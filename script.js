@@ -1,43 +1,45 @@
 /* ==========================================================================
    GAMENEST — Main Script
-   Handles: language, cart, favorites, modals, search, checkout, countdown,
-            stats counters, toasts, receipt download, and all interactions.
+   Handles: catalog rendering, cart, favorites, search, modals, checkout,
+            payment buttons, countdown, animated stats, toasts.
    ========================================================================== */
 
 (() => {
   "use strict";
 
   /* ==========================================================================
-     1. PRODUCT CATALOG
+     1. CATALOG
      ========================================================================== */
   const PRODUCTS = [
-    /* --- V-Bucks --- */
-    { id:"vb-800",   kind:"vb",   img:"vcoins.png", product:"800 V-Bucks",               price:199  },
-    { id:"vb-2400",  kind:"vb",   img:"vcoins.png", product:"2400 V-Bucks",              price:479  },
-    { id:"vb-4500",  kind:"vb",   img:"vcoins.png", product:"4500 V-Bucks",              price:759  },
-    { id:"vb-12500", kind:"vb",   img:"vcoins.png", product:"12500 V-Bucks",             price:1749 },
+    /* V-Bucks */
+    { id:"vb-800",   kind:"vb",   img:"vbucks.png", product:"800 V-Bucks",               price:199  },
+    { id:"vb-2400",  kind:"vb",   img:"vbucks.png", product:"2400 V-Bucks",              price:479  },
+    { id:"vb-4500",  kind:"vb",   img:"vbucks.png", product:"4500 V-Bucks",              price:759  },
+    { id:"vb-12500", kind:"vb",   img:"vbucks.png", product:"12500 V-Bucks",             price:1749 },
 
-    /* --- Crew --- */
+    /* Crew */
     { id:"cr-1",     kind:"crew", img:"crew.png",   product:"Fortnite Crew — 1 Month",   price:210  },
     { id:"cr-2",     kind:"crew", img:"crew.png",   product:"Fortnite Crew — 2 Months",  price:379  },
     { id:"cr-3",     kind:"crew", img:"crew.png",   product:"Fortnite Crew — 3 Months",  price:559  },
     { id:"cr-6",     kind:"crew", img:"crew.png",   product:"Fortnite Crew — 6 Months",  price:1049 },
     { id:"cr-12",    kind:"crew", img:"crew.png",   product:"Fortnite Crew — 12 Months", price:1959 },
 
-    /* --- Gifts --- */
-    { id:"gf-500",   kind:"gift", img:"vcoins.png", product:"500 V-Bucks Gift",           price:95   },
-    { id:"gf-800",   kind:"gift", img:"vcoins.png", product:"800 V-Bucks Gift",           price:150  },
-    { id:"gf-1200",  kind:"gift", img:"vcoins.png", product:"1200 V-Bucks Gift",          price:225  },
-    { id:"gf-1500",  kind:"gift", img:"vcoins.png", product:"1500 V-Bucks Gift",          price:280  },
-    { id:"gf-1800",  kind:"gift", img:"vcoins.png", product:"1800 V-Bucks Gift",          price:330  },
-    { id:"gf-2000",  kind:"gift", img:"vcoins.png", product:"2000 V-Bucks Gift",          price:375 }
+    /* Gifts */
+    { id:"gf-500",   kind:"gift", img:"gift.png",   product:"500 V-Bucks Gift",           price:95   },
+    { id:"gf-800",   kind:"gift", img:"gift.png",   product:"800 V-Bucks Gift",           price:150  },
+    { id:"gf-1200",  kind:"gift", img:"gift.png",   product:"1200 V-Bucks Gift",          price:225  },
+    { id:"gf-1500",  kind:"gift", img:"gift.png",   product:"1500 V-Bucks Gift",          price:280  },
+    { id:"gf-1800",  kind:"gift", img:"gift.png",   product:"1800 V-Bucks Gift",          price:330  },
+    { id:"gf-2000",  kind:"gift", img:"gift.png",   product:"2000 V-Bucks Gift",          price:375 }
   ];
 
-  /* Descriptions per product kind, EN + AR */
+  /* ==========================================================================
+     2. DESCRIPTIONS
+     ========================================================================== */
   const DESC = {
     vb: {
-      en: "Top up your Fortnite wallet with pure V-Bucks. Delivered straight to your Epic Games account in minutes — no password required, no waiting.",
-      ar: "اشحن محفظة فورتنايت بالفي-بوكس. تُسلّم مباشرة إلى حسابك على Epic Games في دقائق — بدون كلمة سر وبدون انتظار."
+      en: "Top up your Fortnite wallet with pure V-Bucks. Delivered straight to your Epic Games account in minutes — no password required, no waiting, no risk.",
+      ar: "اشحن محفظة فورتنايت بالفي-بوكس. تُسلّم مباشرة إلى حسابك على Epic Games في دقائق — بدون كلمة سر، بدون انتظار، وبدون أي مخاطرة."
     },
     crew: {
       en: "Fortnite Crew subscription — includes monthly V-Bucks, a Crew Pack, and the current Battle Pass. Delivered for the full duration you select.",
@@ -49,22 +51,24 @@
     }
   };
 
-  /* Payment gateway config */
+  /* ==========================================================================
+     3. PAYMENTS
+     ========================================================================== */
   const PAYMENTS = {
     vodafone: {
-      label: "VODAFONE CASH",
-      value: "0104 264 1080",
-      link: "http://vf.eg/vfcash?id=mt&qrId=wgmEpY"
+      label:"VODAFONE CASH",
+      value:"0104 264 1080",
+      link:"http://vf.eg/vfcash?id=mt&qrId=wgmEpY"
     },
     instapay: {
-      label: "INSTAPAY",
-      value: "0115 893 4284",
-      link: "https://ipn.eg/S/iadqm/instapay/9n2XjE"
+      label:"INSTAPAY",
+      value:"0115 893 4284",
+      link:"https://ipn.eg/S/iadqm/instapay/9n2XjE"
     },
     telda: {
-      label: "TELDA",
-      value: "@itzadam",
-      link: ""
+      label:"TELDA",
+      value:"@itzadam",
+      link:""
     }
   };
 
@@ -72,7 +76,7 @@
   const HANDLE = "@GamenestGifts";
 
   /* ==========================================================================
-     2. STATE
+     4. STATE
      ========================================================================== */
   let lang = "en";
   let activeProduct = null;
@@ -81,7 +85,7 @@
   let toastTimer = null;
 
   /* ==========================================================================
-     3. STORAGE HELPERS
+     5. STORAGE
      ========================================================================== */
   const Storage = {
     get(key, fallback){
@@ -95,13 +99,13 @@
     }
   };
 
-  const getCart = () => Storage.get("gn_cart", []);
-  const setCart = (c) => { Storage.set("gn_cart", c); updateBadges(); renderCart(); };
-  const getFavs = () => Storage.get("gn_favs", []);
-  const setFavs = (f) => { Storage.set("gn_favs", f); updateBadges(); renderFavs(); };
+  const getCart  = () => Storage.get("gn_cart", []);
+  const setCart  = (c) => { Storage.set("gn_cart", c); updateBadges(); renderCart(); };
+  const getFavs  = () => Storage.get("gn_favs", []);
+  const setFavs  = (f) => { Storage.set("gn_favs", f); updateBadges(); renderFavs(); };
 
   /* ==========================================================================
-     4. UTILITIES
+     6. HELPERS
      ========================================================================== */
   const $  = (sel, root=document) => root.querySelector(sel);
   const $$ = (sel, root=document) => [...root.querySelectorAll(sel)];
@@ -116,7 +120,7 @@
     return `GN-${y}${m}${d}-${rnd}`;
   }
 
-  async function copyToClipboard(text){
+  async function copyText(text){
     try { await navigator.clipboard.writeText(text); return true; }
     catch {
       try {
@@ -124,7 +128,6 @@
         ta.value = text;
         ta.style.position = "fixed";
         ta.style.opacity = "0";
-        ta.style.pointerEvents = "none";
         document.body.appendChild(ta);
         ta.select();
         const ok = document.execCommand("copy");
@@ -134,13 +137,6 @@
     }
   }
 
-  function bodyLock(locked){
-    document.body.style.overflow = locked ? "hidden" : "";
-  }
-
-  /* ==========================================================================
-     5. TOAST
-     ========================================================================== */
   function toast(msg){
     const el = $("#toast");
     if (!el) return;
@@ -151,7 +147,7 @@
   }
 
   /* ==========================================================================
-     6. LANGUAGE
+     7. LANGUAGE
      ========================================================================== */
   function applyLang(l){
     lang = l;
@@ -161,13 +157,11 @@
     const langBtn = $("#langBtn");
     if (langBtn) langBtn.textContent = l === "en" ? "عربي" : "EN";
 
-    /* Swap text on all bilingual nodes */
     $$("[data-en][data-ar]").forEach(el => {
       const text = l === "en" ? el.dataset.en : el.dataset.ar;
       if (text !== undefined) el.textContent = text;
     });
 
-    /* Re-render everything that depends on language */
     renderAllProducts();
     renderCart();
     renderFavs();
@@ -181,7 +175,7 @@
   }
 
   /* ==========================================================================
-     7. MOBILE MENU
+     8. MOBILE MENU
      ========================================================================== */
   const menuBtn = $("#menuBtn");
   const navLinks = $("#navLinks");
@@ -193,11 +187,10 @@
   }
 
   /* ==========================================================================
-     8. PRODUCT CARD RENDERING
+     9. PRODUCT CARDS
      ========================================================================== */
   function buildCardHTML(p){
-    const favs = getFavs();
-    const isFav = favs.some(f => f.id === p.id);
+    const isFav = getFavs().some(f => f.id === p.id);
     const tag =
       p.kind === "vb"   ? "// FORTNITE | V-BUCKS" :
       p.kind === "crew" ? "// FORTNITE | CREW"    :
@@ -253,7 +246,7 @@
         btn.addEventListener("click", (e) => {
           e.stopPropagation();
           const action = btn.dataset.action;
-          if (action === "cart") addToCartFromCard(card);
+          if (action === "cart") addToCartById(card.dataset.id);
           else if (action === "buy") openProductModal(card);
         });
       });
@@ -267,7 +260,7 @@
   }
 
   /* ==========================================================================
-     9. BADGES
+     10. BADGES
      ========================================================================== */
   function updateBadges(){
     const cartCount = getCart().reduce((sum, i) => sum + (i.qty || 1), 0);
@@ -287,31 +280,17 @@
   }
 
   /* ==========================================================================
-     10. CART
+     11. CART
      ========================================================================== */
-  function findProductById(id){
-    return PRODUCTS.find(p => p.id === id);
-  }
-
-  function addToCartFromCard(card){
-    const id = card.dataset.id;
-    const p = findProductById(id);
-    if (!p) return;
-    const cart = getCart();
-    const found = cart.find(i => i.id === id);
-    if (found) found.qty = (found.qty || 1) + 1;
-    else cart.push({ id: p.id, product: p.product, price: p.price, kind: p.kind, img: p.img, qty: 1 });
-    setCart(cart);
-    toast(lang === "en" ? "Added to cart" : "تمت الإضافة للسلة");
-  }
+  const findProduct = (id) => PRODUCTS.find(p => p.id === id);
 
   function addToCartById(id){
-    const p = findProductById(id);
+    const p = findProduct(id);
     if (!p) return;
     const cart = getCart();
     const found = cart.find(i => i.id === id);
     if (found) found.qty = (found.qty || 1) + 1;
-    else cart.push({ id: p.id, product: p.product, price: p.price, kind: p.kind, img: p.img, qty: 1 });
+    else cart.push({ id:p.id, product:p.product, price:p.price, kind:p.kind, img:p.img, qty:1 });
     setCart(cart);
     toast(lang === "en" ? "Added to cart" : "تمت الإضافة للسلة");
   }
@@ -352,12 +331,12 @@
   }
 
   /* ==========================================================================
-     11. FAVORITES
+     12. FAVORITES
      ========================================================================== */
   function toggleFavorite(id){
     const favs = getFavs();
     const idx = favs.findIndex(f => f.id === id);
-    const p = findProductById(id);
+    const p = findProduct(id);
     if (!p) return;
 
     if (idx > -1){
@@ -402,7 +381,25 @@
   }
 
   /* ==========================================================================
-     12. PRODUCT DETAIL MODAL
+     13. MODAL HELPERS
+     ========================================================================== */
+  function openModal(modal){
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(modal){
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    const anyOpen = $$(".modal.open").length > 0;
+    if (!anyOpen) document.body.style.overflow = "";
+  }
+
+  /* ==========================================================================
+     14. PRODUCT DETAIL MODAL
      ========================================================================== */
   const productModal = $("#productModal");
   const detailTitle  = $("#detailTitle");
@@ -413,7 +410,6 @@
 
   function openProductModal(card){
     if (!productModal || !card) return;
-
     activeProduct = {
       id:      card.dataset.id,
       product: card.dataset.product,
@@ -432,21 +428,18 @@
     openModal(productModal);
   }
 
-  function closeProductModal(){
-    closeModal(productModal);
-  }
-
   if (productModal){
-    $$("[data-close]", productModal).forEach(el => el.addEventListener("click", closeProductModal));
+    $$("[data-close]", productModal).forEach(el =>
+      el.addEventListener("click", () => closeModal(productModal))
+    );
   }
 
-  /* Detail modal action buttons */
   const addCartBtn = $("#addCartBtn");
   if (addCartBtn){
     addCartBtn.addEventListener("click", () => {
       if (!activeProduct) return;
       addToCartById(activeProduct.id);
-      closeProductModal();
+      closeModal(productModal);
     });
   }
 
@@ -459,7 +452,7 @@
   }
 
   /* ==========================================================================
-     13. CHECKOUT MODAL
+     15. CHECKOUT MODAL
      ========================================================================== */
   const checkoutModal = $("#checkoutModal");
   const coTitle     = $("#coTitle");
@@ -472,7 +465,7 @@
 
   function openCheckoutModal(){
     if (!checkoutModal || !activeProduct) return;
-    closeProductModal();
+    closeModal(productModal);
 
     if (coTitle) coTitle.textContent = activeProduct.product;
     const priceStr = fmt(activeProduct.price) + " EGP";
@@ -484,10 +477,6 @@
 
     openModal(checkoutModal);
     setTimeout(() => coUser?.focus(), 220);
-  }
-
-  function closeCheckoutModal(){
-    closeModal(checkoutModal);
   }
 
   function updatePaymentUI(){
@@ -507,7 +496,7 @@
 
   function buildTicket(){
     if (!activeProduct || !activeOrderId) return "";
-    const user = (coUser?.value.trim()) || (lang === "en" ? "—" : "—");
+    const user = (coUser?.value.trim()) || "—";
     const price = fmt(activeProduct.price);
     const pay = PAYMENTS[activePayment];
 
@@ -522,9 +511,9 @@
         ``,
         `طريقة الدفع: ${pay.label}`,
         `عنوان التحويل: ${pay.value}`,
-        `اسم المستلم: ${HOLDER}`,
+        `صاحب الحساب: ${HOLDER}`,
         ``,
-        `سأرسل هذه التذكرة + لقطة الدفع إلى ${HANDLE}.`
+        `سأرسل هذه التذكرة + لقطة الدفع إلى ${HANDLE} على إنستجرام أو ديسكورد.`
       ].join("\n");
     }
 
@@ -553,11 +542,13 @@
   }
 
   if (checkoutModal){
-    $$("[data-close-checkout]", checkoutModal).forEach(el => el.addEventListener("click", closeCheckoutModal));
+    $$("[data-close-checkout]", checkoutModal).forEach(el =>
+      el.addEventListener("click", () => closeModal(checkoutModal))
+    );
   }
 
   /* ==========================================================================
-     14. PAY NOW / RECEIPT / TICKET
+     16. PAY NOW / RECEIPT / TICKET
      ========================================================================== */
   const payNowBtn = $("#payNowBtn");
   if (payNowBtn){
@@ -575,7 +566,7 @@
         window.open(pay.link, "_blank", "noopener");
         toast(lang === "en" ? "Complete payment, then download receipt" : "أكمل الدفع، ثم حمّل الإيصال");
       } else {
-        copyToClipboard(pay.value);
+        copyText(pay.value);
         toast(lang === "en" ? "Telda handle copied" : "تم نسخ عنوان تيلدا");
       }
     });
@@ -609,7 +600,7 @@
     copyTicketBtn.addEventListener("click", async () => {
       updateCheckoutPreview();
       const text = coReference?.textContent || "";
-      const ok = await copyToClipboard(text);
+      const ok = await copyText(text);
       toast(ok
         ? (lang === "en" ? "Ticket copied" : "تم نسخ التذكرة")
         : (lang === "en" ? "Copy failed" : "فشل النسخ"));
@@ -617,20 +608,18 @@
   }
 
   /* ==========================================================================
-     15. CART / FAVORITES / SEARCH MODALS
+     17. CART / FAV / SEARCH MODALS
      ========================================================================== */
   const cartModal = $("#cartModal");
   const favModal  = $("#favModal");
   const searchModal = $("#searchModal");
 
   const cartBtn = $("#cartBtn");
-  if (cartBtn && cartModal){
-    cartBtn.addEventListener("click", () => openModal(cartModal));
-  }
+  if (cartBtn && cartModal) cartBtn.addEventListener("click", () => openModal(cartModal));
+
   const favBtn = $("#favBtn");
-  if (favBtn && favModal){
-    favBtn.addEventListener("click", () => openModal(favModal));
-  }
+  if (favBtn && favModal) favBtn.addEventListener("click", () => openModal(favModal));
+
   const searchBtn = $("#searchBtn");
   if (searchBtn && searchModal){
     searchBtn.addEventListener("click", () => {
@@ -664,7 +653,7 @@
   }
 
   /* ==========================================================================
-     16. SEARCH
+     18. SEARCH
      ========================================================================== */
   const searchInput = $("#searchInput");
   const searchResults = $("#searchResults");
@@ -679,8 +668,7 @@
     }
 
     const results = PRODUCTS.filter(p =>
-      p.product.toLowerCase().includes(q) ||
-      p.kind.toLowerCase().includes(q)
+      p.product.toLowerCase().includes(q) || p.kind.toLowerCase().includes(q)
     );
 
     if (results.length === 0){
@@ -702,17 +690,15 @@
     $$(".search-result", searchResults).forEach(row => {
       row.addEventListener("click", () => {
         const id = row.dataset.id;
-        const p = findProductById(id);
+        const p = findProduct(id);
         if (!p) return;
         closeModal(searchModal);
-        /* Open detail modal directly */
-        const fakeCard = {
+        openProductModal({
           dataset: {
             id: p.id, product: p.product, price: p.price,
             kind: p.kind, img: p.img
           }
-        };
-        openProductModal(fakeCard);
+        });
       });
     });
   }
@@ -722,7 +708,7 @@
   }
 
   /* ==========================================================================
-     17. PAYMENT GATEWAY BUTTONS (main section)
+     19. PAYMENT GATEWAY BUTTONS
      ========================================================================== */
   $$(".gateway").forEach(gate => {
     const btn = $(".gw-btn", gate);
@@ -735,16 +721,15 @@
       const name = gate.dataset.name;
 
       if (method === "telda" || !link){
-        copyToClipboard(value);
+        copyText(value);
         toast(lang === "en" ? "Copied: " + value : "تم النسخ: " + value);
       } else {
         window.open(link, "_blank", "noopener");
         toast(lang === "en" ? "Opening " + name + "..." : "جاري فتح " + name + "...");
       }
 
-      /* Set up a placeholder order if none exists, then open checkout */
       if (!activeProduct){
-        activeProduct = { id:"custom", product:"Custom Order", price:0, kind:"vb", img:"vcoins.png" };
+        activeProduct = { id:"custom", product:"Custom Order", price:0, kind:"vb", img:"vbucks.png" };
         activeOrderId = makeOrderId();
       }
       if (coTitle) coTitle.textContent = activeProduct.product;
@@ -759,7 +744,7 @@
   });
 
   /* ==========================================================================
-     18. COUNTDOWN TIMER
+     20. COUNTDOWN TIMER
      ========================================================================== */
   function startCountdown(){
     const hEl = $("#cdH");
@@ -767,10 +752,9 @@
     const sEl = $("#cdS");
     if (!hEl || !mEl || !sEl) return;
 
-    /* Target: end of the current week (Sunday 23:59:59 local time) */
     const now = new Date();
     const target = new Date(now);
-    const day = target.getDay(); /* 0 = Sunday */
+    const day = target.getDay();
     const daysUntilEnd = (7 - day) % 7;
     target.setDate(target.getDate() + daysUntilEnd);
     target.setHours(23, 59, 59, 0);
@@ -801,7 +785,7 @@
   }
 
   /* ==========================================================================
-     19. ANIMATED STATS COUNTER
+     21. ANIMATED STATS
      ========================================================================== */
   function animateStats(){
     const nums = $$(".stat-num");
@@ -835,26 +819,7 @@
   }
 
   /* ==========================================================================
-     20. MODAL HELPERS
-     ========================================================================== */
-  function openModal(modal){
-    if (!modal) return;
-    modal.classList.add("open");
-    modal.setAttribute("aria-hidden", "false");
-    bodyLock(true);
-  }
-
-  function closeModal(modal){
-    if (!modal) return;
-    modal.classList.remove("open");
-    modal.setAttribute("aria-hidden", "true");
-    /* Only unlock body if no other modal is open */
-    const anyOpen = $$(".modal.open").length > 0;
-    if (!anyOpen) bodyLock(false);
-  }
-
-  /* ==========================================================================
-     21. ESCAPE KEY HANDLING
+     22. ESC KEY
      ========================================================================== */
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -863,7 +828,7 @@
   });
 
   /* ==========================================================================
-     22. INIT
+     23. INIT
      ========================================================================== */
   function init(){
     renderAllProducts();
