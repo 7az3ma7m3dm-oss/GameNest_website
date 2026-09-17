@@ -439,19 +439,37 @@
           <button class="gw-btn" id="payNowBtn" type="button">CLICK TO PAY NOW</button>
         </div>
       </div>
-      <div class="checkout-right">
+            <div class="checkout-right">
         <div class="co-field">
           <label>FORTNITE USERNAME</label>
           <input id="coUser" type="text" placeholder="Enter your Fortnite username" maxlength="50" autocomplete="off">
         </div>
+
+        <div class="co-field">
+          <label>UPLOAD PAYMENT PROOF</label>
+          <label class="upload-box" for="proofUpload" id="uploadBox">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span id="uploadLabel">Click to upload screenshot</span>
+            <input id="proofUpload" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          </label>
+          <img id="proofPreview" class="proof-preview" alt="" hidden>
+          <span class="proof-remove" id="proofRemove" hidden>✕ Remove file</span>
+        </div>
+
         <div class="co-field">
           <label>PAYMENT_REFERENCE</label>
           <div class="co-pre" id="coReference">—</div>
         </div>
+
         <div class="co-actions">
           <button class="btn" id="downloadReceipt" type="button">DOWNLOAD RECEIPT</button>
           <button class="btn ghost" id="copyTicket" type="button">COPY TICKET</button>
         </div>
+
         <p class="co-note">Send the receipt + ticket to @GamenestGifts on Instagram or Discord.</p>
       </div>
     </div>
