@@ -279,6 +279,7 @@
   </div>
   <div class="gateways">
     <div class="gateway" data-method="vodafone" data-name="VODAFONE CASH" data-value="0104 264 1080" data-link="http://vf.eg/vfcash?id=mt&qrId=wgmEpY">
+      <img src="vodafone.webp" alt="Vodafone Cash" class="gw-icon" onerror="this.style.display='none'">
       <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
       <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
       <div class="gw-line">SEND FUNDS TO VODAFONE CASH: <b class="gw-val">0104 264 1080</b></div>
@@ -286,6 +287,7 @@
       <button class="gw-btn" type="button">CLICK TO PAY WITH VODAFONE CASH</button>
     </div>
     <div class="gateway" data-method="instapay" data-name="INSTAPAY" data-value="0115 893 4284" data-link="https://ipn.eg/S/iadqm/instapay/9n2XjE">
+      <img src="instapay.webp" alt="InstaPay" class="gw-icon" onerror="this.style.display='none'">
       <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
       <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
       <div class="gw-line">SEND FUNDS TO INSTAPAY: <b class="gw-val">0115 893 4284</b></div>
@@ -293,6 +295,7 @@
       <button class="gw-btn" type="button">CLICK TO PAY WITH INSTAPAY</button>
     </div>
     <div class="gateway" data-method="telda" data-name="TELDA" data-value="@itzadam" data-link="">
+      <img src="telda.webp" alt="Telda" class="gw-icon" onerror="this.style.display='none'">
       <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
       <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
       <div class="gw-line">SEND FUNDS TO TELDA: <b class="gw-val">@itzadam</b></div>
@@ -312,11 +315,11 @@
   <div class="faq-list">
     <details open>
       <summary>How do I place an order?</summary>
-      <p>Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, then copy the ticket and send it to @GamenestGifts on Instagram or Discord along with your payment screenshot. That's it.</p>
+      <p>Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, upload your payment screenshot, then copy the ticket and send it to @GamenestGifts on Instagram or Discord.</p>
     </details>
     <details>
       <summary>How long does delivery take?</summary>
-      <p>Most orders are delivered within 5 minutes. During peak hours it can take slightly longer, but we always keep you posted.</p>
+      <p>Most orders are delivered within 5 minutes. During peak hours it can take slightly longer.</p>
     </details>
     <details>
       <summary>Which payment methods do you accept?</summary>
@@ -415,7 +418,7 @@
         <div class="co-line"><span>PROCESSING:</span><span>INSTANT</span></div>
         <div class="co-total"><span>TOTAL_DUE :</span><b id="coTotal">—</b></div>
         <div class="co-label">// CHOOSE_PAYMENT</div>
-                <div class="pay-tabs">
+        <div class="pay-tabs">
           <button class="pay-tab active" data-pay="vodafone" type="button">
             <img src="vodafone.webp" alt="" class="pay-tab-icon" onerror="this.style.display='none'">
             <span>VODAFONE CASH</span>
@@ -426,7 +429,7 @@
             <span>INSTAPAY</span>
             <small>0115 893 4284</small>
           </button>
-          <button class="pay-tab" type="button" data-pay="telda">
+          <button class="pay-tab" data-pay="telda" type="button">
             <img src="telda.webp" alt="" class="pay-tab-icon" onerror="this.style.display='none'">
             <span>TELDA</span>
             <small>@itzadam</small>
@@ -439,7 +442,7 @@
           <button class="gw-btn" id="payNowBtn" type="button">CLICK TO PAY NOW</button>
         </div>
       </div>
-            <div class="checkout-right">
+      <div class="checkout-right">
         <div class="co-field">
           <label>FORTNITE USERNAME</label>
           <input id="coUser" type="text" placeholder="Enter your Fortnite username" maxlength="50" autocomplete="off">
@@ -469,7 +472,6 @@
           <button class="btn" id="downloadReceipt" type="button">DOWNLOAD RECEIPT</button>
           <button class="btn ghost" id="copyTicket" type="button">COPY TICKET</button>
         </div>
-
         <p class="co-note">Send the receipt + ticket to @GamenestGifts on Instagram or Discord.</p>
       </div>
     </div>
@@ -513,7 +515,7 @@
 <div class="toast" id="toast"></div>
 
 <div class="float-stack">
-  <a class="float-btn" href="https://www.instagram.com/gamenestshop" target="_blank" rel="noopener" aria-label="Instagram">
+  <a class="float-btn" href="https://www.instagram.com/gamenestshop/" target="_blank" rel="noopener" aria-label="Instagram">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
       <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
@@ -545,7 +547,7 @@
       </div>
       <div>
         <h4>COMMUNITY</h4>
-        <a href="https://www.instagram.com/gamenest.shop" target="_blank" rel="noopener">Instagram · @GamenestGifts</a>
+        <a href="https://www.instagram.com/gamenestshop/" target="_blank" rel="noopener">Instagram · @GamenestGifts</a>
         <a href="https://discord.gg/X3qCVbnW3K" target="_blank" rel="noopener">Discord Server</a>
         <a href="#faq">FAQ</a>
         <a href="#payment">Payment</a>
