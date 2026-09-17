@@ -710,7 +710,7 @@
   /* ==========================================================================
      19. PAYMENT GATEWAY BUTTONS
      ========================================================================== */
-  $$(".gateway").forEach(gate => {
+    $$(".gateway:not(.gateway-compact)").forEach(gate => {
     const btn = $(".gw-btn", gate);
     if (!btn) return;
 
