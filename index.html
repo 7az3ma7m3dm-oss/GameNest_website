@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#15130F">
+  <meta name="theme-color" content="#F4F1EA">
   <meta name="description" content="GameNest.shop — order Fortnite V-Bucks and Crew like a counter ticket, hand it to a real admin on Discord.">
   <title>GameNest.shop — Order Counter for Fortnite</title>
   <link rel="icon" href="favicon.png" type="image/png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="grain"></div>
@@ -335,7 +335,7 @@
       <div class="footer-links">
         <a href="#vbucks">V-Bucks</a><a href="#crew">Crew</a><a href="#how">How It Works</a><a href="#faq">FAQ</a>
 
-        <!-- Instagram -->
+        <!-- Instagram — CHANGE THIS URL to your real Instagram username -->
         <a class="social-link" target="_blank" rel="noopener" href="https://www.instagram.com/gamenest.shop" aria-label="Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
@@ -345,7 +345,7 @@
           Instagram ↗
         </a>
 
-        <!-- Discord -->
+        <!-- Discord — CHANGE THIS URL if your invite link is different -->
         <a class="social-link" target="_blank" rel="noopener" href="https://discord.gg/X3qCVbnW3K" aria-label="Discord">
           <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
             <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
@@ -357,7 +357,7 @@
     <div class="footer-bottom"><span>© 2026 GameNest.shop</span><span>Every order starts as a ticket, not a transaction.</span></div>
   </footer>
 
-  <!-- ORDER MODAL — kept functionally identical, restyled as a ticket being filled in -->
+  <!-- ORDER MODAL -->
   <div class="modal" id="orderModal" aria-hidden="true">
     <div class="modal-backdrop"></div>
     <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
@@ -564,7 +564,6 @@ Please confirm and assist me with payment.`;
       let headX = mouseX, headY = mouseY;
       let visible = false;
 
-      // long point history — this is what makes the ribbon long
       const POINTS = 22;
       const pts = Array.from({ length: POINTS }, () => ({ x: mouseX, y: mouseY }));
 
@@ -579,8 +578,6 @@ Please confirm and assist me with payment.`;
         ringY += (mouseY - ringY) * 0.13;
         ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
 
-        // head eases smoothly toward the real pointer, then the rest of the
-        // ribbon follows the head — a single continuous tapered shape, no seams
         headX += (mouseX - headX) * 0.22;
         headY += (mouseY - headY) * 0.22;
         pts.unshift({ x: headX, y: headY });
@@ -588,8 +585,6 @@ Please confirm and assist me with payment.`;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // build a tapering ribbon polygon: an offset edge on each side of the
-        // path, width shrinking toward the tail, filled as one smooth shape
         const left = [];
         const right = [];
         const maxWidth = 4;
@@ -611,8 +606,8 @@ Please confirm and assist me with payment.`;
           ctx.closePath();
 
           const grad = ctx.createLinearGradient(headX, headY, pts[pts.length - 1].x, pts[pts.length - 1].y);
-          grad.addColorStop(0, 'rgba(255,255,255,0.5)');
-          grad.addColorStop(1, 'rgba(255,255,255,0)');
+          grad.addColorStop(0, 'rgba(21,19,15,0.45)');
+          grad.addColorStop(1, 'rgba(21,19,15,0)');
           ctx.fillStyle = grad;
           ctx.fill();
         }
@@ -631,14 +626,20 @@ Please confirm and assist me with payment.`;
     }
   </script>
 
-  <!-- ---- Ratings: saved to Firebase, shown to every visitor on load ---- -->
+  <!-- ============================================================
+       RATINGS via Firebase Firestore
+       ------------------------------------------------------------
+       NOTE: This "apiKey" is NOT a secret. Firebase web API keys are
+       public identifiers, not credentials. Real security is handled
+       by your Firestore Rules (set them to allow read+create on the
+       /reviews collection and nothing else).
+       ============================================================ -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // TODO: replace with your real Firebase config (Project settings > Your apps)
     const firebaseConfig = {
       apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
       authDomain: "gamenest-reviews.firebaseapp.com",
