@@ -199,9 +199,7 @@ main{display:block}
   position:relative;z-index:2;
 }
 @media(min-width:900px){.process-grid{grid-template-columns:repeat(3,1fr)}}
-.process-line{
-  display:none;
-}
+.process-line{display:none}
 @media(min-width:900px){
   .process-line{
     display:block;position:absolute;top:44%;left:0;right:0;
