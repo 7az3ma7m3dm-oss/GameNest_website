@@ -636,37 +636,7 @@ html[dir="rtl"] .pnum{right:auto;left:22px}
 }
 
 /* ==========================================================================
-   11. STATS
-   ========================================================================== */
-.stats{padding:70px 22px}
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:20px;max-width:1080px;margin:0 auto;
-}
-.stat{
-  background:var(--panel);
-  border:1px solid var(--border);
-  padding:30px 20px;text-align:center;
-  transition:.3s var(--ease);
-}
-.stat:hover{
-  border-color:rgba(255,255,255,.5);
-  box-shadow:0 0 26px rgba(255,255,255,.08);
-}
-.stat-num{
-  font-family:var(--mono);font-size:2.4rem;
-  font-weight:900;color:var(--accent);
-  line-height:1;margin-bottom:10px;
-  letter-spacing:-.02em;
-}
-.stat-lbl{
-  font-family:var(--mono);font-size:10px;
-  letter-spacing:.24em;text-transform:uppercase;
-  color:var(--muted);
-}
-
-/* ==========================================================================
-   12. WHY GRID
+   11. WHY GRID
    ========================================================================== */
 .why-grid{
   display:grid;
@@ -704,7 +674,7 @@ html[dir="rtl"] .pnum{right:auto;left:22px}
 .why-card p{color:var(--muted);font-size:14px;line-height:1.7}
 
 /* ==========================================================================
-   13. PAYMENT GATEWAYS
+   12. PAYMENT GATEWAYS
    ========================================================================== */
 .gateways{
   display:grid;
@@ -753,7 +723,7 @@ html[dir="rtl"] .pnum{right:auto;left:22px}
 .gateway-compact .gw-btn{padding:12px 14px;font-size:11px}
 
 /* ==========================================================================
-   14. FAQ
+   13. FAQ
    ========================================================================== */
 .faq-list{
   max-width:860px;margin:0 auto;
@@ -787,7 +757,7 @@ details p{
 }
 
 /* ==========================================================================
-   15. REVIEWS
+   14. REVIEWS
    ========================================================================== */
 .review-form{
   max-width:640px;margin:0 auto 40px;
@@ -850,7 +820,7 @@ details p{
 .review-muted{color:var(--dim);font-style:italic}
 
 /* ==========================================================================
-   16. FINAL CTA
+   15. FINAL CTA
    ========================================================================== */
 .final-cta{padding:100px 22px 130px}
 .cta-inner{
@@ -870,7 +840,7 @@ details p{
 }
 
 /* ==========================================================================
-   17. MODALS
+   16. MODALS
    ========================================================================== */
 .modal{
   position:fixed;inset:0;z-index:120;display:none;
@@ -1231,7 +1201,7 @@ html[dir="rtl"] .modal-close{right:auto;left:18px}
 }
 
 /* ==========================================================================
-   18. TOAST
+   17. TOAST
    ========================================================================== */
 .toast{
   position:fixed;bottom:96px;left:50%;
@@ -1252,7 +1222,7 @@ html[dir="rtl"] .modal-close{right:auto;left:18px}
 }
 
 /* ==========================================================================
-   19. FLOATING ACTIONS
+   18. FLOATING ACTIONS
    ========================================================================== */
 .float-stack{
   position:fixed;bottom:24px;right:24px;
@@ -1272,7 +1242,7 @@ html[dir="rtl"] .modal-close{right:auto;left:18px}
 }
 
 /* ==========================================================================
-   20. FOOTER
+   19. FOOTER
    ========================================================================== */
 .site-footer{
   border-top:1px solid var(--border);
@@ -1334,7 +1304,7 @@ html[dir="rtl"] .modal-close{right:auto;left:18px}
 .foot-sep{color:var(--border-2)}
 
 /* ==========================================================================
-   21. RTL
+   20. RTL
    ========================================================================== */
 html[dir="rtl"] .marquee{direction:ltr}
 html[dir="rtl"] .process-line{
@@ -1345,7 +1315,7 @@ html[dir="rtl"] .detail-visual{border-right:none;border-left:1px solid var(--bor
 html[dir="rtl"] .checkout-left{border-right:none;border-left:1px solid var(--border)}
 
 /* ==========================================================================
-   22. MOBILE
+   21. MOBILE
    ========================================================================== */
 @media(max-width:900px){
   .nav-links{display:none}
@@ -1381,7 +1351,6 @@ html[dir="rtl"] .checkout-left{border-right:none;border-left:1px solid var(--bor
   .gateways{grid-template-columns:1fr}
   .deal-inner{padding:40px 24px}
   .why-grid{grid-template-columns:1fr}
-  .stats-grid{grid-template-columns:repeat(2,1fr)}
 }
 @media(max-width:520px){
   .pgrid{grid-template-columns:1fr}
@@ -1391,7 +1360,7 @@ html[dir="rtl"] .checkout-left{border-right:none;border-left:1px solid var(--bor
 }
 
 /* ==========================================================================
-   23. REDUCED MOTION
+   22. REDUCED MOTION
    ========================================================================== */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{
