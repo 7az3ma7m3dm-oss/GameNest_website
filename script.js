@@ -1,7 +1,7 @@
 /* ==========================================================================
    GAMENEST — Main Script
    Handles: catalog rendering, cart, favorites, search, modals, checkout,
-            payment buttons, countdown, animated stats, toasts.
+            payment buttons, countdown, toasts.
    ========================================================================== */
 
 (() => {
@@ -785,41 +785,7 @@
   }
 
   /* ==========================================================================
-     21. ANIMATED STATS
-     ========================================================================== */
-  function animateStats(){
-    const nums = $$(".stat-num");
-    if (nums.length === 0) return;
-
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        const el = entry.target;
-        if (el.dataset.animated === "1") return;
-        el.dataset.animated = "1";
-
-        const target = parseInt(el.dataset.count || "0", 10);
-        const duration = 1400;
-        const start = performance.now();
-
-        function frame(t){
-          const elapsed = t - start;
-          const pct = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - pct, 3);
-          const value = Math.floor(target * eased);
-          el.textContent = value.toLocaleString("en-US");
-          if (pct < 1) requestAnimationFrame(frame);
-          else el.textContent = target.toLocaleString("en-US");
-        }
-        requestAnimationFrame(frame);
-      });
-    }, { threshold: 0.4 });
-
-    nums.forEach(n => observer.observe(n));
-  }
-
-  /* ==========================================================================
-     22. ESC KEY
+     21. ESC KEY
      ========================================================================== */
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -828,7 +794,7 @@
   });
 
   /* ==========================================================================
-     23. INIT
+     22. INIT
      ========================================================================== */
   function init(){
     renderAllProducts();
@@ -836,7 +802,6 @@
     renderCart();
     renderFavs();
     startCountdown();
-    animateStats();
     applyLang("en");
   }
 
