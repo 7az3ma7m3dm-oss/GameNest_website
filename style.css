@@ -1370,3 +1370,14 @@ html[dir="rtl"] .checkout-left{border-right:none;border-left:1px solid var(--bor
     scroll-behavior:auto !important;
   }
 }
+
+/* Payment tab icons */
+.pay-tab-icon{
+  width:26px;
+  height:26px;
+  object-fit:contain;
+  margin-bottom:4px;
+  filter:grayscale(1) brightness(1.5) contrast(.9);
+  transition:filter .22s;
+}
+.pay-tab.active .pay-tab-icon{filter:none}
