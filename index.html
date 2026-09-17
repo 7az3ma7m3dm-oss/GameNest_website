@@ -3,90 +3,186 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
 <title>GAMENEST | Fortnite V-Bucks, Crew & Gifts</title>
-<meta name="description" content="GAMENEST — Fortnite V-Bucks, Crew and Gifts. Instant delivery, best prices, trusted seller.">
+<meta name="description" content="GAMENEST — Fortnite V-Bucks, Crew subscriptions and Gifts. Instant delivery, best prices, trusted seller.">
+<meta name="keywords" content="Fortnite, V-Bucks, Crew, Gifts, GAMENEST, GamenestGifts, gaming">
+<meta property="og:title" content="GAMENEST | Fortnite V-Bucks, Crew & Gifts">
+<meta property="og:description" content="Instant delivery · best prices · trusted seller.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<!-- ============================================================
+     GRAIN / SCANLINES OVERLAY
+     ============================================================ -->
+<div class="scanlines" aria-hidden="true"></div>
+<div class="grain" aria-hidden="true"></div>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
 <header class="site-header">
-  <nav class="nav wrap">
-    <a href="#top" class="brand">
-      <span class="brand-mark" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-          <path d="M78 22 H40 L18 40 V78 L32 90 H78 L90 78 V55 L65 55 L58 62 V74 H36 V46 L45 38 H78 Z"/>
-        </svg>
-      </span>
-      <span class="brand-text">GAMENEST<small>.shop</small></span>
-    </a>
-    <div class="nav-links" id="navLinks">
-      <a href="#process" data-en="Process" data-ar="العملية">Process</a>
-      <a href="#vbucks"  data-en="V-Bucks" data-ar="في-بوكس">V-Bucks</a>
-      <a href="#crew"    data-en="Crew"    data-ar="الكرو">Crew</a>
-      <a href="#gifts"   data-en="Gifts"   data-ar="الهدايا">Gifts</a>
-      <a href="#payment" data-en="Payment" data-ar="الدفع">Payment</a>
-      <a href="#faq"     data-en="FAQ"     data-ar="الأسئلة">FAQ</a>
-      <button class="lang-btn" id="langBtn" type="button">عربي</button>
+  <div class="header-bar">
+    <div class="wrap nav">
+
+      <!-- Brand -->
+      <a href="#top" class="brand" aria-label="GAMENEST home">
+        <img src="logo.png" alt="" class="brand-logo" onerror="this.style.display='none'">
+        <span class="brand-text">GAMENEST<small>.shop</small></span>
+      </a>
+
+      <!-- Desktop nav -->
+      <nav class="nav-links" id="navLinks" aria-label="Main">
+        <a href="#process"  data-en="Process"      data-ar="العملية">Process</a>
+        <a href="#vbucks"   data-en="V-Bucks"      data-ar="في-بوكس">V-Bucks</a>
+        <a href="#crew"     data-en="Crew"         data-ar="الكرو">Crew</a>
+        <a href="#gifts"    data-en="Gifts"        data-ar="الهدايا">Gifts</a>
+        <a href="#reviews"  data-en="Reviews"      data-ar="المراجعات">Reviews</a>
+        <a href="#payment"  data-en="Payment"      data-ar="الدفع">Payment</a>
+        <a href="#faq"      data-en="FAQ"          data-ar="الأسئلة">FAQ</a>
+        <button class="lang-btn" id="langBtn" type="button">عربي</button>
+      </nav>
+
+      <!-- Icons -->
+      <div class="nav-icons">
+        <button class="icon-btn" id="searchBtn" type="button" aria-label="Search" title="Search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z"/>
+          </svg>
+        </button>
+        <button class="icon-btn" id="favBtn" type="button" aria-label="Favorites" title="Favorites">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>
+          </svg>
+          <span class="badge" id="favCount" hidden>0</span>
+        </button>
+        <button class="icon-btn" id="cartBtn" type="button" aria-label="Cart" title="Cart">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/>
+          </svg>
+          <span class="badge" id="cartCount" hidden>0</span>
+        </button>
+        <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu">☰</button>
+      </div>
     </div>
-    <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu">☰</button>
-  </nav>
+  </div>
 </header>
 
 <main>
 
-<!-- ============ HERO ============ -->
+<!-- ============================================================
+     HERO
+     ============================================================ -->
 <section class="hero" id="top">
+
+  <!-- Background marquees -->
   <div class="marquee marquee-top" aria-hidden="true">
-    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
-    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
+    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
+    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
+  </div>
+  <div class="marquee marquee-mid" aria-hidden="true">
+    <span>/// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// </span>
+    <span>/// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// INSTANT DELIVERY /// TRUSTED /// </span>
   </div>
   <div class="marquee marquee-bot" aria-hidden="true">
-    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
-    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
+    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
+    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
   </div>
 
+  <!-- Decorative grid -->
   <div class="grid-bg" aria-hidden="true"></div>
-  <div class="corner corner-tl"></div>
-  <div class="corner corner-tr"></div>
-  <div class="corner corner-bl"></div>
-  <div class="corner corner-br"></div>
 
+  <!-- Corner brackets -->
+  <div class="corner corner-tl" aria-hidden="true"></div>
+  <div class="corner corner-tr" aria-hidden="true"></div>
+  <div class="corner corner-bl" aria-hidden="true"></div>
+  <div class="corner corner-br" aria-hidden="true"></div>
+
+  <!-- Side text -->
+  <div class="hero-meta hero-meta-right" aria-hidden="true">GAMENEST // METADATA_SYNCED</div>
+  <div class="hero-meta hero-meta-left"  aria-hidden="true">TERMINAL_ONLINE // PORT_8080</div>
+
+  <!-- Hero content -->
   <div class="hero-inner">
-    <!-- G monogram in the CENTRE -->
-    <img src="gmark.png" alt="GAMENEST" class="hero-mark" onerror="this.style.display='none'">
 
-    <span class="tag">
-      <span class="dot"></span>
-      <span data-en="SYSTEM ACTIVE // CORE_v1.0.4" data-ar="النظام نشط // الإصدار ١.٠.٤">SYSTEM ACTIVE // CORE_v1.0.4</span>
-    </span>
-    <span class="tag-sub" data-en="SECURE_LINK // USER: GUEST_09" data-ar="اتصال آمن // المستخدم: زائر_٠٩">SECURE_LINK // USER: GUEST_09</span>
+    <img src="logo.png" alt="" class="hero-mark" onerror="this.style.display='none'">
 
-    <h1 class="glitch">GAMENEST</h1>
+    <div class="hero-status">
+      <span class="tag">
+        <span class="dot"></span>
+        <span data-en="SYSTEM ACTIVE // CORE_v1.0.4" data-ar="النظام نشط // الإصدار ١.٠.٤">SYSTEM ACTIVE // CORE_v1.0.4</span>
+      </span>
+      <span class="tag-sub" data-en="SECURE_LINK // USER: GUEST_09" data-ar="اتصال آمن // المستخدم: زائر_٠٩">SECURE_LINK // USER: GUEST_09</span>
+    </div>
+
+    <h1 class="glitch" data-text="GAMENEST">GAMENEST</h1>
 
     <p class="hero-text"
-       data-en="Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support."
-       data-ar="في-بوكس فورتنايت، اشتراكات الكرو، والهدايا — تسليم فوري، أفضل الأسعار، ودعم حقيقي.">
-       Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support.
+       data-en="Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support. Trusted by thousands of players across Egypt and the Middle East."
+       data-ar="في-بوكس فورتنايت، اشتراكات الكرو، والهدايا — تسليم فوري، أفضل الأسعار، ودعم حقيقي. موثوق من آلاف اللاعبين في مصر والشرق الأوسط.">
+      Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support. Trusted by thousands of players across Egypt and the Middle East.
     </p>
 
     <div class="btns">
-      <a href="#vbucks"  class="btn"       data-en="Shop Now // BROWSE" data-ar="تسوق الآن // تصفح">Shop Now // BROWSE</a>
-      <a href="#payment" class="btn ghost" data-en="Payment // METHODS" data-ar="الدفع // الطرق">Payment // METHODS</a>
+      <a href="#vbucks"  class="btn"       data-en="Shop V-Bucks"      data-ar="تسوق في-بوكس">Shop V-Bucks</a>
+      <a href="#crew"    class="btn ghost" data-en="Crew & Gifts"       data-ar="الكرو والهدايا">Crew &amp; Gifts</a>
     </div>
-  </div>
 
-  <div class="hero-meta hero-meta-right" aria-hidden="true">GAMENEST // METADATA_SYNCED</div>
-  <div class="hero-meta hero-meta-left"  aria-hidden="true">TERMINAL_ONLINE // PORT_8080</div>
+    <!-- Quick trust strip -->
+    <ul class="hero-trust">
+      <li><span class="tick">✓</span><span data-en="Instant Delivery"     data-ar="تسليم فوري">Instant Delivery</span></li>
+      <li><span class="tick">✓</span><span data-en="No Password Needed"   data-ar="بدون كلمة سر">No Password Needed</span></li>
+      <li><span class="tick">✓</span><span data-en="24/7 Support"         data-ar="دعم ٢٤/٧">24/7 Support</span></li>
+      <li><span class="tick">✓</span><span data-en="Verified Seller"      data-ar="بائع موثوق">Verified Seller</span></li>
+    </ul>
+
+    <!-- Scroll hint -->
+    <a href="#process" class="scroll-hint" aria-label="Scroll down">
+      <span data-en="SCROLL" data-ar="انزل">SCROLL</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7-7-7M19 5l-7 7-7-7"/>
+      </svg>
+    </a>
+  </div>
 </section>
 
-<!-- ============ PROCESS ============ -->
+<!-- ============================================================
+     MARQUEE TICKER STRIP
+     ============================================================ -->
+<section class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>⚡ 800 VB — 199 EGP</span><span class="sep">///</span>
+    <span>⚡ 2400 VB — 479 EGP</span><span class="sep">///</span>
+    <span>⚡ 4500 VB — 759 EGP</span><span class="sep">///</span>
+    <span>⚡ 12500 VB — 1749 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 1M — 210 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 12M — 1959 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 500 — 95 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 2000 — 375 EGP</span><span class="sep">///</span>
+    <span>⚡ 800 VB — 199 EGP</span><span class="sep">///</span>
+    <span>⚡ 2400 VB — 479 EGP</span><span class="sep">///</span>
+    <span>⚡ 4500 VB — 759 EGP</span><span class="sep">///</span>
+    <span>⚡ 12500 VB — 1749 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 1M — 210 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 12M — 1959 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 500 — 95 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 2000 — 375 EGP</span><span class="sep">///</span>
+  </div>
+</section>
+
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
 <section id="process" class="section">
   <div class="glow glow-tr"></div>
   <div class="glow glow-bl"></div>
 
   <div class="sec-head">
     <span class="sec-label">[SYSTEM_FLOW // PROCESS_FLOW_v1.0]</span>
-    <h2 class="sec-title" data-en="HOW_IT_WORKS // SEC_PROCESS" data-ar="كيف تشتري // العملية">HOW_IT_WORKS // SEC_PROCESS</h2>
+    <h2 class="sec-title" data-en="HOW_IT_WORKS" data-ar="كيف تشتري">HOW_IT_WORKS</h2>
     <p class="sec-sub" data-en="3 SIMPLE STEPS TO GET YOUR ORDER" data-ar="٣ خطوات بسيطة للحصول على طلبك">3 SIMPLE STEPS TO GET YOUR ORDER</p>
     <div class="sec-bar"></div>
   </div>
@@ -95,125 +191,93 @@
     <div class="process-line" aria-hidden="true"></div>
 
     <article class="pcard">
-      <div class="pnum">01</div>
+      <div class="pnum" aria-hidden="true">01</div>
       <div class="ptick"></div>
       <div class="pbody">
-        <h3><span>[01]</span> <span data-en="SELECT PACK" data-ar="اختر الباقة">SELECT PACK</span></h3>
-        <p data-en="Choose a V-Bucks pack, Crew subscription or a Gift." data-ar="اختر باقة في-بوكس، اشتراك كرو، أو هدية.">Choose a V-Bucks pack, Crew subscription or a Gift.</p>
+        <h3><span>[01]</span><span data-en="SELECT PACK" data-ar="اختر الباقة">SELECT PACK</span></h3>
+        <p data-en="Choose a V-Bucks pack, Crew subscription, or a Gift from the catalog below." data-ar="اختر باقة في-بوكس، اشتراك كرو، أو هدية من الكتالوج بالأسفل.">Choose a V-Bucks pack, Crew subscription, or a Gift from the catalog below.</p>
       </div>
       <div class="pfoot"><span>STAGE_01</span><span>// COMPILING_OK</span></div>
     </article>
 
     <article class="pcard">
-      <div class="pnum">02</div>
+      <div class="pnum" aria-hidden="true">02</div>
       <div class="ptick"></div>
       <div class="pbody">
-        <h3><span>[02]</span> <span data-en="TRANSFER FUNDS" data-ar="حوّل المبلغ">TRANSFER FUNDS</span></h3>
-        <p data-en="Send the exact amount via Vodafone Cash, InstaPay or Telda." data-ar="أرسل المبلغ بدقة عبر فودافون كاش، إنستاباي، أو تيلدا.">Send the exact amount via Vodafone Cash, InstaPay or Telda.</p>
+        <h3><span>[02]</span><span data-en="TRANSFER FUNDS" data-ar="حوّل المبلغ">TRANSFER FUNDS</span></h3>
+        <p data-en="Send the exact amount via Vodafone Cash, InstaPay, or Telda using the details in the Payment section." data-ar="أرسل المبلغ بدقة عبر فودافون كاش، إنستاباي، أو تيلدا من قسم الدفع.">Send the exact amount via Vodafone Cash, InstaPay, or Telda using the details in the Payment section.</p>
       </div>
       <div class="pfoot"><span>STAGE_02</span><span>// COMPILING_OK</span></div>
     </article>
 
     <article class="pcard">
-      <div class="pnum">03</div>
+      <div class="pnum" aria-hidden="true">03</div>
       <div class="ptick"></div>
       <div class="pbody">
-        <h3><span>[03]</span> <span data-en="SEND RECEIPT" data-ar="أرسل الإيصال">SEND RECEIPT</span></h3>
-        <p data-en="Send payment screenshot + your username to @GamenestGifts and get it instantly." data-ar="أرسل لقطة الدفع + اسمك إلى @GamenestGifts واستلم فوراً.">Send payment screenshot + your username to @GamenestGifts and get it instantly.</p>
+        <h3><span>[03]</span><span data-en="SEND RECEIPT" data-ar="أرسل الإيصال">SEND RECEIPT</span></h3>
+        <p data-en="Copy the ticket, attach your payment screenshot, and message @GamenestGifts on Instagram or TikTok." data-ar="انسخ التذكرة، أرفق لقطة الشاشة للدفع، وراسل @GamenestGifts على إنستجرام أو تيك توك.">Copy the ticket, attach your payment screenshot, and message @GamenestGifts on Instagram or TikTok.</p>
       </div>
       <div class="pfoot"><span>STAGE_03</span><span>// COMPILING_OK</span></div>
     </article>
   </div>
 </section>
 
-<!-- ============ V-BUCKS (with coins image) ============ -->
+<!-- ============================================================
+     V-BUCKS
+     ============================================================ -->
 <section id="vbucks" class="section">
   <div class="sec-head">
     <span class="sec-label">[ V-BUCKS ]</span>
-    <img src="vcoins.png" alt="V-Bucks" class="sec-img" onerror="this.style.display='none'">
+    <img src="vcoins.png" alt="" class="sec-img" onerror="this.style.display='none'">
     <h2 class="sec-title" data-en="V-BUCKS PACKS" data-ar="باقات في-بوكس">V-BUCKS PACKS</h2>
     <p class="sec-sub" data-en="INSTANT DELIVERY · TOP-UP ANYTIME" data-ar="تسليم فوري · اشحن في أي وقت">INSTANT DELIVERY · TOP-UP ANYTIME</p>
     <div class="sec-bar"></div>
   </div>
-  <div class="grid grid-4">
-    <article class="product" data-product="800 V-Bucks" data-price="199" data-kind="vb">
-      <div class="pcard-num" aria-hidden="true">01</div>
-      <div class="pcard-body">
-        <div class="label">PACK 01</div>
-        <div class="amount">800 VB</div>
-        <div class="price"><b>199</b><small>EGP</small></div>
-      </div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="2400 V-Bucks" data-price="479" data-kind="vb">
-      <div class="pcard-num" aria-hidden="true">02</div>
-      <div class="pcard-body">
-        <div class="label">PACK 02</div>
-        <div class="amount">2400 VB</div>
-        <div class="price"><b>479</b><small>EGP</small></div>
-      </div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="4500 V-Bucks" data-price="759" data-kind="vb">
-      <div class="pcard-num" aria-hidden="true">03</div>
-      <div class="pcard-body">
-        <div class="label">PACK 03</div>
-        <div class="amount">4500 VB</div>
-        <div class="price"><b>759</b><small>EGP</small></div>
-      </div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="12500 V-Bucks" data-price="1749" data-kind="vb">
-      <div class="pcard-num" aria-hidden="true">04</div>
-      <div class="pcard-body">
-        <div class="label">PACK 04</div>
-        <div class="amount">12500 VB</div>
-        <div class="price"><b>1749</b><small>EGP</small></div>
-      </div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
+
+  <div class="pgrid" id="gridVB">
+    <!-- Rendered by script.js -->
   </div>
 </section>
 
-<!-- ============ CREW (with crown image) ============ -->
+<!-- ============================================================
+     FEATURED DEAL / COUNTDOWN
+     ============================================================ -->
+<section class="deal-banner section">
+  <div class="deal-inner">
+    <div class="deal-tag">[ LIMITED_TIME_DROP ]</div>
+    <h2 class="deal-title" data-en="WEEKLY DROP" data-ar="العرض الأسبوعي">WEEKLY DROP</h2>
+    <p class="deal-sub" data-en="Best value in the store · ends soon" data-ar="أفضل قيمة في المتجر · ينتهي قريباً">Best value in the store · ends soon</p>
+
+    <div class="countdown" id="countdown" aria-live="polite">
+      <div class="cd-block"><span class="cd-num" id="cdH">00</span><span class="cd-lbl" data-en="HRS" data-ar="ساعة">HRS</span></div>
+      <div class="cd-block"><span class="cd-num" id="cdM">00</span><span class="cd-lbl" data-en="MIN" data-ar="دقيقة">MIN</span></div>
+      <div class="cd-block"><span class="cd-num" id="cdS">00</span><span class="cd-lbl" data-en="SEC" data-ar="ثانية">SEC</span></div>
+    </div>
+
+    <a href="#vbucks" class="btn" data-en="Grab it now" data-ar="احصل عليه الآن">Grab it now</a>
+  </div>
+</section>
+
+<!-- ============================================================
+     CREW
+     ============================================================ -->
 <section id="crew" class="section">
   <div class="sec-head">
     <span class="sec-label">[ FORTNITE CREW ]</span>
-    <img src="crown.png" alt="Crown" class="sec-img sec-img-crown" onerror="this.style.display='none'">
+    <img src="crew.png" alt="" class="sec-img sec-img-crown" onerror="this.style.display='none'">
     <h2 class="sec-title" data-en="CREW SUBSCRIPTIONS" data-ar="اشتراكات الكرو">CREW SUBSCRIPTIONS</h2>
     <p class="sec-sub" data-en="MONTHLY · DISCOUNTED LONGER TIERS" data-ar="شهري · باقات أطول بخصم">MONTHLY · DISCOUNTED LONGER TIERS</p>
     <div class="sec-bar"></div>
   </div>
-  <div class="grid grid-4">
-    <article class="product" data-product="Fortnite Crew — 1 Month" data-price="210" data-kind="crew">
-      <div class="pcard-num" aria-hidden="true">01</div>
-      <div class="pcard-body"><div class="label">01 MONTH</div><div class="amount">1 Month</div><div class="price"><b>210</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="Fortnite Crew — 2 Months" data-price="379" data-kind="crew">
-      <div class="pcard-num" aria-hidden="true">02</div>
-      <div class="pcard-body"><div class="label">02 MONTHS</div><div class="amount">2 Months</div><div class="price"><b>379</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="Fortnite Crew — 3 Months" data-price="559" data-kind="crew">
-      <div class="pcard-num" aria-hidden="true">03</div>
-      <div class="pcard-body"><div class="label">03 MONTHS</div><div class="amount">3 Months</div><div class="price"><b>559</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="Fortnite Crew — 6 Months" data-price="1049" data-kind="crew">
-      <div class="pcard-num" aria-hidden="true">04</div>
-      <div class="pcard-body"><div class="label">06 MONTHS</div><div class="amount">6 Months</div><div class="price"><b>1049</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="Fortnite Crew — 12 Months" data-price="1959" data-kind="crew">
-      <div class="pcard-num" aria-hidden="true">05</div>
-      <div class="pcard-body"><div class="label">12 MONTHS</div><div class="amount">12 Months</div><div class="price"><b>1959</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
+
+  <div class="pgrid" id="gridCrew">
+    <!-- Rendered by script.js -->
   </div>
 </section>
 
-<!-- ============ GIFTS ============ -->
+<!-- ============================================================
+     GIFTS
+     ============================================================ -->
 <section id="gifts" class="section">
   <div class="sec-head">
     <span class="sec-label">[ FORTNITE GIFTS ]</span>
@@ -221,111 +285,182 @@
     <p class="sec-sub" data-en="SEND A GIFT TO ANY FORTNITE FRIEND" data-ar="أرسل هدية لأي صديق في فورتنايت">SEND A GIFT TO ANY FORTNITE FRIEND</p>
     <div class="sec-bar"></div>
   </div>
-  <div class="grid grid-4">
-    <article class="product" data-product="500 V-Bucks Gift"  data-price="95"  data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">01</div>
-      <div class="pcard-body"><div class="label">GIFT 01</div><div class="amount">500 GIFT</div><div class="price"><b>95</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="800 V-Bucks Gift"  data-price="150" data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">02</div>
-      <div class="pcard-body"><div class="label">GIFT 02</div><div class="amount">800 GIFT</div><div class="price"><b>150</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="1200 V-Bucks Gift" data-price="225" data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">03</div>
-      <div class="pcard-body"><div class="label">GIFT 03</div><div class="amount">1200 GIFT</div><div class="price"><b>225</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="1500 V-Bucks Gift" data-price="280" data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">04</div>
-      <div class="pcard-body"><div class="label">GIFT 04</div><div class="amount">1500 GIFT</div><div class="price"><b>280</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="1800 V-Bucks Gift" data-price="330" data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">05</div>
-      <div class="pcard-body"><div class="label">GIFT 05</div><div class="amount">1800 GIFT</div><div class="price"><b>330</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
-    <article class="product" data-product="2000 V-Bucks Gift" data-price="375" data-kind="gift">
-      <div class="pcard-num" aria-hidden="true">06</div>
-      <div class="pcard-body"><div class="label">GIFT 06</div><div class="amount">2000 GIFT</div><div class="price"><b>375</b><small>EGP</small></div></div>
-      <button class="copy-btn order-btn" type="button" data-en="ORDER // DETAILS" data-ar="اطلب // التفاصيل">ORDER // DETAILS</button>
-    </article>
+
+  <div class="pgrid" id="gridGift">
+    <!-- Rendered by script.js -->
   </div>
 </section>
 
-<!-- ============ PAYMENT ============ -->
-<section id="payment" class="section">
-  <div class="glow glow-tr"></div>
-  <div class="glow glow-bl"></div>
+<!-- ============================================================
+     STATS
+     ============================================================ -->
+<section class="stats section">
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-num" data-count="5000">0</div>
+      <div class="stat-lbl" data-en="ORDERS DELIVERED" data-ar="طلب تم تسليمه">ORDERS DELIVERED</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="1200">0</div>
+      <div class="stat-lbl" data-en="HAPPY PLAYERS" data-ar="لاعب سعيد">HAPPY PLAYERS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="99">0</div>
+      <div class="stat-lbl" data-en="% SUCCESS RATE" data-ar="٪ نسبة نجاح">% SUCCESS RATE</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="24">0</div>
+      <div class="stat-lbl" data-en="HRS SUPPORT" data-ar="ساعة دعم">HRS SUPPORT</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     REVIEWS
+     ============================================================ -->
+<section id="reviews" class="section">
   <div class="sec-head">
-    <span class="sec-label">[ SYS_SECURE ]</span>
-    <h2 class="sec-title" data-en="PAYMENT METHODS" data-ar="طرق الدفع">PAYMENT METHODS</h2>
-    <p class="sec-sub" data-en="ALL ACCOUNTS REGISTERED TO: ADAM MOHAMED OMAR" data-ar="كل الحسابات مسجلة باسم: آدم محمد عمر">ALL ACCOUNTS REGISTERED TO: ADAM MOHAMED OMAR</p>
+    <span class="sec-label">[ COMMUNITY_FEEDBACK ]</span>
+    <h2 class="sec-title" data-en="PLAYER_REVIEWS" data-ar="آراء اللاعبين">PLAYER_REVIEWS</h2>
+    <p class="sec-sub" data-en="WHAT OUR CUSTOMERS SAY" data-ar="ماذا يقول عملاؤنا">WHAT OUR CUSTOMERS SAY</p>
     <div class="sec-bar"></div>
   </div>
 
-  <div class="grid grid-3">
-    <div class="pay-card">
-      <div class="pay-head">
-        <img src="vodafone.png" alt="Vodafone Cash" class="pay-icon" onerror="this.style.display='none'">
-        <div class="pay-name">Vodafone Cash</div>
+  <div class="reviews-grid">
+    <article class="review">
+      <div class="stars">★★★★★</div>
+      <p data-en="Ordered 4500 V-Bucks and got them in under 4 minutes. Fast, clean, no issues. Best store in Egypt." data-ar="طلب 4500 في-بوكس واستلمتهم في أقل من ٤ دقائق. سريع ونظيف وبدون مشاكل. أفضل متجر في مصر.">Ordered 4500 V-Bucks and got them in under 4 minutes. Fast, clean, no issues. Best store in Egypt.</p>
+      <div class="review-author">
+        <div class="ravatar">A</div>
+        <div>
+          <div class="rname">Ahmed M.</div>
+          <div class="rmeta">Fortnite Player · Cairo</div>
+        </div>
       </div>
-      <div class="pay-holder">Adam Mohamed Omar</div>
-      <div class="pay-num"><span data-copy="01042641080">0104 264 1080</span><button class="copy-num" type="button">COPY</button></div>
-      <a class="pay-link" href="http://vf.eg/vfcash?id=mt&qrId=wgmEpY" target="_blank" rel="noopener">OPEN PAYMENT LINK ↗</a>
-    </div>
+    </article>
 
-    <div class="pay-card">
-      <div class="pay-head">
-        <img src="instapay.png" alt="InstaPay" class="pay-icon" onerror="this.style.display='none'">
-        <div class="pay-name">InstaPay</div>
+    <article class="review">
+      <div class="stars">★★★★★</div>
+      <p data-en="I was skeptical at first, but the whole process was smooth. Paid with InstaPay, sent the receipt, and got my Crew subscription instantly." data-ar="كنت متشككاً في البداية، لكن العملية كلها كانت سلسة. دفعت بـ إنستاباي، أرسلت الإيصال، واستلمت اشتراك الكرو فوراً.">I was skeptical at first, but the whole process was smooth. Paid with InstaPay, sent the receipt, and got my Crew subscription instantly.</p>
+      <div class="review-author">
+        <div class="ravatar">S</div>
+        <div>
+          <div class="rname">Sara K.</div>
+          <div class="rmeta">Fortnite Player · Alexandria</div>
+        </div>
       </div>
-      <div class="pay-holder">Adam Mohamed Omar</div>
-      <div class="pay-num"><span data-copy="01158934284">0115 893 4284</span><button class="copy-num" type="button">COPY</button></div>
-      <a class="pay-link" href="https://ipn.eg/S/iadqm/instapay/9n2XjE" target="_blank" rel="noopener">OPEN PAYMENT LINK ↗</a>
-    </div>
+    </article>
 
-    <div class="pay-card">
-      <div class="pay-head">
-        <img src="telda.png" alt="Telda" class="pay-icon" onerror="this.style.display='none'">
-        <div class="pay-name">Telda</div>
+    <article class="review">
+      <div class="stars">★★★★★</div>
+      <p data-en="Third time ordering. Always responsive, always fast, always the best price. Won't go anywhere else." data-ar="ثالث مرة أطلب. دائماً متفاعل، دائماً سريع، دائماً أفضل سعر. مش هروح مكان تاني.">Third time ordering. Always responsive, always fast, always the best price. Won't go anywhere else.</p>
+      <div class="review-author">
+        <div class="ravatar">Y</div>
+        <div>
+          <div class="rname">Youssef R.</div>
+          <div class="rmeta">Content Creator</div>
+        </div>
       </div>
-      <div class="pay-holder">Adam Mohamed Omar</div>
-      <div class="pay-num"><span data-copy="itzadam">@itzadam</span><button class="copy-num" type="button">COPY</button></div>
-      <div class="pay-hint">SEND VIA TELDA APP</div>
-    </div>
-  </div>
+    </article>
 
-  <div class="pay-note">
-    <b data-en="AFTER PAYMENT:" data-ar="بعد الدفع:">AFTER PAYMENT:</b>
-    <span data-en="send a screenshot + your Fortnite username to " data-ar="أرسل لقطة شاشة + اسمك في فورتنايت إلى ">send a screenshot + your Fortnite username to </span>
-    <span class="social">@GamenestGifts</span>
-    <span data-en=" on Instagram / TikTok." data-ar=" على إنستجرام / تيك توك."> on Instagram / TikTok.</span>
+    <article class="review">
+      <div class="stars">★★★★★</div>
+      <p data-en="Legit. Got my 12500 V-Bucks pack with no games or delays. The support team is really helpful too." data-ar="موثوق. استلمت باقة 12500 في-بوكس بدون أي تأخير. فريق الدعم مساعد جداً أيضاً.">Legit. Got my 12500 V-Bucks pack with no games or delays. The support team is really helpful too.</p>
+      <div class="review-author">
+        <div class="ravatar">M</div>
+        <div>
+          <div class="rname">Mohamed T.</div>
+          <div class="rmeta">Fortnite Player · Giza</div>
+        </div>
+      </div>
+    </article>
   </div>
 </section>
 
-<!-- ============ FAQ ============ -->
+<!-- ============================================================
+     PAYMENT
+     ============================================================ -->
+<section id="payment" class="section">
+  <div class="glow glow-tr"></div>
+  <div class="glow glow-bl"></div>
+
+  <div class="sec-head">
+    <span class="sec-label">[ SYS_SECURE ]</span>
+    <h2 class="sec-title" data-en="PAYMENT METHODS" data-ar="طرق الدفع">PAYMENT METHODS</h2>
+    <p class="sec-sub" data-en="ACCOUNT NAME: ADAM MOHAMED OMAR" data-ar="اسم الحساب: آدم محمد عمر">ACCOUNT NAME: ADAM MOHAMED OMAR</p>
+    <div class="sec-bar"></div>
+  </div>
+
+  <div class="gateways">
+
+    <div class="gateway" data-method="vodafone"
+         data-name="VODAFONE CASH"
+         data-value="0104 264 1080"
+         data-link="http://vf.eg/vfcash?id=mt&qrId=wgmEpY">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO VODAFONE CASH: <b class="gw-val">0104 264 1080</b></div>
+      <button class="gw-btn" type="button">
+        <span data-en="CLICK TO PAY WITH VODAFONE CASH" data-ar="اضغط للدفع عبر فودافون كاش">CLICK TO PAY WITH VODAFONE CASH</span>
+      </button>
+    </div>
+
+    <div class="gateway" data-method="instapay"
+         data-name="INSTAPAY"
+         data-value="0115 893 4284"
+         data-link="https://ipn.eg/S/iadqm/instapay/9n2XjE">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO INSTAPAY ADDRESS: <b class="gw-val">0115 893 4284</b></div>
+      <button class="gw-btn" type="button">
+        <span data-en="CLICK TO PAY WITH INSTAPAY" data-ar="اضغط للدفع عبر إنستاباي">CLICK TO PAY WITH INSTAPAY</span>
+      </button>
+    </div>
+
+    <div class="gateway" data-method="telda"
+         data-name="TELDA"
+         data-value="@itzadam"
+         data-link="">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO TELDA: <b class="gw-val">@itzadam</b></div>
+      <button class="gw-btn" type="button">
+        <span data-en="COPY TELDA HANDLE" data-ar="انسخ عنوان تيلدا">COPY TELDA HANDLE</span>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
 <section id="faq" class="section">
   <div class="sec-head">
     <span class="sec-label">[FAQ // KNOWLEDGE_BASE_v2.0]</span>
-    <h2 class="sec-title" data-en="SYSTEM_FAQ // HELP_CENTER" data-ar="الأسئلة // مركز المساعدة">SYSTEM_FAQ // HELP_CENTER</h2>
+    <h2 class="sec-title" data-en="SYSTEM_FAQ" data-ar="الأسئلة الشائعة">SYSTEM_FAQ</h2>
+    <p class="sec-sub" data-en="YOUR GUIDE TO ORDERING AT GAMENEST" data-ar="دليلك للشراء من GAMENEST">YOUR GUIDE TO ORDERING AT GAMENEST</p>
     <div class="sec-bar"></div>
   </div>
 
   <div class="faq-list">
     <details open>
       <summary data-en="How do I order?" data-ar="كيف أطلب؟">How do I order?</summary>
-      <p data-en="Click any pack, review the details, then click Buy Now. Choose your payment method, enter your Fortnite username, and copy the ticket to send to @GamenestGifts."
-         data-ar="اضغط على أي باقة، راجع التفاصيل، ثم اضغط اشتر الآن. اختر طريقة الدفع، أدخل اسمك في فورتنايت، وانسخ التذكرة وأرسلها إلى @GamenestGifts.">
-         Click any pack, review the details, then click Buy Now. Choose your payment method, enter your Fortnite username, and copy the ticket to send to @GamenestGifts.</p>
+      <p data-en="Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, then copy the ticket and send it to @GamenestGifts on Instagram or TikTok with your payment screenshot."
+         data-ar="اضغط PURCHASE على أي باقة، راجع التفاصيل، اختر طريقة الدفع، أدخل اسمك في فورتنايت، ثم انسخ التذكرة وأرسلها إلى @GamenestGifts على إنستجرام أو تيك توك مع لقطة الدفع.">
+         Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, then copy the ticket and send it to @GamenestGifts on Instagram or TikTok with your payment screenshot.</p>
     </details>
     <details>
       <summary data-en="How long does delivery take?" data-ar="كم يستغرق التسليم؟">How long does delivery take?</summary>
       <p data-en="Most orders are delivered within a few minutes. During peak hours it may take a bit longer."
          data-ar="معظم الطلبات تُسلّم في دقائق. في أوقات الذروة قد يستغرق وقتاً أطول قليلاً.">
          Most orders are delivered within a few minutes. During peak hours it may take a bit longer.</p>
+    </details>
+    <details>
+      <summary data-en="Which payment methods do you accept?" data-ar="ما طرق الدفع المقبولة؟">Which payment methods do you accept?</summary>
+      <p data-en="Vodafone Cash, InstaPay, and Telda. All details are in the Payment section above."
+         data-ar="فودافون كاش، إنستاباي، وتيلدا. كل التفاصيل في قسم الدفع بالأعلى.">
+         Vodafone Cash, InstaPay, and Telda. All details are in the Payment section above.</p>
     </details>
     <details>
       <summary data-en="Do you need my Epic password?" data-ar="هل تحتاج كلمة سر Epic؟">Do you need my Epic password?</summary>
@@ -339,32 +474,56 @@
          data-ar="الاسترداد يُدرس حسب كل حالة. راسلنا على إنستجرام أو تيك توك وسنراجع الطلب.">
          Refunds are handled case-by-case. Message us on Instagram or TikTok and we'll review it.</p>
     </details>
+    <details>
+      <summary data-en="Are these official Fortnite items?" data-ar="هل هذه العناصر الرسمية من فورتنايت؟">Are these official Fortnite items?</summary>
+      <p data-en="Yes. All V-Bucks, Crew subscriptions, and Gifts are delivered through legitimate Epic Games channels."
+         data-ar="نعم. كل الفي-بوكس واشتراكات الكرو والهدايا تُسلّم عبر قنوات Epic Games الرسمية.">
+         Yes. All V-Bucks, Crew subscriptions, and Gifts are delivered through legitimate Epic Games channels.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL CTA
+     ============================================================ -->
+<section class="final-cta section">
+  <div class="cta-inner">
+    <span class="sec-label">[ READY_TO_PLAY ]</span>
+    <h2 class="cta-title" data-en="TIME TO LEVEL UP" data-ar="وقت الارتفاع في المستوى">TIME TO LEVEL UP</h2>
+    <p class="cta-sub" data-en="Grab your V-Bucks, Crew, or Gift pack now — delivery starts the moment your payment lands." data-ar="احصل على باقة الفي-بوكس، الكرو، أو الهدايا الآن — التسليم يبدأ لحظة وصول دفعتك.">Grab your V-Bucks, Crew, or Gift pack now — delivery starts the moment your payment lands.</p>
+    <div class="btns">
+      <a href="#vbucks"  class="btn"       data-en="Start Shopping" data-ar="ابدأ التسوق">Start Shopping</a>
+      <a href="#payment" class="btn ghost" data-en="See Payment Options" data-ar="طرق الدفع">See Payment Options</a>
+    </div>
   </div>
 </section>
 
 </main>
 
-<!-- ============ PRODUCT DETAIL MODAL (like screenshot 4) ============ -->
+<!-- ============================================================
+     MODAL: PRODUCT DETAIL
+     ============================================================ -->
 <div class="modal" id="productModal" aria-hidden="true">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-box modal-detail" role="dialog" aria-modal="true">
-    <button class="modal-close" type="button" aria-label="Close" data-close>×</button>
+    <button class="modal-close" type="button" data-close aria-label="Close">×</button>
 
     <div class="detail-grid">
-      <!-- LEFT: Visual -->
+      <!-- Left: visual + telemetry -->
       <div class="detail-visual">
         <div class="detail-visual-inner">
-          <img src="vcoins.png" alt="" class="detail-img" onerror="this.style.display='none'">
-          <div class="detail-code" id="detailCode">PACK_01</div>
+          <img id="detailImg" src="vcoins.png" alt="" onerror="this.style.display='none'">
+          <div class="detail-code" id="detailCode">PACK</div>
         </div>
         <div class="detail-telemetry">
           <div class="tel-row"><span>REGION:</span><span>Global</span></div>
           <div class="tel-row"><span>PLATFORM:</span><span>Epic Games</span></div>
           <div class="tel-row"><span>DELIVERY:</span><span>Instant</span></div>
+          <div class="tel-row"><span>SUPPORT:</span><span>24/7</span></div>
         </div>
       </div>
 
-      <!-- RIGHT: Info -->
+      <!-- Right: info -->
       <div class="detail-info">
         <div class="detail-label">// DIGITAL_LICENSE</div>
         <h2 id="detailTitle">—</h2>
@@ -372,7 +531,7 @@
 
         <div class="detail-price-row">
           <div class="detail-price-label">TOTAL_LICENSE_ESTIMATE :</div>
-          <div class="detail-price"><b id="detailPrice">—</b><span>EGP</span></div>
+          <div class="detail-price"><b id="detailPrice">—</b></div>
         </div>
 
         <div class="delivery-protocol">
@@ -381,7 +540,7 @@
             <li><b>Place Your Order</b><span>Pick your pack and confirm.</span></li>
             <li><b>Enter the Queue</b><span>Your ticket is prioritised instantly.</span></li>
             <li><b>Our Team Gets to Work</b><span>Delivery in a few minutes.</span></li>
-            <li><b>Delivery & Completion</b><span>Codes/items sent straight to you.</span></li>
+            <li><b>Delivery & Completion</b><span>Items sent straight to you.</span></li>
           </ol>
         </div>
 
@@ -389,20 +548,21 @@
           <button class="btn" id="buyNowBtn" type="button" data-en="BUY_NOW" data-ar="اشتري الآن">BUY_NOW</button>
           <button class="btn ghost" id="addCartBtn" type="button" data-en="ADD_TO_CART" data-ar="أضف للسلة">ADD_TO_CART</button>
         </div>
-        <a class="detail-back" href="#top" data-close data-en="← Back to Catalog" data-ar="← العودة للكتالوج">← Back to Catalog</a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============ CHECKOUT MODAL (like screenshot 5) ============ -->
+<!-- ============================================================
+     MODAL: CHECKOUT
+     ============================================================ -->
 <div class="modal" id="checkoutModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-checkout></div>
   <div class="modal-box modal-checkout" role="dialog" aria-modal="true">
-    <button class="modal-close" type="button" aria-label="Close" data-close-checkout>×</button>
+    <button class="modal-close" type="button" data-close-checkout aria-label="Close">×</button>
 
     <div class="checkout-grid">
-      <!-- LEFT: Summary + Payment -->
+      <!-- Left -->
       <div class="checkout-left">
         <div class="co-label">ORDER_SUMMARY</div>
         <h3 id="coTitle">—</h3>
@@ -411,39 +571,40 @@
         <div class="co-line"><span>COMM_LINK_ENCRYPTION:</span><span>AES_256 // SECURE</span></div>
 
         <div class="co-total">
-          <span>TOTAL_DUE :</span>
-          <b id="coTotal">—</b>
+          <span>TOTAL_DUE :</span><b id="coTotal">—</b>
         </div>
 
         <div class="co-label">// CHOOSE_PAYMENT_METHOD</div>
         <div class="pay-tabs">
           <button class="pay-tab active" data-pay="vodafone" type="button">
-            <img src="vodafone.png" alt="" onerror="this.style.display='none'">
             <span>VODAFONE CASH</span>
+            <small>0104 264 1080</small>
           </button>
           <button class="pay-tab" data-pay="instapay" type="button">
-            <img src="instapay.png" alt="" onerror="this.style.display='none'">
             <span>INSTAPAY</span>
+            <small>0115 893 4284</small>
           </button>
           <button class="pay-tab" data-pay="telda" type="button">
-            <img src="telda.png" alt="" onerror="this.style.display='none'">
             <span>TELDA</span>
+            <small>@itzadam</small>
           </button>
         </div>
 
-        <div class="pay-info">
-          <div class="pi-label">[ GATEWAY_UPLINK: ACTIVE ]</div>
-          <div class="pi-name">ACCOUNT NAME: <b>Adam Mohamed Omar</b></div>
-          <div class="pi-address">SEND FUNDS TO <span id="piMethod">VODAFONE CASH</span>: <b id="piAddress">0104 264 1080</b></div>
-          <button class="btn" id="copyAddress" type="button">COPY ADDRESS</button>
+        <div class="gateway gateway-compact">
+          <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+          <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+          <div class="gw-line">SEND FUNDS TO <span id="coMethod">VODAFONE CASH</span>: <b class="gw-val" id="coAddress">0104 264 1080</b></div>
+          <button class="gw-btn" id="payNowBtn" type="button">
+            <span data-en="CLICK TO PAY NOW" data-ar="اضغط للدفع الآن">CLICK TO PAY NOW</span>
+          </button>
         </div>
       </div>
 
-      <!-- RIGHT: Details + Confirm -->
+      <!-- Right -->
       <div class="checkout-right">
         <div class="co-field">
           <label for="coUser">FULL_NAME / FORTNITE USERNAME</label>
-          <input id="coUser" type="text" placeholder="Enter your Fortnite username" maxlength="50">
+          <input id="coUser" type="text" placeholder="Enter your Fortnite username" maxlength="50" autocomplete="off">
         </div>
 
         <div class="co-field">
@@ -451,53 +612,136 @@
           <div class="co-pre" id="coReference">—</div>
         </div>
 
-        <div class="co-note">
-          <b data-en="AFTER PAYING:" data-ar="بعد الدفع:">AFTER PAYING:</b>
-          <span data-en="copy the ticket below and send it with your screenshot to @GamenestGifts on Instagram / TikTok." data-ar="انسخ التذكرة بالأسفل وأرسلها مع لقطة الشاشة إلى @GamenestGifts على إنستجرام / تيك توك.">copy the ticket below and send it with your screenshot to @GamenestGifts on Instagram / TikTok.</span>
+        <div class="co-actions">
+          <button class="btn" id="downloadReceipt" type="button" data-en="DOWNLOAD RECEIPT" data-ar="تحميل الإيصال">DOWNLOAD RECEIPT</button>
+          <button class="btn ghost" id="copyTicket" type="button" data-en="COPY TICKET" data-ar="انسخ التذكرة">COPY TICKET</button>
         </div>
 
-        <button class="btn" id="confirmOrder" type="button" data-en="COPY TICKET TO CONFIRM" data-ar="انسخ التذكرة للتأكيد">COPY TICKET TO CONFIRM</button>
-        <a class="detail-back" href="#" id="backToProduct" data-en="← Return to Product" data-ar="← العودة للمنتج">← Return to Product</a>
+        <p class="co-note" data-en="Send the receipt + ticket to @GamenestGifts on Instagram / TikTok to complete your order."
+           data-ar="أرسل الإيصال + التذكرة إلى @GamenestGifts على إنستجرام / تيك توك لإتمام الطلب.">
+           Send the receipt + ticket to @GamenestGifts on Instagram / TikTok to complete your order.</p>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ============ FLOATING ACTION ============ -->
-<a class="float-btn float-ig" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-  </svg>
-</a>
+<!-- ============================================================
+     MODAL: CART
+     ============================================================ -->
+<div class="modal" id="cartModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-cart></div>
+  <div class="modal-box modal-cart" role="dialog" aria-modal="true">
+    <button class="modal-close" type="button" data-close-cart aria-label="Close">×</button>
+    <div class="cart-head">
+      <div class="co-label">[ YOUR_CART ]</div>
+      <h3 data-en="Cart" data-ar="السلة">Cart</h3>
+    </div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-foot">
+      <div class="co-total"><span data-en="TOTAL:" data-ar="الإجمالي:">TOTAL:</span><b id="cartTotal">0 EGP</b></div>
+      <button class="btn" id="cartCheckout" type="button" data-en="PROCEED TO CHECKOUT" data-ar="إتمام الشراء">PROCEED TO CHECKOUT</button>
+    </div>
+  </div>
+</div>
 
+<!-- ============================================================
+     MODAL: FAVORITES
+     ============================================================ -->
+<div class="modal" id="favModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-fav></div>
+  <div class="modal-box modal-cart" role="dialog" aria-modal="true">
+    <button class="modal-close" type="button" data-close-fav aria-label="Close">×</button>
+    <div class="cart-head">
+      <div class="co-label">[ FAVORITES ]</div>
+      <h3 data-en="Favorites" data-ar="المفضلة">Favorites</h3>
+    </div>
+    <div id="favItems" class="cart-items"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     MODAL: SEARCH
+     ============================================================ -->
+<div class="modal" id="searchModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-search></div>
+  <div class="modal-box modal-search" role="dialog" aria-modal="true">
+    <button class="modal-close" type="button" data-close-search aria-label="Close">×</button>
+    <div class="search-head">
+      <div class="co-label">[ SEARCH ]</div>
+      <input id="searchInput" type="text" placeholder="Search V-Bucks, Crew, Gifts..." autocomplete="off">
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     TOAST
+     ============================================================ -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- ============================================================
+     FLOATING ACTIONS
+     ============================================================ -->
+<div class="float-stack">
+  <a class="float-btn" href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+  </a>
+  <a class="float-btn" href="https://www.tiktok.com/" target="_blank" rel="noopener" aria-label="TikTok">
+    <svg viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.86-.74-3.94-1.74-.22-.2-.41-.43-.6-.67-.02 3.1-.01 6.2 0 9.3-.07 2.24-.94 4.54-2.67 6.06-2.15 1.94-5.46 2.33-8.06 1.07-2.58-1.2-4.12-4.14-3.78-7.01.27-2.73 2.23-5.26 4.95-5.93 1.05-.27 2.16-.27 3.2 0V11.2c-1.63-.44-3.47.09-4.57 1.34-1.25 1.34-1.41 3.53-.41 5.06.91 1.48 2.75 2.28 4.46 1.94 1.54-.26 2.76-1.54 2.92-3.1.06-2.86.03-5.72.04-8.58-.02-2.55-.01-5.1-.03-7.65-.11-.07-.23-.1-.36-.07z"/>
+    </svg>
+  </a>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
 <footer class="site-footer">
   <div class="wrap">
     <div class="foot-grid">
+
       <div>
         <div class="foot-brand">
-          <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round">
-            <path d="M78 22 H40 L18 40 V78 L32 90 H78 L90 78 V55 L65 55 L58 62 V74 H36 V46 L45 38 H78 Z"/>
-          </svg>
+          <img src="logo.png" alt="" class="foot-logo" onerror="this.style.display='none'">
           <span>GAMENEST</span>
         </div>
-        <p data-en="Fortnite V-Bucks, Crew and Gifts — instant delivery, best prices." data-ar="في-بوكس فورتنايت، الكرو، والهدايا — تسليم فوري وأفضل الأسعار.">Fortnite V-Bucks, Crew and Gifts — instant delivery, best prices.</p>
+        <p data-en="Fortnite V-Bucks, Crew and Gifts — instant delivery, best prices, real support. Trusted by thousands of players." data-ar="في-بوكس فورتنايت، الكرو، والهدايا — تسليم فوري وأفضل الأسعار ودعم حقيقي. موثوق من آلاف اللاعبين.">Fortnite V-Bucks, Crew and Gifts — instant delivery, best prices, real support. Trusted by thousands of players.</p>
         <span class="foot-meta">[SYS_STATUS: ONLINE // VER: 1.0.4]</span>
       </div>
+
       <div>
-        <h4 data-en="COMMUNITY" data-ar="المجتمع">COMMUNITY</h4>
-        <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram · @GamenestGifts</a>
-        <a href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok · @GamenestGifts</a>
+        <h4 data-en="SHOP" data-ar="التسوق">SHOP</h4>
+        <a href="#vbucks" data-en="V-Bucks" data-ar="في-بوكس">V-Bucks</a>
+        <a href="#crew"   data-en="Crew"    data-ar="الكرو">Crew</a>
+        <a href="#gifts"  data-en="Gifts"   data-ar="الهدايا">Gifts</a>
+        <a href="#reviews" data-en="Reviews" data-ar="المراجعات">Reviews</a>
       </div>
+
+      <div>
+        <h4 data-en="SUPPORT" data-ar="الدعم">SUPPORT</h4>
+        <a href="#faq"     data-en="FAQ"     data-ar="الأسئلة">FAQ</a>
+        <a href="#payment" data-en="Payment" data-ar="الدفع">Payment</a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.tiktok.com/" target="_blank" rel="noopener">TikTok</a>
+      </div>
+
       <div>
         <h4 data-en="PAYMENT" data-ar="الدفع">PAYMENT</h4>
         <p>Vodafone Cash · 0104 264 1080</p>
         <p>InstaPay · 0115 893 4284</p>
         <p>Telda · @itzadam</p>
       </div>
+
     </div>
-    <div class="foot-bottom">© 2026 GAMENEST — ALL RIGHTS RESERVED</div>
+    <div class="foot-bottom">
+      <span>© 2026 GAMENEST — ALL RIGHTS RESERVED</span>
+      <span class="foot-sep">//</span>
+      <span>@GamenestGifts</span>
+    </div>
   </div>
 </footer>
 
