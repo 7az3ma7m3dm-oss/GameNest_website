@@ -1,769 +1,769 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#F4F1EA">
-  <meta name="description" content="GameNest.shop — order Fortnite V-Bucks and Crew like a counter ticket, hand it to a real admin on Discord.">
-  <title>GameNest.shop — Order Counter for Fortnite</title>
-  <link rel="icon" href="favicon.png" type="image/png">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0a0a0a">
+<title>GAMENEST | Fortnite V-Bucks, Crew &amp; Gifts — Instant Delivery</title>
+<meta name="description" content="GAMENEST — Fortnite V-Bucks, Crew subscriptions and Gifts. Instant delivery, best prices in Egypt, trusted seller. Pay with Vodafone Cash, InstaPay or Telda.">
+<meta name="keywords" content="Fortnite, V-Bucks, Crew, Gifts, GAMENEST, Egypt, Vodafone Cash, InstaPay, Telda">
+<meta property="og:title" content="GAMENEST | Fortnite V-Bucks, Crew &amp; Gifts">
+<meta property="og:description" content="Instant delivery · Best prices · Trusted by thousands">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="grain"></div>
-  <canvas id="cursorCanvas"></canvas>
-  <div class="cursor-ring" id="cursorRing"></div>
 
-  <header class="nav" id="nav">
-    <a class="brand" href="#top" aria-label="GameNest home">
-      <img class="brand-mark" src="logo.png" alt="GameNest">
-      <span class="brand-word">GameNest<span class="muted">.shop</span></span>
+<header class="site-header">
+  <nav class="nav wrap">
+    <a href="#top" class="brand">
+      <img src="logo.png" alt="GAMENEST" class="brand-logo" onerror="this.style.display='none'">
+      <span class="brand-text">GAMENEST<small>.shop</small></span>
     </a>
-    <button class="menu-toggle" aria-label="Open menu" aria-expanded="false"><span></span><span></span></button>
-    <nav class="nav-links">
-      <a href="#vbucks">V-Bucks</a><a href="#crew">Crew</a><a href="#why">Why Us</a>
-      <a href="#how">How It Works</a><a href="#safety">Safety</a><a href="#reviews">Reviews</a><a href="#faq">FAQ</a>
-      <a class="nav-cta" href="#vbucks">Open a ticket <span>↗</span></a>
-    </nav>
-  </header>
-
-  <main id="top">
-    <!-- HERO: boarding-pass / ticket concept -->
-    <section class="hero section">
-      <div class="ticket-hero reveal">
-        <div class="ticket-hero-top">
-          <span class="th-label">ADMIT ONE · FORTNITE</span>
-          <span class="th-serial">NO. GN‑0001</span>
-        </div>
-
-        <div class="ticket-hero-body">
-          <div class="ticket-hero-visual"><img src="vbucks.png" alt="V-Bucks"></div>
-          <p class="eyebrow"><span class="dot"></span> Manual order counter — not an auto checkout</p>
-          <h1>Take a ticket.<br><em>Get your V‑Bucks.</em></h1>
-          <p class="hero-text">GameNest.shop works like a real counter: pick your pack, fill in your ticket, and hand it to the person on the other side of Discord. No card forms, no store credentials, no bots — just you and the admin.</p>
-          <div class="hero-actions">
-            <a class="btn primary" href="#vbucks">Pick a pack <span>↗</span></a>
-            <a class="text-btn" href="#how">See the counter flow <span>↓</span></a>
-          </div>
-        </div>
-
-        <div class="perforation" aria-hidden="true"></div>
-
-        <div class="ticket-hero-stub">
-          <div><strong>08</strong><span>packs on<br>the board</span></div>
-          <div><strong>1</strong><span>ticket per<br>order</span></div>
-          <div><strong>24/7</strong><span>counter open<br>for tickets</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- QUICK STRIP: the deal in three beats -->
-    <section class="deal section" id="why">
-      <div class="section-label reveal">THE DEAL</div>
-      <div class="deal-grid">
-        <article class="deal-card reveal">
-          <span class="stamp-icon">①</span>
-          <h3>You fill the ticket</h3>
-          <p>Your pack, price and username get written onto one clean order slip — nothing hidden, nothing pre-checked.</p>
-        </article>
-        <article class="deal-card reveal">
-          <span class="stamp-icon">②</span>
-          <h3>You carry it over</h3>
-          <p>One tap copies the ticket. You bring it into the GameNest Discord yourself — we never ask for your Epic password.</p>
-        </article>
-        <article class="deal-card reveal">
-          <span class="stamp-icon">③</span>
-          <h3>A person answers</h3>
-          <p>The admin reads your ticket, confirms the price, and walks you through payment. Real replies, not a script.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- ABOUT: the counter's story, in numbers -->
-    <section class="deal section" id="about">
-      <div class="section-head reveal">
-        <div><div class="section-label">THE COUNTER, EXPLAINED</div><h2>Why a<br><em>counter,</em> not a cart.</h2></div>
-        <p>Automated checkouts can't answer a question or catch a typo before it costs you money. A person can.</p>
-      </div>
-      <div class="deal-grid">
-        <article class="deal-card reveal">
-          <span class="stamp-icon">$</span>
-          <h3>Fixed pricing</h3>
-          <p>Every pack and every Crew length has one listed price in EGP. What you see on the board is what you pay at the counter — no surprise fees added mid-chat.</p>
-        </article>
-        <article class="deal-card reveal">
-          <span class="stamp-icon">@</span>
-          <h3>A real admin</h3>
-          <p>Every ticket is read by a person, not routed through a bot. If your username has a typo or your pack choice doesn't look right, they'll catch it before anything is sent.</p>
-        </article>
-        <article class="deal-card reveal">
-          <span class="stamp-icon">#</span>
-          <h3>Nothing stored here</h3>
-          <p>This site never asks for a password, a card number, or account access. It only ever generates a ticket — the actual order happens inside a normal Discord ticket channel.</p>
-        </article>
-      </div>
-    </section>
-
-    <!-- V-BUCKS STORE: ticket stubs -->
-    <section class="store section" id="vbucks">
-      <div class="section-head reveal">
-        <div><div class="section-label">THE BOARD</div><h2>Choose your<br><em>V‑Bucks.</em></h2></div>
-        <p>Four amounts, four fixed prices in EGP. Whatever you pick opens the same one‑page ticket.</p>
-      </div>
-      <div class="product-grid">
-        <article class="ticket-stub reveal" data-product="800 V-Bucks" data-price="200">
-          <div class="stub-row"><span>PACK 01</span><span>V‑BUCKS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="vbucks.png" alt="V-Bucks"></div>
-          <h3>800</h3><p class="stub-unit">V‑Bucks</p>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">200 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-
-        <article class="ticket-stub featured reveal" data-product="2,400 V-Bucks" data-price="500">
-          <div class="badge">MOST TAKEN</div>
-          <div class="stub-row"><span>PACK 02</span><span>V‑BUCKS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="vbucks.png" alt="V-Bucks"></div>
-          <h3>2,400</h3><p class="stub-unit">V‑Bucks</p>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">500 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-
-        <article class="ticket-stub reveal" data-product="4,500 V-Bucks" data-price="810">
-          <div class="stub-row"><span>PACK 03</span><span>V‑BUCKS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="vbucks.png" alt="V-Bucks"></div>
-          <h3>4,500</h3><p class="stub-unit">V‑Bucks</p>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">810 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-
-        <article class="ticket-stub reveal" data-product="12,500 V-Bucks" data-price="1820">
-          <div class="stub-row"><span>PACK 04</span><span>V‑BUCKS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="vbucks.png" alt="V-Bucks"></div>
-          <h3>12,500</h3><p class="stub-unit">V‑Bucks</p>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">1,820 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-      </div>
-    </section>
-
-    <!-- CREW: ticket stubs, subscription style -->
-    <section class="crew section" id="crew">
-      <div class="section-head reveal">
-        <div><div class="section-label">THE SEASON PASS</div><h2>Stay in the<br><em>Crew.</em></h2></div>
-        <p>Pick a duration. Same ticket, same counter, same admin.</p>
-      </div>
-      <div class="crew-grid">
-        <article class="ticket-stub crew-stub reveal" data-product="Fortnite Crew — 1 Month" data-price="199">
-          <div class="stub-row"><span>01</span><span>MONTH</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="crew.png" alt="Fortnite Crew"></div>
-          <h3>1 Month</h3>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">199 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-        <article class="ticket-stub crew-stub reveal" data-product="Fortnite Crew — 3 Months" data-price="559">
-          <div class="stub-row"><span>02</span><span>MONTHS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="crew.png" alt="Fortnite Crew"></div>
-          <h3>3 Months</h3>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">559 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-        <article class="ticket-stub crew-stub featured reveal" data-product="Fortnite Crew — 6 Months" data-price="979">
-          <div class="badge">MOST TAKEN</div>
-          <div class="stub-row"><span>03</span><span>MONTHS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="crew.png" alt="Fortnite Crew"></div>
-          <h3>6 Months</h3>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">979 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-        <article class="ticket-stub crew-stub reveal" data-product="Fortnite Crew — 12 Months" data-price="1749">
-          <div class="stub-row"><span>04</span><span>MONTHS</span></div>
-          <div class="stub-punch" aria-hidden="true"></div>
-          <div class="stub-visual"><img src="crew.png" alt="Fortnite Crew"></div>
-          <h3>12 Months</h3>
-          <div class="stub-perf" aria-hidden="true"></div>
-          <div class="stub-price">1,749 <small>EGP</small></div>
-          <button class="btn product-btn order-btn">Open ticket <span>↗</span></button>
-        </article>
-      </div>
-    </section>
-
-    <!-- HOW IT WORKS: counter queue timeline -->
-    <section class="how section" id="how">
-      <div class="section-head reveal">
-        <div><div class="section-label">THE COUNTER</div><h2>From ticket<br><em>to chat.</em></h2></div>
-        <p>Seven short steps. No account, no stored card, no checkout maze.</p>
-      </div>
-      <div class="queue">
-        <div class="queue-line" aria-hidden="true"></div>
-        <div class="queue-item reveal"><span>01</span><div><b>PICK</b><h3>Choose a pack or Crew length</h3><p>Every price is shown up front — nothing changes once you're at the counter.</p></div></div>
-        <div class="queue-item reveal"><span>02</span><div><b>FILL</b><h3>Add your Fortnite / Epic username</h3><p>That's the only detail your ticket needs.</p></div></div>
-        <div class="queue-item reveal"><span>03</span><div><b>STAMP</b><h3>Copy your ticket</h3><p>A ticket number and full order summary are generated for you.</p></div></div>
-        <div class="queue-item reveal"><span>04</span><div><b>CARRY</b><h3>Join the GameNest Discord</h3><p>The official GameNest server — link is right there in your ticket.</p></div></div>
-        <div class="queue-item reveal"><span>05</span><div><b>OPEN</b><h3>Create a ticket in the server</h3><p>Use the server's ticket channel so an admin gets pinged directly.</p></div></div>
-        <div class="queue-item reveal"><span>06</span><div><b>HAND OFF</b><h3>Paste your ticket to the admin</h3><p>Send the copied text straight into the chat.</p></div></div>
-        <div class="queue-item reveal"><span>07</span><div><b>SETTLE UP</b><h3>Pay the admin directly</h3><p>They confirm your order and walk you through payment.</p></div></div>
-      </div>
-    </section>
-
-    <!-- PAYMENTS -->
-    <section class="payments section">
-      <div class="payment-wrap reveal">
-        <div>
-          <div class="section-label">ACCEPTED AT THE COUNTER</div>
-          <h2>Payment happens<br><em>with the admin.</em></h2>
-          <p>There's no card field on this site by design. Once you've opened a ticket in our Discord, the admin takes it from there.</p>
-        </div>
-        <div class="payment-grid">
-          <a class="payment-chip" href="http://vf.eg/vfcash?id=mt&amp;qrId=wgmEpY" target="_blank" rel="noopener">
-            <span class="payment-mark">01</span>
-            <strong>Vodafone Cash</strong>
-            <span class="payment-detail">Adam Mohamed Omar · 0104 264 1080</span>
-            <b class="payment-go">↗</b>
-          </a>
-          <div class="payment-chip">
-            <span class="payment-mark">02</span>
-            <strong>WE Pay</strong>
-            <span class="payment-detail">Ask the admin in Discord</span>
-          </div>
-          <a class="payment-chip" href="https://ipn.eg/S/iadqm/instapay/9n2Xj" target="_blank" rel="noopener">
-            <span class="payment-mark">03</span>
-            <strong>InstaPay</strong>
-            <span class="payment-detail">Adam Mohamed Omar</span>
-            <b class="payment-go">↗</b>
-          </a>
-          <div class="payment-chip">
-            <span class="payment-mark">04</span>
-            <strong>Telda</strong>
-            <span class="payment-detail">@itzadam · Adam Mohamed Omar</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SAFETY: a real checklist, using the queue timeline styling -->
-    <section class="how section" id="safety">
-      <div class="section-head reveal">
-        <div><div class="section-label">BEFORE YOU SEND A TICKET</div><h2>Order<br><em>safely.</em></h2></div>
-        <p>A few habits that protect your account and your money.</p>
-      </div>
-      <div class="queue">
-        <div class="queue-line" aria-hidden="true"></div>
-        <div class="queue-item reveal"><span>01</span><div><b>CHECK</b><h3>Double-check your username</h3><p>Your Fortnite/Epic username is the only detail on the ticket — a typo means the wrong account gets credited.</p></div></div>
-        <div class="queue-item reveal"><span>02</span><div><b>NEVER SHARE</b><h3>Never send your password</h3><p>The admin will never ask for your Epic password, 2FA code, or email login. If anyone does, it isn't GameNest.</p></div></div>
-        <div class="queue-item reveal"><span>03</span><div><b>CONFIRM</b><h3>Confirm the price before paying</h3><p>The price on your ticket should match what the admin quotes. Ask if anything looks different.</p></div></div>
-        <div class="queue-item reveal"><span>04</span><div><b>KEEP IT</b><h3>Keep your ticket number</h3><p>Your ticket number is your reference if you need to follow up on an order later.</p></div></div>
-      </div>
-    </section>
-
-    <!-- FAQ -->
-    <section class="faq section" id="faq">
-      <div class="section-head reveal">
-        <div><div class="section-label">SMALL PRINT</div><h2>Questions,<br><em>answered.</em></h2></div>
-        <p>Everything people ask before their first ticket.</p>
-      </div>
-      <div class="faq-list">
-        <details class="reveal"><summary>How do I actually order?<span>+</span></summary><p>Pick a pack, tap Open ticket, add your Fortnite/Epic username, then use Copy Ticket, join the GameNest Discord, and create a ticket there to send it.</p></details>
-        <details class="reveal"><summary>Do I need to create an account?<span>+</span></summary><p>No. Only your Fortnite/Epic username goes on the ticket. The admin handles the rest of the order in chat.</p></details>
-        <details class="reveal"><summary>Where does my ticket actually go?<span>+</span></summary><p>Nowhere until you send it — copying it doesn't submit anything. You paste it yourself into a ticket channel inside the GameNest Discord server.</p></details>
-        <details class="reveal"><summary>Can I pay on the website?<span>+</span></summary><p>No, and that's intentional — this site never asks for payment details. Payment is arranged directly with the admin after you join the group.</p></details>
-        <details class="reveal"><summary>Which payment methods work?<span>+</span></summary><p>Vodafone Cash, WE Pay, InstaPay and Telda. The admin will guide you through whichever one you use.</p></details>
-        <details class="reveal"><summary>What if I never got a reply?<span>+</span></summary><p>Keep your copied ticket text — it has your order number on it — and message the admin again in the group with the same ticket.</p></details>
-        <details class="reveal"><summary>How long does delivery take?<span>+</span></summary><p>It depends on how busy the counter is, but most orders are handled shortly after payment is confirmed. The admin will give you a heads-up if there's a delay.</p></details>
-        <details class="reveal"><summary>Can I change my order after sending the ticket?<span>+</span></summary><p>Yes — just message the admin in the same chat before payment is confirmed. Once payment is made, changes may not be possible.</p></details>
-        <details class="reveal"><summary>Do you offer other games besides Fortnite?<span>+</span></summary><p>Not yet — GameNest currently only handles Fortnite V-Bucks and Crew. If that changes, it'll be listed on this page.</p></details>
-        <details class="reveal"><summary>Is my Epic account safe if I order?<span>+</span></summary><p>Yes, as long as you never share your password or 2FA code with anyone — GameNest will never ask for either. Only your username is needed to complete an order.</p></details>
-      </div>
-    </section>
-
-    <!-- RATINGS: live shared reviews via Firebase -->
-    <section class="how section" id="reviews">
-      <div class="section-head reveal">
-        <div><div class="section-label">FROM THE COUNTER</div><h2>Rate your<br><em>order.</em></h2></div>
-        <p id="reviewSummary">Be the first to leave a rating.</p>
-      </div>
-
-      <div class="review-form reveal">
-        <div class="star-input" id="starInput" role="radiogroup" aria-label="Rating">
-          <button type="button" class="star" data-value="1" aria-label="1 star">★</button>
-          <button type="button" class="star" data-value="2" aria-label="2 stars">★</button>
-          <button type="button" class="star" data-value="3" aria-label="3 stars">★</button>
-          <button type="button" class="star" data-value="4" aria-label="4 stars">★</button>
-          <button type="button" class="star" data-value="5" aria-label="5 stars">★</button>
-        </div>
-        <input id="reviewName" maxlength="40" placeholder="Your name or username (optional)" autocomplete="off">
-        <textarea id="reviewText" maxlength="280" placeholder="Tell us about your order (optional)"></textarea>
-        <button class="btn primary" id="submitReview" type="button">Submit rating <span>↗</span></button>
-        <p class="copy-note" id="reviewNote"></p>
-      </div>
-
-      <div class="review-list" id="reviewList"></div>
-    </section>
-
-    <!-- FINAL CTA -->
-    <section class="final-cta section">
-      <div class="cta-box reveal">
-        <div class="cta-perf" aria-hidden="true"></div>
-        <div class="section-label">LAST CALL</div>
-        <h2>Your ticket's<br><em>waiting.</em></h2>
-        <p>Pick a pack, fill it in, and take it to the counter.</p>
-        <a class="btn light big" href="#vbucks">Open a ticket <span>↗</span></a>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-main">
-      <a class="brand" href="#top"><img class="brand-mark" src="logo.png" alt="GameNest"><span class="brand-word">GameNest<span class="muted">.shop</span></span></a>
-      <p>A ticket counter for Fortnite,<br>not a checkout page.</p>
-      <div class="footer-links">
-        <a href="#vbucks">V-Bucks</a><a href="#crew">Crew</a><a href="#how">How It Works</a><a href="#faq">FAQ</a>
-
-        <!-- Instagram — CHANGE THIS URL to your real Instagram username -->
-        <a class="social-link" target="_blank" rel="noopener" href="https://www.instagram.com/gamenest.shop" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16">
-            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
-          </svg>
-          Instagram ↗
-        </a>
-
-        <!-- Discord — CHANGE THIS URL if your invite link is different -->
-        <a class="social-link" target="_blank" rel="noopener" href="https://discord.gg/X3qCVbnW3K" aria-label="Discord">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-            <path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
-          </svg>
-          Discord ↗
-        </a>
-      </div>
+    <div class="nav-links" id="navLinks">
+      <a href="#vbucks"   data-en="V-Bucks"  data-ar="في-بوكس">V-Bucks</a>
+      <a href="#crew"     data-en="Crew"     data-ar="الكرو">Crew</a>
+      <a href="#gifts"    data-en="Gifts"    data-ar="الهدايا">Gifts</a>
+      <a href="#process"  data-en="Process"  data-ar="طريقة الشراء">Process</a>
+      <a href="#reviews"  data-en="Reviews"  data-ar="المراجعات">Reviews</a>
+      <a href="#payment"  data-en="Payment"  data-ar="الدفع">Payment</a>
+      <a href="#faq"      data-en="FAQ"      data-ar="الأسئلة">FAQ</a>
+      <button class="lang-btn" id="langBtn" type="button">عربي</button>
     </div>
-    <div class="footer-bottom"><span>© 2026 GameNest.shop</span><span>Every order starts as a ticket, not a transaction.</span></div>
-  </footer>
-
-  <!-- ORDER MODAL -->
-  <div class="modal" id="orderModal" aria-hidden="true">
-    <div class="modal-backdrop"></div>
-    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <button class="modal-close" aria-label="Close">×</button>
-
-      <div class="modal-label">TICKET / GAMENEST</div>
-      <h2 id="modalTitle"><span id="modalProductTitle">12,500 V-Bucks</span></h2>
-      <div class="modal-price" id="modalPrice">1,820 EGP</div>
-
-      <div class="modal-field">
-        <label for="username">YOUR NAME / USERNAME</label>
-        <input id="username" name="username" autocomplete="off" maxlength="50"
-               placeholder="Enter your name or Epic username" required>
-      </div>
-
-      <div class="order-info-label">TICKET DETAILS</div>
-      <div class="order-info-box">
-        <pre id="orderText"></pre>
-      </div>
-
-      <div class="result-actions">
-        <button class="modal-action copy-btn" id="copyBtn" type="button">
-          <span>Copy Ticket</span><b>▣</b>
-        </button>
-        <a class="modal-action discord-btn" target="_blank" rel="noopener"
-           href="https://discord.gg/X3qCVbnW3K">
-          <span>Join Discord</span><b>↗</b>
-        </a>
-      </div>
-
-      <p class="copy-note" id="copyNote">
-        Copy your ticket, join the GameNest Discord, then create a ticket there to complete your order.
-      </p>
-
-      <div class="pay-now-label">OR PAY DIRECTLY — <span id="payNowPrice">1,820 EGP</span></div>
-      <div class="pay-now-grid" id="payNowGrid">
-        <a class="pay-now-btn" target="_blank" rel="noopener" href="http://vf.eg/vfcash?id=mt&amp;qrId=wgmEpY">
-          <span>Vodafone Cash</span><small>Adam Mohamed Omar · 0104 264 1080</small><b>↗</b>
-        </a>
-        <a class="pay-now-btn" target="_blank" rel="noopener" href="https://ipn.eg/S/iadqm/instapay/9n2Xj">
-          <span>InstaPay</span><small>Adam Mohamed Omar</small><b>↗</b>
-        </a>
-        <div class="pay-now-btn is-static">
-          <span>Telda</span><small>@itzadam · Adam Mohamed Omar</small>
-        </div>
-      </div>
-      <p class="copy-note">After paying, send your ticket + a payment screenshot to the admin in Discord.</p>
+    <div class="nav-icons">
+      <button class="icon-btn" id="searchBtn" type="button" aria-label="Search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.602 10.602Z"/></svg>
+      </button>
+      <button class="icon-btn" id="favBtn" type="button" aria-label="Favorites">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>
+        <span class="badge" id="favCount" hidden>0</span>
+      </button>
+      <button class="icon-btn" id="cartBtn" type="button" aria-label="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007Z"/></svg>
+        <span class="badge" id="cartCount" hidden>0</span>
+      </button>
+      <button class="menu-btn" id="menuBtn" type="button" aria-label="Menu">☰</button>
     </div>
+  </nav>
+</header>
+
+<main>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section class="hero" id="top">
+  <div class="marquee marquee-top" aria-hidden="true">
+    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
+    <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
+  </div>
+  <div class="marquee marquee-mid" aria-hidden="true">
+    <span>/// INSTANT DELIVERY /// TRUSTED SELLER /// INSTANT DELIVERY /// TRUSTED SELLER /// INSTANT DELIVERY /// TRUSTED SELLER /// </span>
+    <span>/// INSTANT DELIVERY /// TRUSTED SELLER /// INSTANT DELIVERY /// TRUSTED SELLER /// INSTANT DELIVERY /// TRUSTED SELLER /// </span>
+  </div>
+  <div class="marquee marquee-bot" aria-hidden="true">
+    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
+    <span>/// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// V-BUCKS /// CREW /// GIFTS /// </span>
   </div>
 
-  <script>
-    const modal = document.getElementById('orderModal');
-    const username = document.getElementById('username');
-    const modalProductTitle = document.getElementById('modalProductTitle');
-    const modalPrice = document.getElementById('modalPrice');
-    const orderText = document.getElementById('orderText');
-    const copyBtn = document.getElementById('copyBtn');
-    const copyNote = document.getElementById('copyNote');
-    const payNowPrice = document.getElementById('payNowPrice');
-    let activeProduct = null;
-    let activeOrderId = null;
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="corner corner-tl" aria-hidden="true"></div>
+  <div class="corner corner-tr" aria-hidden="true"></div>
+  <div class="corner corner-bl" aria-hidden="true"></div>
+  <div class="corner corner-br" aria-hidden="true"></div>
 
-    function makeOrderId() {
-      const now = new Date();
-      const stamp = now.getFullYear().toString().slice(-2) +
-        String(now.getMonth()+1).padStart(2,'0') +
-        String(now.getDate()).padStart(2,'0');
-      const random = Math.random().toString(36).slice(2,7).toUpperCase();
-      return `GN-${stamp}-${random}`;
-    }
+  <div class="hero-meta hero-meta-right" aria-hidden="true">GAMENEST // METADATA_SYNCED</div>
+  <div class="hero-meta hero-meta-left" aria-hidden="true">TERMINAL_ONLINE // PORT_8080</div>
 
-    function buildOrderText() {
-      if (!activeProduct || !activeOrderId) return '';
-      const customer = username.value.trim() || 'Not provided';
-      const price = Number(activeProduct.price).toLocaleString('en-US');
+  <div class="hero-inner">
+    <img src="logo.png" alt="" class="hero-mark" onerror="this.style.display='none'">
 
-      return `GameNest Ticket 🎟️
+    <div class="hero-status">
+      <span class="tag">
+        <span class="dot"></span>
+        <span data-en="SYSTEM ACTIVE // CORE_v1.0.4" data-ar="النظام نشط // الإصدار ١.٠.٤">SYSTEM ACTIVE // CORE_v1.0.4</span>
+      </span>
+      <span class="tag-sub" data-en="SECURE_LINK // USER: GUEST_09" data-ar="اتصال آمن // المستخدم: زائر_٠٩">SECURE_LINK // USER: GUEST_09</span>
+    </div>
 
-Ticket No: ${activeOrderId}
-Customer: ${customer}
-Product: ${activeProduct.product}
-Price: ${price} EGP
+    <h1 class="glitch" data-text="GAMENEST">GAMENEST</h1>
 
-Pay to: Vodafone Cash / InstaPay / Telda — Adam Mohamed Omar
-I'm bringing this ticket to the GameNest Discord.
-Please confirm and assist me with payment.`;
-    }
+    <p class="hero-text"
+       data-en="Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support. Trusted by thousands of players across Egypt and the Middle East."
+       data-ar="في-بوكس فورتنايت، اشتراكات الكرو، والهدايا — تسليم فوري، أفضل الأسعار، ودعم حقيقي. موثوق من آلاف اللاعبين في مصر والشرق الأوسط.">
+       Fortnite V-Bucks, Crew subscriptions and Gifts — instant delivery, best prices, real support. Trusted by thousands of players across Egypt and the Middle East.
+    </p>
 
-    function refreshOrderText() {
-      orderText.textContent = buildOrderText();
-    }
+    <div class="btns">
+      <a href="#vbucks"  class="btn"       data-en="Shop V-Bucks"    data-ar="تسوق في-بوكس">Shop V-Bucks</a>
+      <a href="#crew"    class="btn ghost" data-en="Crew & Gifts"    data-ar="الكرو والهدايا">Crew &amp; Gifts</a>
+    </div>
 
-    function openModal(card) {
-      activeProduct = {
-        product: card.dataset.product,
-        price: card.dataset.price
-      };
-      activeOrderId = makeOrderId();
+    <ul class="hero-trust">
+      <li><span class="tick">✓</span><span data-en="Instant Delivery"   data-ar="تسليم فوري">Instant Delivery</span></li>
+      <li><span class="tick">✓</span><span data-en="No Password Needed" data-ar="بدون كلمة سر">No Password Needed</span></li>
+      <li><span class="tick">✓</span><span data-en="24/7 Support"       data-ar="دعم ٢٤/٧">24/7 Support</span></li>
+      <li><span class="tick">✓</span><span data-en="Verified Seller"    data-ar="بائع موثوق">Verified Seller</span></li>
+    </ul>
 
-      modalProductTitle.textContent = activeProduct.product;
-      modalPrice.textContent = Number(activeProduct.price).toLocaleString('en-US') + ' EGP';
-      payNowPrice.textContent = modalPrice.textContent;
-      username.value = '';
-      copyBtn.innerHTML = '<span>Copy Ticket</span><b>▣</b>';
-      copyNote.textContent = 'Copy your ticket, join the GameNest Discord, then create a ticket there to complete your order.';
-      copyNote.classList.remove('copied');
-      refreshOrderText();
+    <a href="#process" class="scroll-hint">
+      <span data-en="SCROLL" data-ar="انزل">SCROLL</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7-7-7M19 5l-7 7-7-7"/></svg>
+    </a>
+  </div>
+</section>
 
-      modal.classList.add('open');
-      modal.setAttribute('aria-hidden','false');
-      document.body.classList.add('modal-open');
+<!-- ============================================================
+     TICKER STRIP
+     ============================================================ -->
+<section class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>⚡ 800 VB — 199 EGP</span><span class="sep">///</span>
+    <span>⚡ 2400 VB — 479 EGP</span><span class="sep">///</span>
+    <span>⚡ 4500 VB — 759 EGP</span><span class="sep">///</span>
+    <span>⚡ 12500 VB — 1749 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 1M — 210 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 3M — 559 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 12M — 1959 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 500 — 95 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 2000 — 375 EGP</span><span class="sep">///</span>
+    <span>⚡ INSTANT DELIVERY /// TRUSTED</span><span class="sep">///</span>
+    <span>⚡ 800 VB — 199 EGP</span><span class="sep">///</span>
+    <span>⚡ 2400 VB — 479 EGP</span><span class="sep">///</span>
+    <span>⚡ 4500 VB — 759 EGP</span><span class="sep">///</span>
+    <span>⚡ 12500 VB — 1749 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 1M — 210 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 3M — 559 EGP</span><span class="sep">///</span>
+    <span>⚡ CREW 12M — 1959 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 500 — 95 EGP</span><span class="sep">///</span>
+    <span>⚡ GIFT 2000 — 375 EGP</span><span class="sep">///</span>
+    <span>⚡ INSTANT DELIVERY /// TRUSTED</span><span class="sep">///</span>
+  </div>
+</section>
 
-      setTimeout(() => username.focus(), 280);
-    }
+<!-- ============================================================
+     HOW IT WORKS
+     ============================================================ -->
+<section id="process" class="section">
+  <div class="glow glow-tr"></div>
+  <div class="glow glow-bl"></div>
 
-    function closeModal() {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden','true');
-      document.body.classList.remove('modal-open');
-    }
+  <div class="sec-head">
+    <span class="sec-label">[SYSTEM_FLOW // PROCESS_FLOW_v1.0]</span>
+    <h2 class="sec-title" data-en="HOW_IT_WORKS" data-ar="كيف تشتري">HOW_IT_WORKS</h2>
+    <p class="sec-sub" data-en="3 SIMPLE STEPS TO GET YOUR ORDER" data-ar="٣ خطوات بسيطة للحصول على طلبك">3 SIMPLE STEPS TO GET YOUR ORDER</p>
+    <div class="sec-bar"></div>
+  </div>
 
-    document.querySelectorAll('.order-btn').forEach(btn => {
-      btn.addEventListener('click', () => openModal(btn.closest('[data-product]')));
+  <div class="process-grid">
+    <div class="process-line" aria-hidden="true"></div>
+
+    <article class="pcard">
+      <div class="pnum" aria-hidden="true">01</div>
+      <div class="ptick"></div>
+      <div class="pbody">
+        <h3><span>[01]</span><span data-en="SELECT PACK" data-ar="اختر الباقة">SELECT PACK</span></h3>
+        <p data-en="Choose a V-Bucks pack, Crew subscription, or a Gift from the catalog below. Every price is listed up front — nothing hidden, nothing changes mid-order." data-ar="اختر باقة في-بوكس، اشتراك كرو، أو هدية من الكتالوج. كل سعر ظاهر من البداية — بدون أي رسوم خفية.">Choose a V-Bucks pack, Crew subscription, or a Gift from the catalog below. Every price is listed up front — nothing hidden, nothing changes mid-order.</p>
+      </div>
+      <div class="pfoot"><span>STAGE_01</span><span>// COMPILING_OK</span></div>
+    </article>
+
+    <article class="pcard">
+      <div class="pnum" aria-hidden="true">02</div>
+      <div class="ptick"></div>
+      <div class="pbody">
+        <h3><span>[02]</span><span data-en="TRANSFER FUNDS" data-ar="حوّل المبلغ">TRANSFER FUNDS</span></h3>
+        <p data-en="Send the exact amount via Vodafone Cash, InstaPay, or Telda. All payment details are printed right there on your ticket — copy them with one tap." data-ar="أرسل المبلغ بدقة عبر فودافون كاش، إنستاباي، أو تيلدا. كل بيانات الدفع مطبوعة على تذكرتك — انسخها بضغطة واحدة.">Send the exact amount via Vodafone Cash, InstaPay, or Telda. All payment details are printed right there on your ticket — copy them with one tap.</p>
+      </div>
+      <div class="pfoot"><span>STAGE_02</span><span>// COMPILING_OK</span></div>
+    </article>
+
+    <article class="pcard">
+      <div class="pnum" aria-hidden="true">03</div>
+      <div class="ptick"></div>
+      <div class="pbody">
+        <h3><span>[03]</span><span data-en="SEND RECEIPT" data-ar="أرسل الإيصال">SEND RECEIPT</span></h3>
+        <p data-en="Send the payment screenshot + your username to @GamenestGifts on Instagram or Discord. Your items arrive within minutes — no waiting, no bots, no games." data-ar="أرسل لقطة الشاشة + اسمك إلى @GamenestGifts على إنستجرام أو ديسكورد. تُسلّم طلبك في دقائق — بدون انتظار، بدون روبوتات.">Send the payment screenshot + your username to @GamenestGifts on Instagram or Discord. Your items arrive within minutes — no waiting, no bots, no games.</p>
+      </div>
+      <div class="pfoot"><span>STAGE_03</span><span>// COMPILING_OK</span></div>
+    </article>
+  </div>
+</section>
+
+<!-- ============================================================
+     V-BUCKS
+     ============================================================ -->
+<section id="vbucks" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ V-BUCKS ]</span>
+    <img src="vbucks.png" alt="" class="sec-img" onerror="this.style.display='none'">
+    <h2 class="sec-title" data-en="V-BUCKS PACKS" data-ar="باقات في-بوكس">V-BUCKS PACKS</h2>
+    <p class="sec-sub" data-en="INSTANT DELIVERY · TOP-UP ANYTIME" data-ar="تسليم فوري · اشحن في أي وقت">INSTANT DELIVERY · TOP-UP ANYTIME</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridVB"></div>
+</section>
+
+<!-- ============================================================
+     DEAL / COUNTDOWN
+     ============================================================ -->
+<section class="deal-banner section">
+  <div class="deal-inner">
+    <div class="deal-tag">[ LIMITED_TIME_DROP ]</div>
+    <h2 class="deal-title" data-en="WEEKLY DROP" data-ar="العرض الأسبوعي">WEEKLY DROP</h2>
+    <p class="deal-sub" data-en="Best value in the store · ends soon" data-ar="أفضل قيمة في المتجر · ينتهي قريباً">Best value in the store · ends soon</p>
+
+    <div class="countdown" id="countdown" aria-live="polite">
+      <div class="cd-block"><span class="cd-num" id="cdH">00</span><span class="cd-lbl" data-en="HRS" data-ar="ساعة">HRS</span></div>
+      <div class="cd-block"><span class="cd-num" id="cdM">00</span><span class="cd-lbl" data-en="MIN" data-ar="دقيقة">MIN</span></div>
+      <div class="cd-block"><span class="cd-num" id="cdS">00</span><span class="cd-lbl" data-en="SEC" data-ar="ثانية">SEC</span></div>
+    </div>
+
+    <a href="#vbucks" class="btn" data-en="Grab it now" data-ar="احصل عليه الآن">Grab it now</a>
+  </div>
+</section>
+
+<!-- ============================================================
+     CREW
+     ============================================================ -->
+<section id="crew" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ FORTNITE CREW ]</span>
+    <img src="crew.png" alt="" class="sec-img sec-img-crown" onerror="this.style.display='none'">
+    <h2 class="sec-title" data-en="CREW SUBSCRIPTIONS" data-ar="اشتراكات الكرو">CREW SUBSCRIPTIONS</h2>
+    <p class="sec-sub" data-en="MONTHLY · DISCOUNTED LONGER TIERS" data-ar="شهري · باقات أطول بخصم">MONTHLY · DISCOUNTED LONGER TIERS</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridCrew"></div>
+</section>
+
+<!-- ============================================================
+     GIFTS
+     ============================================================ -->
+<section id="gifts" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ FORTNITE GIFTS ]</span>
+    <h2 class="sec-title" data-en="GIFT PACKS" data-ar="باقات الهدايا">GIFT PACKS</h2>
+    <p class="sec-sub" data-en="SEND A GIFT TO ANY FORTNITE FRIEND" data-ar="أرسل هدية لأي صديق في فورتنايت">SEND A GIFT TO ANY FORTNITE FRIEND</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridGift"></div>
+</section>
+
+<!-- ============================================================
+     STATS
+     ============================================================ -->
+<section class="stats section">
+  <div class="stats-grid">
+    <div class="stat">
+      <div class="stat-num" data-count="5000">0</div>
+      <div class="stat-lbl" data-en="ORDERS DELIVERED" data-ar="طلب تم تسليمه">ORDERS DELIVERED</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="1200">0</div>
+      <div class="stat-lbl" data-en="HAPPY PLAYERS" data-ar="لاعب سعيد">HAPPY PLAYERS</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="99">0</div>
+      <div class="stat-lbl" data-en="% SUCCESS RATE" data-ar="٪ نسبة النجاح">% SUCCESS RATE</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" data-count="24">0</div>
+      <div class="stat-lbl" data-en="HRS SUPPORT" data-ar="ساعة دعم">HRS SUPPORT</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WHY GAMENEST
+     ============================================================ -->
+<section class="why section">
+  <div class="sec-head">
+    <span class="sec-label">[ WHY_GAMENEST ]</span>
+    <h2 class="sec-title" data-en="WHY CHOOSE US" data-ar="لماذا تختارنا">WHY CHOOSE US</h2>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="why-grid">
+    <div class="why-card">
+      <div class="why-icon">⚡</div>
+      <h3 data-en="Instant Delivery" data-ar="تسليم فوري">Instant Delivery</h3>
+      <p data-en="Most orders arrive within 5 minutes of payment confirmation." data-ar="معظم الطلبات تصل خلال ٥ دقائق من تأكيد الدفع.">Most orders arrive within 5 minutes of payment confirmation.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🔒</div>
+      <h3 data-en="Fully Secure" data-ar="آمن تماماً">Fully Secure</h3>
+      <p data-en="We never ask for your Epic password — only your username." data-ar="لا نطلب كلمة سر Epic أبداً — فقط اسم المستخدم.">We never ask for your Epic password — only your username.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">💬</div>
+      <h3 data-en="Real Support" data-ar="دعم حقيقي">Real Support</h3>
+      <p data-en="Talk to a real person on Instagram or Discord — not a bot." data-ar="تحدث مع شخص حقيقي على إنستجرام أو ديسكورد — ليس روبوت.">Talk to a real person on Instagram or Discord — not a bot.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">💵</div>
+      <h3 data-en="Best Prices" data-ar="أفضل الأسعار">Best Prices</h3>
+      <p data-en="The most competitive V-Bucks and Crew prices in Egypt." data-ar="أفضل أسعار في-بوكس والكرو في مصر.">The most competitive V-Bucks and Crew prices in Egypt.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🎁</div>
+      <h3 data-en="Gift Friendly" data-ar="هدايا">Gift Friendly</h3>
+      <p data-en="Send gifts to friends and family with just their username." data-ar="أرسل هدايا لأصدقائك وعائلتك باسم المستخدم فقط.">Send gifts to friends and family with just their username.</p>
+    </div>
+    <div class="why-card">
+      <div class="why-icon">🛡️</div>
+      <h3 data-en="Trusted Seller" data-ar="بائع موثوق">Trusted Seller</h3>
+      <p data-en="Verified by major gaming communities and thousands of reviews." data-ar="موثق من كبرى مجتمعات الألعاب وآلاف المراجعات.">Verified by major gaming communities and thousands of reviews.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     REVIEWS
+     ============================================================ -->
+<section id="reviews" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ COMMUNITY_FEEDBACK ]</span>
+    <h2 class="sec-title" data-en="PLAYER_REVIEWS" data-ar="آراء اللاعبين">PLAYER_REVIEWS</h2>
+    <p class="sec-sub" id="reviewSummary">Be the first to leave a rating.</p>
+    <div class="sec-bar"></div>
+  </div>
+
+  <div class="review-form">
+    <div class="star-input" id="starInput" role="radiogroup" aria-label="Rating">
+      <button type="button" class="star" data-value="1" aria-label="1 star">★</button>
+      <button type="button" class="star" data-value="2" aria-label="2 stars">★</button>
+      <button type="button" class="star" data-value="3" aria-label="3 stars">★</button>
+      <button type="button" class="star" data-value="4" aria-label="4 stars">★</button>
+      <button type="button" class="star" data-value="5" aria-label="5 stars">★</button>
+    </div>
+    <input id="reviewName" maxlength="40" placeholder="Your name (optional)" autocomplete="off">
+    <textarea id="reviewText" maxlength="280" placeholder="Tell us about your order (optional)"></textarea>
+    <button class="btn" id="submitReview" type="button" data-en="Submit Rating" data-ar="أرسل التقييم">Submit Rating</button>
+    <p class="review-note" id="reviewNote"></p>
+  </div>
+
+  <div class="review-list" id="reviewList"></div>
+</section>
+
+<!-- ============================================================
+     PAYMENT
+     ============================================================ -->
+<section id="payment" class="section">
+  <div class="glow glow-tr"></div>
+  <div class="glow glow-bl"></div>
+
+  <div class="sec-head">
+    <span class="sec-label">[ SYS_SECURE ]</span>
+    <h2 class="sec-title" data-en="PAYMENT METHODS" data-ar="طرق الدفع">PAYMENT METHODS</h2>
+    <p class="sec-sub" data-en="ACCOUNT: ADAM MOHAMED OMAR" data-ar="الحساب: آدم محمد عمر">ACCOUNT: ADAM MOHAMED OMAR</p>
+    <div class="sec-bar"></div>
+  </div>
+
+  <div class="gateways">
+    <div class="gateway" data-method="vodafone" data-name="VODAFONE CASH" data-value="0104 264 1080" data-link="http://vf.eg/vfcash?id=mt&qrId=wgmEpY">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO VODAFONE CASH: <b class="gw-val">0104 264 1080</b></div>
+      <div class="gw-line">PROCESSING: <b>Instant · No fees</b></div>
+      <button class="gw-btn" type="button"><span data-en="CLICK TO PAY WITH VODAFONE CASH" data-ar="اضغط للدفع عبر فودافون كاش">CLICK TO PAY WITH VODAFONE CASH</span></button>
+    </div>
+
+    <div class="gateway" data-method="instapay" data-name="INSTAPAY" data-value="0115 893 4284" data-link="https://ipn.eg/S/iadqm/instapay/9n2XjE">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO INSTAPAY: <b class="gw-val">0115 893 4284</b></div>
+      <div class="gw-line">PROCESSING: <b>Instant · No fees</b></div>
+      <button class="gw-btn" type="button"><span data-en="CLICK TO PAY WITH INSTAPAY" data-ar="اضغط للدفع عبر إنستاباي">CLICK TO PAY WITH INSTAPAY</span></button>
+    </div>
+
+    <div class="gateway" data-method="telda" data-name="TELDA" data-value="@itzadam" data-link="">
+      <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+      <div class="gw-line">ACCOUNT NAME: <b>ADAM MOHAMED OMAR</b></div>
+      <div class="gw-line">SEND FUNDS TO TELDA: <b class="gw-val">@itzadam</b></div>
+      <div class="gw-line">PROCESSING: <b>Instant · No fees</b></div>
+      <button class="gw-btn" type="button"><span data-en="COPY TELDA HANDLE" data-ar="انسخ عنوان تيلدا">COPY TELDA HANDLE</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FAQ
+     ============================================================ -->
+<section id="faq" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[FAQ // KNOWLEDGE_BASE]</span>
+    <h2 class="sec-title" data-en="SYSTEM_FAQ" data-ar="الأسئلة الشائعة">SYSTEM_FAQ</h2>
+    <p class="sec-sub" data-en="EVERYTHING YOU NEED TO KNOW" data-ar="كل ما تحتاج معرفته">EVERYTHING YOU NEED TO KNOW</p>
+    <div class="sec-bar"></div>
+  </div>
+
+  <div class="faq-list">
+    <details open>
+      <summary data-en="How do I place an order?" data-ar="كيف أطلب؟">How do I place an order?</summary>
+      <p data-en="Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, then copy the ticket and send it to @GamenestGifts on Instagram or Discord along with your payment screenshot. That's it." data-ar="اضغط اشتري على أي باقة، راجع التفاصيل، اختر طريقة الدفع، أدخل اسمك في فورتنايت، ثم انسخ التذكرة وأرسلها إلى @GamenestGifts على إنستجرام أو ديسكورد مع لقطة الشاشة للدفع. هذا كل شيء.">Click PURCHASE on any pack, review the details, choose a payment method, enter your Fortnite username, then copy the ticket and send it to @GamenestGifts on Instagram or Discord along with your payment screenshot. That's it.</p>
+    </details>
+    <details>
+      <summary data-en="How long does delivery take?" data-ar="كم يستغرق التسليم؟">How long does delivery take?</summary>
+      <p data-en="Most orders are delivered within 5 minutes. During peak hours it can take slightly longer, but we always keep you posted." data-ar="معظم الطلبات تُسلّم خلال ٥ دقائق. في أوقات الذروة قد يستغرق وقتاً أطول قليلاً.">Most orders are delivered within 5 minutes. During peak hours it can take slightly longer, but we always keep you posted.</p>
+    </details>
+    <details>
+      <summary data-en="Which payment methods do you accept?" data-ar="ما طرق الدفع المقبولة؟">Which payment methods do you accept?</summary>
+      <p data-en="Vodafone Cash, InstaPay, and Telda. All payment details are listed in the Payment section above — each one has a 'Pay Now' button that opens the payment app directly." data-ar="فودافون كاش، إنستاباي، وتيلدا. كل التفاصيل في قسم الدفع بالأعلى.">Vodafone Cash, InstaPay, and Telda. All payment details are listed in the Payment section above — each one has a 'Pay Now' button that opens the payment app directly.</p>
+    </details>
+    <details>
+      <summary data-en="Do you need my Epic password?" data-ar="هل تحتاج كلمة سر Epic؟">Do you need my Epic password?</summary>
+      <p data-en="Never. We only need your Fortnite / Epic username. Anyone asking for your password, 2FA code, or email login is not us." data-ar="أبداً. نحتاج فقط اسمك في فورتنايت / Epic. أي شخص يطلب كلمة السر ليس نحن.">Never. We only need your Fortnite / Epic username. Anyone asking for your password, 2FA code, or email login is not us.</p>
+    </details>
+    <details>
+      <summary data-en="Can I get a refund?" data-ar="هل يمكنني استرداد أموالي؟">Can I get a refund?</summary>
+      <p data-en="Refunds are handled case-by-case. Message us on Instagram or Discord and we'll review your order personally." data-ar="الاسترداد يُدرس حسب كل حالة. راسلنا على إنستجرام أو ديسكورد وسنراجع طلبك.">Refunds are handled case-by-case. Message us on Instagram or Discord and we'll review your order personally.</p>
+    </details>
+    <details>
+      <summary data-en="Are V-Bucks and Crew legitimate?" data-ar="هل الفي-بوكس والكرو موثوقة؟">Are V-Bucks and Crew legitimate?</summary>
+      <p data-en="Yes. All V-Bucks, Crew subscriptions, and Gifts are delivered through legitimate Epic Games channels. Nothing suspicious, nothing risky." data-ar="نعم. كل الفي-بوكس واشتراكات الكرو والهدايا تُسلّم عبر قنوات Epic Games الرسمية.">Yes. All V-Bucks, Crew subscriptions, and Gifts are delivered through legitimate Epic Games channels. Nothing suspicious, nothing risky.</p>
+    </details>
+    <details>
+      <summary data-en="Can I send a gift to a friend?" data-ar="هل يمكنني إرسال هدية لصديق؟">Can I send a gift to a friend?</summary>
+      <p data-en="Absolutely. Just select the GIFT pack, then enter your friend's Fortnite username on the ticket instead of your own." data-ar="بالطبع. اختر باقة الهدايا، ثم أدخل اسم صديقك في فورتنايت على التذكرة بدلاً من اسمك.">Absolutely. Just select the GIFT pack, then enter your friend's Fortnite username on the ticket instead of your own.</p>
+    </details>
+    <details>
+      <summary data-en="What if I made a mistake on my ticket?" data-ar="ماذا لو أخطأت في التذكرة؟">What if I made a mistake on my ticket?</summary>
+      <p data-en="No problem — just message the admin in the same chat before payment is confirmed. We can fix typos, change packs, or swap payment methods." data-ar="لا مشكلة — راسل المسؤول في نفس المحادثة قبل تأكيد الدفع. يمكننا تصحيح الأخطاء أو تغيير الباقات.">No problem — just message the admin in the same chat before payment is confirmed. We can fix typos, change packs, or swap payment methods.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ============================================================
+     FINAL CTA
+     ============================================================ -->
+<section class="final-cta section">
+  <div class="cta-inner">
+    <span class="sec-label">[ READY_TO_PLAY ]</span>
+    <h2 class="cta-title" data-en="TIME TO LEVEL UP" data-ar="وقت الارتفاع في المستوى">TIME TO LEVEL UP</h2>
+    <p class="cta-sub" data-en="Grab your V-Bucks, Crew, or Gift pack now — delivery starts the moment your payment lands." data-ar="احصل على باقة الفي-بوكس، الكرو، أو الهدايا الآن — التسليم يبدأ لحظة وصول دفعتك.">Grab your V-Bucks, Crew, or Gift pack now — delivery starts the moment your payment lands.</p>
+    <div class="btns">
+      <a href="#vbucks"  class="btn"       data-en="Start Shopping"     data-ar="ابدأ التسوق">Start Shopping</a>
+      <a href="#payment" class="btn ghost" data-en="See Payment Options" data-ar="طرق الدفع">See Payment Options</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============================================================
+     PRODUCT DETAIL MODAL
+     ============================================================ -->
+<div class="modal" id="productModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-box modal-detail">
+    <button class="modal-close" type="button" data-close>×</button>
+    <div class="detail-grid">
+      <div class="detail-visual">
+        <div class="detail-visual-inner">
+          <img id="detailImg" src="vbucks.png" alt="" onerror="this.style.display='none'">
+          <div class="detail-code" id="detailCode">PACK</div>
+        </div>
+        <div class="detail-telemetry">
+          <div class="tel-row"><span>REGION:</span><span>Global</span></div>
+          <div class="tel-row"><span>PLATFORM:</span><span>Epic Games</span></div>
+          <div class="tel-row"><span>DELIVERY:</span><span>Instant</span></div>
+          <div class="tel-row"><span>SUPPORT:</span><span>24/7</span></div>
+        </div>
+      </div>
+      <div class="detail-info">
+        <div class="detail-label">// DIGITAL_LICENSE</div>
+        <h2 id="detailTitle">—</h2>
+        <p class="detail-desc" id="detailDesc">—</p>
+        <div class="detail-price-row">
+          <div class="detail-price-label">TOTAL_LICENSE_ESTIMATE :</div>
+          <div class="detail-price"><b id="detailPrice">—</b></div>
+        </div>
+        <div class="delivery-protocol">
+          <div class="dp-head">[ DELIVERY_PROTOCOL ]</div>
+          <ol>
+            <li><b>Place Your Order</b><span>Pick your pack and confirm.</span></li>
+            <li><b>Enter the Queue</b><span>Your ticket is prioritised instantly.</span></li>
+            <li><b>Our Team Gets to Work</b><span>Delivery in a few minutes.</span></li>
+            <li><b>Delivery & Completion</b><span>Items sent straight to you.</span></li>
+          </ol>
+        </div>
+        <div class="detail-actions">
+          <button class="btn" id="buyNowBtn" type="button">BUY_NOW</button>
+          <button class="btn ghost" id="addCartBtn" type="button">ADD_TO_CART</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CHECKOUT MODAL
+     ============================================================ -->
+<div class="modal" id="checkoutModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-checkout></div>
+  <div class="modal-box modal-checkout">
+    <button class="modal-close" type="button" data-close-checkout>×</button>
+    <div class="checkout-grid">
+      <div class="checkout-left">
+        <div class="co-label">ORDER_SUMMARY</div>
+        <h3 id="coTitle">—</h3>
+        <div class="co-line"><span>SUBTOTAL:</span><span id="coSubtotal">—</span></div>
+        <div class="co-line"><span>ENCRYPTION:</span><span>AES_256 // SECURE</span></div>
+        <div class="co-line"><span>PROCESSING:</span><span>INSTANT</span></div>
+        <div class="co-total"><span>TOTAL_DUE :</span><b id="coTotal">—</b></div>
+        <div class="co-label">// CHOOSE_PAYMENT</div>
+        <div class="pay-tabs">
+          <button class="pay-tab active" data-pay="vodafone" type="button"><span>VODAFONE CASH</span><small>0104 264 1080</small></button>
+          <button class="pay-tab" data-pay="instapay" type="button"><span>INSTAPAY</span><small>0115 893 4284</small></button>
+          <button class="pay-tab" data-pay="telda" type="button"><span>TELDA</span><small>@itzadam</small></button>
+        </div>
+        <div class="gateway gateway-compact">
+          <div class="gw-head">[ GATEWAY_UPLINK: ACTIVE ]</div>
+          <div class="gw-line">ACCOUNT: <b>ADAM MOHAMED OMAR</b></div>
+          <div class="gw-line">SEND TO <span id="coMethod">VODAFONE CASH</span>: <b class="gw-val" id="coAddress">0104 264 1080</b></div>
+          <button class="gw-btn" id="payNowBtn" type="button">CLICK TO PAY NOW</button>
+        </div>
+      </div>
+      <div class="checkout-right">
+        <div class="co-field">
+          <label>FORTNITE USERNAME</label>
+          <input id="coUser" type="text" placeholder="Enter your Fortnite username" maxlength="50" autocomplete="off">
+        </div>
+        <div class="co-field">
+          <label>PAYMENT_REFERENCE</label>
+          <div class="co-pre" id="coReference">—</div>
+        </div>
+        <div class="co-actions">
+          <button class="btn" id="downloadReceipt" type="button">DOWNLOAD RECEIPT</button>
+          <button class="btn ghost" id="copyTicket" type="button">COPY TICKET</button>
+        </div>
+        <p class="co-note">Send the receipt + ticket to @GamenestGifts on Instagram or Discord.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     CART MODAL
+     ============================================================ -->
+<div class="modal" id="cartModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-cart></div>
+  <div class="modal-box modal-cart">
+    <button class="modal-close" type="button" data-close-cart>×</button>
+    <div class="cart-head"><div class="co-label">[ YOUR_CART ]</div><h3>Cart</h3></div>
+    <div id="cartItems" class="cart-items"></div>
+    <div class="cart-foot">
+      <div class="co-total"><span>TOTAL:</span><b id="cartTotal">0 EGP</b></div>
+      <button class="btn" id="cartCheckout" type="button">PROCEED TO CHECKOUT</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     FAVORITES MODAL
+     ============================================================ -->
+<div class="modal" id="favModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-fav></div>
+  <div class="modal-box modal-cart">
+    <button class="modal-close" type="button" data-close-fav>×</button>
+    <div class="cart-head"><div class="co-label">[ FAVORITES ]</div><h3>Favorites</h3></div>
+    <div id="favItems" class="cart-items"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SEARCH MODAL
+     ============================================================ -->
+<div class="modal" id="searchModal" aria-hidden="true">
+  <div class="modal-backdrop" data-close-search></div>
+  <div class="modal-box modal-search">
+    <button class="modal-close" type="button" data-close-search>×</button>
+    <div class="search-head">
+      <div class="co-label">[ SEARCH ]</div>
+      <input id="searchInput" type="text" placeholder="Search V-Bucks, Crew, Gifts..." autocomplete="off">
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="float-stack">
+  <a class="float-btn" href="https://www.instagram.com/gamenest.shop" target="_blank" rel="noopener" aria-label="Instagram">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+  </a>
+  <a class="float-btn" href="https://discord.gg/X3qCVbnW3K" target="_blank" rel="noopener" aria-label="Discord">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.79 19.79 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg>
+  </a>
+</div>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <div class="foot-brand">
+          <img src="logo.png" alt="" class="foot-logo" onerror="this.style.display='none'">
+          <span>GAMENEST</span>
+        </div>
+        <p>Fortnite V-Bucks, Crew and Gifts — instant delivery, best prices, real support. Trusted by thousands of players.</p>
+        <span class="foot-meta">[SYS_STATUS: ONLINE // VER: 1.0.4]</span>
+      </div>
+      <div>
+        <h4>SHOP</h4>
+        <a href="#vbucks">V-Bucks</a>
+        <a href="#crew">Crew</a>
+        <a href="#gifts">Gifts</a>
+        <a href="#reviews">Reviews</a>
+      </div>
+      <div>
+        <h4>COMMUNITY</h4>
+        <a href="https://www.instagram.com/gamenest.shop" target="_blank" rel="noopener">Instagram · @GamenestGifts</a>
+        <a href="https://discord.gg/X3qCVbnW3K" target="_blank" rel="noopener">Discord Server</a>
+        <a href="#faq">FAQ</a>
+        <a href="#payment">Payment</a>
+      </div>
+      <div>
+        <h4>PAYMENT</h4>
+        <p>Vodafone Cash · 0104 264 1080</p>
+        <p>InstaPay · 0115 893 4284</p>
+        <p>Telda · @itzadam</p>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 GAMENEST — ALL RIGHTS RESERVED</span>
+      <span class="foot-sep">//</span>
+      <span>@GamenestGifts</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
+    authDomain: "gamenest-reviews.firebaseapp.com",
+    projectId: "gamenest-reviews",
+    storageBucket: "gamenest-reviews.firebasestorage.app",
+    messagingSenderId: "480446593066",
+    appId: "1:480446593066:web:97a76d0cf5a1aeb7c7ab53"
+  };
+
+  const starInput = document.getElementById('starInput');
+  const stars = Array.from(starInput.querySelectorAll('.star'));
+  const reviewTextEl = document.getElementById('reviewText');
+  const reviewNameEl = document.getElementById('reviewName');
+  const submitBtn = document.getElementById('submitReview');
+  const reviewNote = document.getElementById('reviewNote');
+  const reviewList = document.getElementById('reviewList');
+  const reviewSummary = document.getElementById('reviewSummary');
+
+  let selectedRating = 0;
+  let db = null;
+
+  try {
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+  } catch (err) {
+    reviewNote.textContent = 'Ratings are not connected yet.';
+  }
+
+  function paintStars(upTo, className) {
+    stars.forEach(s => s.classList.toggle(className, Number(s.dataset.value) <= upTo));
+  }
+
+  stars.forEach(star => {
+    star.addEventListener('mouseenter', () => paintStars(Number(star.dataset.value), 'hovered'));
+    star.addEventListener('mouseleave', () => paintStars(0, 'hovered'));
+    star.addEventListener('click', () => {
+      selectedRating = Number(star.dataset.value);
+      paintStars(selectedRating, 'selected');
     });
+  });
 
-    username.addEventListener('input', refreshOrderText);
-    document.querySelector('.modal-close').addEventListener('click', closeModal);
-    document.querySelector('.modal-backdrop').addEventListener('click', closeModal);
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
-    });
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
-    copyBtn.addEventListener('click', async () => {
-      refreshOrderText();
-      try {
-        await navigator.clipboard.writeText(orderText.textContent);
-        copyBtn.innerHTML = '<span>Copied!</span><b>✓</b>';
-        copyNote.textContent = 'Copied! Now join the GameNest Discord and paste your ticket into a new ticket channel.';
-        copyNote.classList.add('copied');
-
-        setTimeout(() => {
-          copyBtn.innerHTML = '<span>Copy Ticket</span><b>▣</b>';
-          copyNote.textContent = 'Copy your ticket, join the GameNest Discord, then create a ticket there to complete your order.';
-          copyNote.classList.remove('copied');
-        }, 3000);
-      } catch {
-        const range = document.createRange();
-        range.selectNodeContents(orderText);
-        const sel = window.getSelection();
-        sel.removeAllRanges();
-        sel.addRange(range);
-        copyBtn.innerHTML = '<span>Select & Copy</span><b>↗</b>';
-      }
-    });
-
-    const menu = document.querySelector('.menu-toggle');
-    const navLinks = document.querySelector('.nav-links');
-    menu.addEventListener('click', () => {
-      const open = navLinks.classList.toggle('mobile-open');
-      menu.setAttribute('aria-expanded', open);
-      document.body.classList.toggle('menu-open', open);
-    });
-    navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
-      navLinks.classList.remove('mobile-open');
-      menu.setAttribute('aria-expanded','false');
-      document.body.classList.remove('menu-open');
-    }));
-
-    document.querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (target) { e.preventDefault(); target.scrollIntoView({behavior:'smooth', block:'start'}); }
-    }));
-
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => { if(entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); }});
-    }, {threshold:.12});
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-    document.querySelectorAll('details').forEach(detail => {
-      detail.addEventListener('toggle', () => {
-        if (detail.open) document.querySelectorAll('details').forEach(other => { if(other !== detail) other.open = false; });
-      });
-    });
-
-    // ---- Custom cursor: flowing ink-ribbon trail on canvas, long and smooth ----
-    const supportsFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    if (supportsFinePointer && !reducedMotion) {
-      document.documentElement.classList.add('has-custom-cursor');
-      const ring = document.getElementById('cursorRing');
-      const canvas = document.getElementById('cursorCanvas');
-      const ctx = canvas.getContext('2d');
-
-      function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-      resizeCanvas();
-      window.addEventListener('resize', resizeCanvas);
-
-      let mouseX = window.innerWidth / 2, mouseY = window.innerHeight / 2;
-      let ringX = mouseX, ringY = mouseY;
-      let headX = mouseX, headY = mouseY;
-      let visible = false;
-
-      const POINTS = 22;
-      const pts = Array.from({ length: POINTS }, () => ({ x: mouseX, y: mouseY }));
-
-      window.addEventListener('mousemove', e => {
-        mouseX = e.clientX; mouseY = e.clientY;
-        if (!visible) { ring.classList.add('is-visible'); visible = true; }
-      });
-      document.addEventListener('mouseleave', () => { ring.classList.remove('is-visible'); visible = false; });
-
-      function animate() {
-        ringX += (mouseX - ringX) * 0.13;
-        ringY += (mouseY - ringY) * 0.13;
-        ring.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
-
-        headX += (mouseX - headX) * 0.22;
-        headY += (mouseY - headY) * 0.22;
-        pts.unshift({ x: headX, y: headY });
-        pts.pop();
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        const left = [];
-        const right = [];
-        const maxWidth = 4;
-        for (let i = 0; i < pts.length - 1; i++) {
-          const p0 = pts[i], p1 = pts[i + 1];
-          const dx = p1.x - p0.x, dy = p1.y - p0.y;
-          const len = Math.hypot(dx, dy) || 1;
-          const nx = -dy / len, ny = dx / len;
-          const w = Math.max(0, maxWidth * (1 - i / pts.length));
-          left.push({ x: p0.x + nx * w, y: p0.y + ny * w });
-          right.push({ x: p0.x - nx * w, y: p0.y - ny * w });
-        }
-
-        if (left.length > 1) {
-          ctx.beginPath();
-          ctx.moveTo(left[0].x, left[0].y);
-          for (let i = 1; i < left.length; i++) ctx.lineTo(left[i].x, left[i].y);
-          for (let i = right.length - 1; i >= 0; i--) ctx.lineTo(right[i].x, right[i].y);
-          ctx.closePath();
-
-          const grad = ctx.createLinearGradient(headX, headY, pts[pts.length - 1].x, pts[pts.length - 1].y);
-          grad.addColorStop(0, 'rgba(21,19,15,0.45)');
-          grad.addColorStop(1, 'rgba(21,19,15,0)');
-          ctx.fillStyle = grad;
-          ctx.fill();
-        }
-
-        requestAnimationFrame(animate);
-      }
-      animate();
-
-      const hoverTargets = 'a, button, input, summary, .ticket-stub, label';
-      document.querySelectorAll(hoverTargets).forEach(el => {
-        el.addEventListener('mouseenter', () => ring.classList.add('is-active'));
-        el.addEventListener('mouseleave', () => ring.classList.remove('is-active'));
-      });
-      document.addEventListener('mousedown', () => ring.classList.add('is-down'));
-      document.addEventListener('mouseup', () => ring.classList.remove('is-down'));
+  function renderReviews(reviews) {
+    reviewList.innerHTML = '';
+    if (!reviews.length) {
+      reviewList.innerHTML = '<div class="review-empty">No ratings yet — be the first.</div>';
+      reviewSummary.textContent = 'Be the first to leave a rating.';
+      return;
     }
-  </script>
+    const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
+    reviewSummary.textContent = `${avg} average from ${reviews.length} rating${reviews.length === 1 ? '' : 's'}`;
 
-  <!-- ============================================================
-       RATINGS via Firebase Firestore
-       ------------------------------------------------------------
-       NOTE: This "apiKey" is NOT a secret. Firebase web API keys are
-       public identifiers, not credentials. Real security is handled
-       by your Firestore Rules (set them to allow read+create on the
-       /reviews collection and nothing else).
-       ============================================================ -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    reviews.forEach(r => {
+      const card = document.createElement('div');
+      card.className = 'review-card';
+      const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+      const date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+      const name = r.name ? escapeHtml(r.name) : 'Anonymous';
+      card.innerHTML = `
+        <div class="review-stars">${starsStr}</div>
+        <p>${r.text ? escapeHtml(r.text) : '<span class="review-muted">No comment left.</span>'}</p>
+        <div class="review-meta">${name}${date ? ' · ' + date : ''}</div>
+      `;
+      reviewList.appendChild(card);
+    });
+  }
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
-      authDomain: "gamenest-reviews.firebaseapp.com",
-      projectId: "gamenest-reviews",
-      storageBucket: "gamenest-reviews.firebasestorage.app",
-      messagingSenderId: "480446593066",
-      appId: "1:480446593066:web:97a76d0cf5a1aeb7c7ab53"
-    };
-
-    const starInput = document.getElementById('starInput');
-    const stars = Array.from(starInput.querySelectorAll('.star'));
-    const reviewTextEl = document.getElementById('reviewText');
-    const reviewNameEl = document.getElementById('reviewName');
-    const submitBtn = document.getElementById('submitReview');
-    const reviewNote = document.getElementById('reviewNote');
-    const reviewList = document.getElementById('reviewList');
-    const reviewSummary = document.getElementById('reviewSummary');
-
-    let selectedRating = 0;
-    let db = null;
-
+  async function loadReviews() {
+    if (!db) return;
     try {
-      const app = initializeApp(firebaseConfig);
-      db = getFirestore(app);
+      const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(30));
+      const snap = await getDocs(q);
+      const reviews = snap.docs.map(doc => {
+        const d = doc.data();
+        return { rating: d.rating, text: d.text, name: d.name, createdAt: d.createdAt ? d.createdAt.toMillis() : null };
+      });
+      renderReviews(reviews);
     } catch (err) {
-      reviewNote.textContent = 'Ratings are not connected yet.';
+      reviewList.innerHTML = '<div class="review-empty">Could not load ratings right now.</div>';
     }
+  }
 
-    function paintStars(upTo, className) {
-      stars.forEach(s => s.classList.toggle(className, Number(s.dataset.value) <= upTo));
-    }
-
-    stars.forEach(star => {
-      star.addEventListener('mouseenter', () => paintStars(Number(star.dataset.value), 'hovered'));
-      star.addEventListener('mouseleave', () => paintStars(0, 'hovered'));
-      star.addEventListener('click', () => {
-        selectedRating = Number(star.dataset.value);
-        paintStars(selectedRating, 'selected');
+  submitBtn.addEventListener('click', async () => {
+    if (!selectedRating) { reviewNote.textContent = 'Pick a star rating first.'; return; }
+    if (!db) { reviewNote.textContent = 'Ratings are not connected yet.'; return; }
+    submitBtn.disabled = true;
+    reviewNote.textContent = 'Submitting…';
+    try {
+      await addDoc(collection(db, 'reviews'), {
+        rating: selectedRating,
+        text: reviewTextEl.value.trim().slice(0, 280),
+        name: reviewNameEl.value.trim().slice(0, 40),
+        createdAt: serverTimestamp()
       });
-    });
-
-    function renderReviews(reviews) {
-      reviewList.innerHTML = '';
-      if (!reviews.length) {
-        reviewList.innerHTML = '<div class="review-empty">No ratings yet — be the first.</div>';
-        reviewSummary.textContent = 'Be the first to leave a rating.';
-        return;
-      }
-      const avg = (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1);
-      reviewSummary.textContent = `${avg} average from ${reviews.length} rating${reviews.length === 1 ? '' : 's'}`;
-
-      reviews.forEach(r => {
-        const card = document.createElement('div');
-        card.className = 'review-card';
-        const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-        const date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
-        const name = r.name ? escapeHtml(r.name) : 'Anonymous';
-        card.innerHTML = `
-          <div class="review-stars">${starsStr}</div>
-          <p>${r.text ? escapeHtml(r.text) : '<span class="muted">No comment left.</span>'}</p>
-          <div class="review-meta">${name}${date ? ' · ' + date : ''}</div>
-        `;
-        reviewList.appendChild(card);
-      });
+      reviewNote.textContent = 'Thanks — your rating has been saved.';
+      reviewTextEl.value = '';
+      reviewNameEl.value = '';
+      selectedRating = 0;
+      paintStars(0, 'selected');
+      loadReviews();
+    } catch (err) {
+      reviewNote.textContent = 'Something went wrong — please try again.';
+    } finally {
+      submitBtn.disabled = false;
     }
+  });
 
-    function escapeHtml(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    async function loadReviews() {
-      if (!db) return;
-      try {
-        const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(30));
-        const snap = await getDocs(q);
-        const reviews = snap.docs.map(doc => {
-          const d = doc.data();
-          return {
-            rating: d.rating,
-            text: d.text,
-            name: d.name,
-            createdAt: d.createdAt ? d.createdAt.toMillis() : null
-          };
-        });
-        renderReviews(reviews);
-      } catch (err) {
-        reviewList.innerHTML = '<div class="review-empty">Could not load ratings right now.</div>';
-      }
-    }
-
-    submitBtn.addEventListener('click', async () => {
-      if (!selectedRating) {
-        reviewNote.textContent = 'Pick a star rating first.';
-        return;
-      }
-      if (!db) {
-        reviewNote.textContent = 'Ratings are not connected yet.';
-        return;
-      }
-      submitBtn.disabled = true;
-      reviewNote.textContent = 'Submitting…';
-      try {
-        await addDoc(collection(db, 'reviews'), {
-          rating: selectedRating,
-          text: reviewTextEl.value.trim().slice(0, 280),
-          name: reviewNameEl.value.trim().slice(0, 40),
-          createdAt: serverTimestamp()
-        });
-        reviewNote.textContent = 'Thanks — your rating has been saved.';
-        reviewTextEl.value = '';
-        reviewNameEl.value = '';
-        selectedRating = 0;
-        paintStars(0, 'selected');
-        loadReviews();
-      } catch (err) {
-        reviewNote.textContent = 'Something went wrong — please try again.';
-      } finally {
-        submitBtn.disabled = false;
-      }
-    });
-
-    loadReviews();
-  </script>
+  loadReviews();
+</script>
 </body>
 </html>
