@@ -561,9 +561,18 @@
       if (code)    code.textContent = activeOrderId || "-";
       if (gateway) gateway.textContent = PAYMENTS[activePayment].label;
       if (player)  player.textContent = coUser.value.trim() || "-";
-      closeModal(checkoutModal);
-      if (successModal) openModal(successModal);
-      toast("Order submitted");
+
+      /* SAVE ORDER TO FIREBASE */
+      saveOrderToFirebase().then(() => {
+        closeModal(checkoutModal);
+        if (successModal) openModal(successModal);
+        toast("Order submitted");
+      }).catch(err => {
+        console.error("Save failed:", err);
+        closeModal(checkoutModal);
+        if (successModal) openModal(successModal);
+        toast("Order submitted (offline)");
+      });
     });
   }
 
@@ -713,6 +722,34 @@
     const openEl = $(".modal.open");
     if (openEl) closeModal(openEl);
   });
+
+  /* ============================================================
+     SAVE ORDER TO FIREBASE
+     ============================================================ */
+  async function saveOrderToFirebase(){
+    if (!window.__gn_db){
+      throw new Error("Firebase not ready");
+    }
+    const { collection, addDoc, serverTimestamp } = window.__gn_fs;
+    const pct = getDiscountPct();
+    const base = activeProduct.price;
+    const finalPrice = Math.round(base - (base * pct / 100));
+
+    await addDoc(collection(window.__gn_db, "orders"), {
+      orderId: activeOrderId,
+      name: coUser?.value.trim() || "—",
+      email: coEmail?.value.trim() || "—",
+      phone: coPhone?.value.trim() || "—",
+      country: coCountry?.value || "+20",
+      product: activeProduct.product,
+      price: finalPrice,
+      discount: pct,
+      payment: PAYMENTS[activePayment].label,
+      proofName: proofFile ? proofFile.name : "",
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
+  }
 
   function init(){
     renderAllProducts();
