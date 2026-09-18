@@ -505,7 +505,34 @@
     </div>
   </div>
 </section>
-
+<section id="support" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ SUPPORT_DESK ]</span>
+    <h2 class="sec-title">NEED_HELP?</h2>
+    <p class="sec-sub">OPEN A TICKET — WE REPLY WITHIN 24 HOURS</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="support-form" style="max-width:640px;margin:0 auto;background:var(--panel,#111);border:1px solid var(--border,#222);padding:32px 28px;display:flex;flex-direction:column;gap:18px">
+    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">YOUR_NAME</label>
+      <input id="ticketName" type="text" placeholder="Enter your name" maxlength="60" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">EMAIL_ADDRESS</label>
+      <input id="ticketEmail" type="email" placeholder="you@example.com" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">ORDER_CODE (OPTIONAL)</label>
+      <input id="ticketOrder" type="text" placeholder="GN-XXXXX-XXXXX" maxlength="30" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">MESSAGE</label>
+      <textarea id="ticketMsg" placeholder="Describe your issue..." maxlength="1000" rows="4" style="background:transparent;border:1.5px solid var(--border,#222);color:#fff;padding:12px;outline:none;font-family:inherit;font-size:14px;resize:vertical;min-height:100px"></textarea>
+    </div>
+    <button class="btn" id="submitTicket" type="button">SUBMIT_TICKET</button>
+    <p class="review-note" id="ticketNote" style="font-family:var(--mono,monospace);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#8a8a8a);text-align:center;min-height:1em"></p>
+  </div>
+</section>
 <section id="faq" class="section">
   <div class="sec-head">
     <span class="sec-label">[FAQ // KNOWLEDGE_BASE]</span>
