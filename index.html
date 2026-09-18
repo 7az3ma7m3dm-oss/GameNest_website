@@ -46,6 +46,198 @@
   }
   .promo-row button:hover{background:var(--accent, #fff);color:var(--bg, #0a0a0a)}
 </style>
+  <style>
+  /* ============================================================
+     GAMENEST — Polish Pack v1.0
+     ============================================================ */
+
+  /* Smooth global easing */
+  *, *::before, *::after {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  /* Better scrollbar */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0a0a0a; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #333, #1a1a1a);
+    border: 2px solid #0a0a0a;
+    border-radius: 5px;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #444; }
+
+  /* Better focus rings (accessibility + looks) */
+  :focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Smoother button feedback */
+  .btn, .pcard-btn, .gw-btn, .pay-tab, .icon-btn, .float-btn {
+    transition: transform .22s cubic-bezier(.34, 1.56, .64, 1),
+                background-color .22s ease,
+                color .22s ease,
+                border-color .22s ease,
+                box-shadow .28s ease !important;
+  }
+  .btn:active, .pcard-btn:active, .gw-btn:active,
+  .pay-tab:active, .float-btn:active {
+    transform: scale(.96);
+  }
+
+  /* Product card: springier hover */
+  .pcard-prod {
+    transition: transform .35s cubic-bezier(.34, 1.4, .64, 1),
+                border-color .28s ease,
+                box-shadow .35s ease !important;
+  }
+  .pcard-prod:hover {
+    transform: translateY(-8px) scale(1.015) !important;
+    box-shadow: 0 14px 40px rgba(255, 255, 255, .1),
+                0 0 0 1px rgba(255, 255, 255, .18) !important;
+  }
+  .pcard-prod:hover .pcard-media img {
+    transform: scale(1.1) rotate(-1deg) !important;
+  }
+  .pcard-prod .pcard-media img {
+    transition: transform .55s cubic-bezier(.34, 1.4, .64, 1) !important;
+  }
+
+  /* Card entrance stagger */
+  @keyframes gnCardIn {
+    from { opacity: 0; transform: translateY(20px) scale(.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .pcard-prod {
+    animation: gnCardIn .55s cubic-bezier(.22, 1, .36, 1) both;
+  }
+  .pcard-prod:nth-child(1) { animation-delay: .04s; }
+  .pcard-prod:nth-child(2) { animation-delay: .08s; }
+  .pcard-prod:nth-child(3) { animation-delay: .12s; }
+  .pcard-prod:nth-child(4) { animation-delay: .16s; }
+  .pcard-prod:nth-child(5) { animation-delay: .20s; }
+  .pcard-prod:nth-child(6) { animation-delay: .24s; }
+  .pcard-prod:nth-child(n+7) { animation-delay: .28s; }
+
+  /* Loading skeleton for empty grids */
+  .pgrid:empty,
+  .pgrid:not(:has(.pcard-prod)) {
+    min-height: 260px;
+  }
+  .pgrid:empty::before {
+    content: "";
+    display: block;
+    height: 300px;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(255,255,255,.02) 0%,
+      rgba(255,255,255,.06) 50%,
+      rgba(255,255,255,.02) 100%
+    );
+    background-size: 200% 100%;
+    animation: gnShimmer 1.6s infinite;
+  }
+  @keyframes gnShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+  }
+
+  /* Smooth modal entrance */
+  @keyframes gnModalIn {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  @keyframes gnBackdropIn {
+    from { opacity: 0; backdrop-filter: blur(0px); }
+    to   { opacity: 1; backdrop-filter: blur(10px); }
+  }
+  .modal.open {
+    animation: gnBackdropIn .25s ease forwards;
+  }
+  .modal.open .modal-box {
+    animation: gnModalIn .35s cubic-bezier(.22, 1, .36, 1) both;
+  }
+
+  /* Toast — nicer entrance */
+  @keyframes gnToastIn {
+    from { opacity: 0; transform: translate(-50%, 30px) scale(.92); }
+    to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  }
+  .toast.show {
+    animation: gnToastIn .35s cubic-bezier(.34, 1.56, .64, 1);
+  }
+
+  /* Banner slide-down */
+  @keyframes gnBannerDrop {
+    from { opacity: 0; transform: translateY(-100%); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .gn-banner { animation: gnBannerDrop .5s cubic-bezier(.22, 1, .36, 1); }
+
+  /* Section reveal on scroll */
+  .gn-reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity .7s cubic-bezier(.22, 1, .36, 1),
+                transform .7s cubic-bezier(.22, 1, .36, 1);
+    will-change: opacity, transform;
+  }
+  .gn-reveal.gn-in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Smoother input focus */
+  input, textarea, select {
+    transition: border-color .22s ease, box-shadow .22s ease;
+  }
+  input:focus, textarea:focus, select:focus {
+    box-shadow: 0 1px 0 0 #fff;
+  }
+
+  /* Better hover on nav links */
+  .nav-links a {
+    transition: color .22s ease, transform .22s ease;
+  }
+  .nav-links a:hover {
+    transform: translateY(-1px);
+  }
+
+  /* Floating buttons — pulse ring on hover */
+  .float-btn {
+    position: relative;
+  }
+  .float-btn::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 2px solid currentColor;
+    border-radius: inherit;
+    opacity: 0;
+    transition: opacity .3s ease, transform .3s ease;
+    pointer-events: none;
+  }
+  .float-btn:hover::after {
+    opacity: .35;
+    transform: scale(1.15);
+  }
+
+  /* Reduce motion for accessibility */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .01ms !important;
+    }
+  }
+</style>
 </head>
 <body>
 
@@ -751,6 +943,89 @@
   });
 
   loadReviews();
+</script>
+  <script>
+  /* ============================================================
+     GAMENEST — Smooth reveals + micro-interactions
+     ============================================================ */
+  (function () {
+    "use strict";
+
+    /* 1. Auto-reveal sections on scroll */
+    const revealTargets = document.querySelectorAll(
+      ".section, .pcard, .why-card, .process-grid, .review-form, .gateway, .deal-inner, .final-cta .cta-inner"
+    );
+
+    revealTargets.forEach(el => el.classList.add("gn-reveal"));
+
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add("gn-in");
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+
+      revealTargets.forEach(el => io.observe(el));
+    } else {
+      revealTargets.forEach(el => el.classList.add("gn-in"));
+    }
+
+    /* 2. Re-run reveal check when products are injected */
+    const grids = ["gridVB", "gridCrew", "gridGift"].map(id => document.getElementById(id));
+    grids.forEach(grid => {
+      if (!grid) return;
+      const mo = new MutationObserver(() => {
+        grid.querySelectorAll(".pcard-prod").forEach((card, i) => {
+          card.style.animationDelay = (i * 0.04) + "s";
+        });
+      });
+      mo.observe(grid, { childList: true });
+    });
+
+    /* 3. Smooth scroll for anchor links (fallback for older browsers) */
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener("click", (e) => {
+        const href = a.getAttribute("href");
+        if (href === "#" || href.length < 2) return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+        window.scrollTo({ top, behavior: "smooth" });
+      });
+    });
+
+    /* 4. Subtle parallax on hero marquee */
+    const hero = document.querySelector(".hero");
+    if (hero) {
+      let ticking = false;
+      window.addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          const y = window.pageYOffset;
+          const marquees = hero.querySelectorAll(".marquee");
+          marquees.forEach((m, i) => {
+            m.style.transform = "translateY(" + (y * (0.05 + i * 0.03)) + "px)";
+          });
+          ticking = false;
+        });
+      }, { passive: true });
+    }
+
+    /* 5. Prefetch product images when idle */
+    if ("requestIdleCallback" in window) {
+      requestIdleCallback(() => {
+        ["vbucks.png", "crew.png", "gift.png"].forEach(src => {
+          const img = new Image();
+          img.src = src;
+        });
+      });
+    }
+  })();
 </script>
 </body>
 </html>
