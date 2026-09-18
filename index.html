@@ -615,6 +615,8 @@
        try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
+             window.__gn_db = db;
+    window.__gn_fs = { collection, addDoc, serverTimestamp };
     window.__gn_db = db;
     window.__gn_fs = { collection, addDoc, serverTimestamp };
   } catch (err) {
