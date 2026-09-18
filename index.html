@@ -612,14 +612,19 @@
   let selectedRating = 0;
   let db = null;
 
-       try {
+  try {
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
-             window.__gn_db = db;
-    window.__gn_fs = { collection, addDoc, serverTimestamp };  
+    window.__gn_db = db;
+    window.__gn_fs = { collection, addDoc, serverTimestamp };
+  } catch (err) {
     reviewNote.textContent = 'Ratings are not connected yet.';
   }
-  
+
+  function paintStars(upTo, className) {
+    stars.forEach(s => s.classList.toggle(className, Number(s.dataset.value) <= upTo));
+  }
+
   stars.forEach(star => {
     star.addEventListener('mouseenter', () => paintStars(Number(star.dataset.value), 'hovered'));
     star.addEventListener('mouseleave', () => paintStars(0, 'hovered'));
