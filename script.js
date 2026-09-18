@@ -726,7 +726,7 @@
   /* ============================================================
      SAVE ORDER TO FIREBASE
      ============================================================ */
-  async function saveOrderToFirebase(){
+    async function saveOrderToFirebase(){
     if (!window.__gn_db){
       throw new Error("Firebase not ready");
     }
@@ -734,6 +734,16 @@
     const pct = getDiscountPct();
     const base = activeProduct.price;
     const finalPrice = Math.round(base - (base * pct / 100));
+
+    let proofData = "";
+    if (proofFile && proofFile.size < 800 * 1024) {
+      proofData = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (ev) => resolve(ev.target.result);
+        reader.onerror = () => resolve("");
+        reader.readAsDataURL(proofFile);
+      });
+    }
 
     await addDoc(collection(window.__gn_db, "orders"), {
       orderId: activeOrderId,
@@ -746,6 +756,7 @@
       discount: pct,
       payment: PAYMENTS[activePayment].label,
       proofName: proofFile ? proofFile.name : "",
+      proofData: proofData,
       status: "pending",
       createdAt: serverTimestamp()
     });
