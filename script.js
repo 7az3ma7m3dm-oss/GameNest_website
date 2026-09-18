@@ -1,7 +1,7 @@
 (() => {
   "use strict";
 
-  const PRODUCTS = [
+  let PRODUCTS = [
     { id:"vb-800",   kind:"vb",   img:"vbucks.png", product:"800 V-Bucks",               price:199  },
     { id:"vb-2400",  kind:"vb",   img:"vbucks.png", product:"2400 V-Bucks",              price:479  },
     { id:"vb-4500",  kind:"vb",   img:"vbucks.png", product:"4500 V-Bucks",              price:759  },
@@ -31,7 +31,7 @@
     telda:    { label:"TELDA",         value:"@itzadam",       link:"" }
   };
 
-  const HOLDER = "Adam Mohamed Omar";
+  let HOLDER = "Adam Mohamed Omar";
   const HANDLE = "@GamenestGifts";
 
   let activeProduct = null;
@@ -39,6 +39,7 @@
   let activeOrderId = null;
   let toastTimer = null;
   let proofFile = null;
+  let appliedPromo = null;
 
   const $  = (s, r=document) => r.querySelector(s);
   const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -83,6 +84,108 @@
     toastTimer = setTimeout(() => el.classList.remove("show"), 1900);
   }
 
+  /* ============================================================
+     FIRESTORE FETCHES
+     ============================================================ */
+  async function loadProductsFromFirestore(){
+    if (!window.__gn_db) return;
+    try {
+      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const snap = await getDocs(collection(window.__gn_db, "products"));
+      if (snap.empty) return;
+      const fromDb = [];
+      snap.docs.forEach(d => {
+        const p = d.data();
+        if (p.status === "disabled") return;
+        fromDb.push({
+          id: d.id,
+          product: p.product || d.id,
+          price: Number(p.price) || 0,
+          kind: p.kind || "vb",
+          img: p.img || "vbucks.png"
+        });
+      });
+      if (fromDb.length) PRODUCTS = fromDb;
+    } catch (e) {
+      console.warn("Products fetch failed, using defaults:", e);
+    }
+  }
+
+  async function loadSettings(){
+    if (!window.__gn_db) return;
+    try {
+      const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+      /* Payment info */
+      const paySnap = await getDoc(doc(window.__gn_db, "settings", "payment"));
+      if (paySnap.exists()){
+        const d = paySnap.data();
+        if (d.vodafone) PAYMENTS.vodafone.value = d.vodafone;
+        if (d.instapay) PAYMENTS.instapay.value = d.instapay;
+        if (d.telda)    PAYMENTS.telda.value    = d.telda;
+        if (d.holder)   HOLDER = d.holder;
+      }
+
+      /* Social links */
+      const socSnap = await getDoc(doc(window.__gn_db, "settings", "social"));
+      if (socSnap.exists()){
+        const d = socSnap.data();
+        const ig = document.querySelector('.float-btn[href*="instagram"]');
+        const dc = document.querySelector('.float-btn[href*="discord"]');
+        if (ig && d.instagram) ig.href = d.instagram;
+        if (dc && d.discord)   dc.href = d.discord;
+      }
+
+      /* Banner */
+      const banSnap = await getDoc(doc(window.__gn_db, "settings", "banner"));
+      if (banSnap.exists() && banSnap.data().on && banSnap.data().text){
+        showBanner(banSnap.data());
+      }
+
+      /* Maintenance mode */
+      const mainSnap = await getDoc(doc(window.__gn_db, "settings", "maintenance"));
+      if (mainSnap.exists() && mainSnap.data().on === true){
+        showMaintenance();
+        return true;
+      }
+    } catch (e) {
+      console.warn("Settings load failed:", e);
+    }
+    return false;
+  }
+
+  function showBanner(data){
+    let banner = document.getElementById("gnBanner");
+    if (!banner){
+      banner = document.createElement("div");
+      banner.id = "gnBanner";
+      banner.className = "gn-banner";
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+    banner.innerHTML = '<span class="gn-banner-dot"></span><span>' + (data.text || "") + '</span>';
+    banner.style.display = "flex";
+    if (data.link){
+      banner.style.cursor = "pointer";
+      banner.onclick = () => window.location.href = data.link;
+    }
+  }
+
+  function showMaintenance(){
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0a0a;color:#fff;font-family:ui-monospace,monospace;text-align:center;padding:20px">
+        <div>
+          <div style="font-size:4rem;margin-bottom:20px">🚧</div>
+          <h1 style="font-size:1.8rem;letter-spacing:.3em;margin-bottom:20px;text-transform:uppercase">Maintenance</h1>
+          <p style="color:#8a8a8a;font-size:14px;letter-spacing:.1em;max-width:400px;margin:0 auto">
+            We'll be right back. Come check us out soon!
+          </p>
+        </div>
+      </div>`;
+  }
+
+  /* ============================================================
+     PRODUCT RENDERING
+     ============================================================ */
   function buildCardHTML(p){
     const isFav = getFavs().some(f => f.id === p.id);
     const tag = p.kind === "vb" ? "// FORTNITE | V-BUCKS" : p.kind === "crew" ? "// FORTNITE | CREW" : "// FORTNITE | GIFTS";
@@ -292,6 +395,7 @@
     if (!checkoutModal || !activeProduct) return;
     closeModal(productModal);
     if (coTitle) coTitle.textContent = activeProduct.product;
+    appliedPromo = null;
     updateDiscountBar();
     updateTotals();
     updatePaymentUI();
@@ -300,13 +404,22 @@
     setTimeout(() => coUser && coUser.focus(), 220);
   }
 
+  function calcPromoDiscount(basePrice){
+    if (!appliedPromo) return 0;
+    if (appliedPromo.type === "percent") return Math.round(basePrice * appliedPromo.value / 100);
+    return Math.min(appliedPromo.value, basePrice);
+  }
+
   function updateTotals(){
     if (!activeProduct) return;
     const base = activeProduct.price;
     const pct = getDiscountPct();
-    const finalPrice = base - (base * pct / 100);
+    const tierDiscount = Math.round(base * pct / 100);
+    const promoDiscount = calcPromoDiscount(base - tierDiscount);
+    const finalPrice = base - tierDiscount - promoDiscount;
     if (coSubtotal) coSubtotal.textContent = fmt(base) + " EGP";
-    if (coTotal) coTotal.textContent = fmt(Math.round(finalPrice)) + " EGP";
+    if (coTotal) coTotal.textContent = fmt(Math.max(0, finalPrice)) + " EGP" +
+      (promoDiscount ? " (-" + fmt(promoDiscount) + " promo)" : "");
   }
 
   function getCartCount(){
@@ -368,6 +481,35 @@
     });
   });
 
+  async function applyPromoCode(){
+    const input = $("#promoInput");
+    if (!input) return;
+    const code = input.value.trim().toUpperCase();
+    if (!code){ toast("Enter a code first"); return; }
+    if (!window.__gn_db){ toast("Promo system offline"); return; }
+
+    try {
+      const { doc, getDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const snap = await getDoc(doc(window.__gn_db, "promotions", code));
+      if (!snap.exists()){ toast("Invalid code"); return; }
+      const p = snap.data();
+      if (p.status === "disabled"){ toast("Code disabled"); return; }
+      if (p.expires && new Date(p.expires) < new Date()){ toast("Code expired"); return; }
+      if (p.maxUses && (p.uses || 0) >= p.maxUses){ toast("Code used up"); return; }
+
+      appliedPromo = { code, type: p.type || "percent", value: Number(p.value) || 0 };
+      toast("✓ Code applied: " + code);
+      updateTotals();
+      updateCheckoutPreview();
+
+      try {
+        await updateDoc(doc(window.__gn_db, "promotions", code), { uses: increment(1) });
+      } catch(e){ console.warn("Increment failed:", e); }
+    } catch (e) {
+      toast("Promo error: " + e.message);
+    }
+  }
+
   function buildTicket(){
     if (!activeProduct || !activeOrderId) return "";
     const user = (coUser && coUser.value.trim()) || "-";
@@ -377,7 +519,9 @@
     const pay = PAYMENTS[activePayment];
     const pct = getDiscountPct();
     const base = activeProduct.price;
-    const finalPrice = Math.round(base - (base * pct / 100));
+    const tierDiscount = Math.round(base * pct / 100);
+    const promoDiscount = calcPromoDiscount(base - tierDiscount);
+    const finalPrice = Math.max(0, Math.round(base - tierDiscount - promoDiscount));
     const proof = proofFile ? proofFile.name : "to attach in DM";
 
     return [
@@ -388,7 +532,7 @@
       "Email: " + email,
       "Phone: " + country + " " + phone,
       "Product: " + activeProduct.product,
-      "Price: " + fmt(finalPrice) + " EGP" + (pct ? " (" + pct + "% off applied)" : ""),
+      "Price: " + fmt(finalPrice) + " EGP" + (pct ? " (" + pct + "% off)" : "") + (appliedPromo ? " (promo " + appliedPromo.code + ")" : ""),
       "",
       "Payment Method: " + pay.label,
       "Pay to: " + pay.value,
@@ -562,7 +706,6 @@
       if (gateway) gateway.textContent = PAYMENTS[activePayment].label;
       if (player)  player.textContent = coUser.value.trim() || "-";
 
-      /* SAVE ORDER TO FIREBASE */
       saveOrderToFirebase().then(() => {
         closeModal(checkoutModal);
         if (successModal) openModal(successModal);
@@ -585,6 +728,7 @@
       if (coPhone) coPhone.value = "";
       if (coReference) coReference.textContent = "-";
       proofFile = null;
+      appliedPromo = null;
       if (proofUpload) proofUpload.value = "";
       if (proofPreview){ proofPreview.src = ""; proofPreview.hidden = true; }
       if (proofRemove) proofRemove.hidden = true;
@@ -723,17 +867,18 @@
     if (openEl) closeModal(openEl);
   });
 
-  /* ============================================================
-     SAVE ORDER TO FIREBASE
-     ============================================================ */
-    async function saveOrderToFirebase(){
-    if (!window.__gn_db){
-      throw new Error("Firebase not ready");
-    }
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "promoApplyBtn") applyPromoCode();
+  });
+
+  async function saveOrderToFirebase(){
+    if (!window.__gn_db) throw new Error("Firebase not ready");
     const { collection, addDoc, serverTimestamp } = window.__gn_fs;
     const pct = getDiscountPct();
     const base = activeProduct.price;
-    const finalPrice = Math.round(base - (base * pct / 100));
+    const tierDiscount = Math.round(base * pct / 100);
+    const promoDiscount = calcPromoDiscount(base - tierDiscount);
+    const finalPrice = Math.max(0, Math.round(base - tierDiscount - promoDiscount));
 
     let proofData = "";
     if (proofFile && proofFile.size < 800 * 1024) {
@@ -754,6 +899,8 @@
       product: activeProduct.product,
       price: finalPrice,
       discount: pct,
+      promoCode: appliedPromo ? appliedPromo.code : "",
+      promoDiscount: promoDiscount,
       payment: PAYMENTS[activePayment].label,
       proofName: proofFile ? proofFile.name : "",
       proofData: proofData,
@@ -762,7 +909,10 @@
     });
   }
 
-  function init(){
+  async function init(){
+    const underMaintenance = await loadSettings();
+    if (underMaintenance) return;
+    await loadProductsFromFirestore();
     renderAllProducts();
     updateBadges();
     renderCart();
