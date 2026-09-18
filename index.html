@@ -7,6 +7,45 @@
 <title>GAMENEST | Fortnite V-Bucks, Crew &amp; Gifts — Instant Delivery</title>
 <meta name="description" content="GAMENEST — Fortnite V-Bucks, Crew subscriptions and Gifts. Instant delivery, best prices in Egypt.">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* Banner injected by script.js */
+  .gn-banner{
+    display:none;align-items:center;justify-content:center;gap:12px;
+    background:linear-gradient(90deg,#ffffff,#e0e0e0);
+    color:#0a0a0a;padding:12px 20px;
+    font-family:var(--mono,ui-monospace,monospace);
+    font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
+    text-align:center;position:relative;z-index:100;
+    box-shadow:0 4px 20px rgba(255,255,255,.15);
+  }
+  .gn-banner-dot{
+    width:8px;height:8px;border-radius:50%;background:#0a0a0a;
+    animation:gnPulse 1.6s infinite;
+  }
+  @keyframes gnPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+
+  /* Promo row inside checkout */
+  .promo-row{
+    display:flex;gap:8px;margin-top:8px;
+  }
+  .promo-row input{
+    flex:1;background:transparent;
+    border:1px solid var(--border-2, #2a2a2a);
+    color:var(--text, #f2f2f2);padding:10px 12px;
+    font-family:var(--mono,ui-monospace,monospace);font-size:12px;
+    letter-spacing:.1em;text-transform:uppercase;outline:none;
+    transition:.2s;
+  }
+  .promo-row input:focus{border-color:var(--accent, #fff)}
+  .promo-row button{
+    padding:10px 16px;border:1px solid var(--accent, #fff);
+    background:transparent;color:var(--accent, #fff);
+    font-family:var(--mono,ui-monospace,monospace);font-size:10px;
+    font-weight:800;letter-spacing:.14em;text-transform:uppercase;
+    cursor:pointer;transition:.2s;white-space:nowrap;
+  }
+  .promo-row button:hover{background:var(--accent, #fff);color:var(--bg, #0a0a0a)}
+</style>
 </head>
 <body>
 
@@ -303,7 +342,7 @@
 
 </main>
 
-<!-- ==================== PRODUCT MODAL ==================== -->
+<!-- PRODUCT MODAL -->
 <div class="modal" id="productModal" aria-hidden="true">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-box modal-detail">
@@ -347,7 +386,7 @@
   </div>
 </div>
 
-<!-- ==================== CHECKOUT MODAL ==================== -->
+<!-- CHECKOUT MODAL -->
 <div class="modal" id="checkoutModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-checkout></div>
   <div class="modal-box modal-checkout">
@@ -373,7 +412,13 @@
         <div class="co-line"><span>PROCESSING:</span><span>INSTANT</span></div>
         <div class="co-total"><span>TOTAL_DUE :</span><b id="coTotal">—</b></div>
 
-        <div class="co-label">// CHOOSE_PAYMENT</div>
+        <div class="co-label">// HAVE_A_PROMO_CODE?</div>
+        <div class="promo-row">
+          <input id="promoInput" type="text" placeholder="ENTER CODE" maxlength="20" autocomplete="off" style="text-transform:uppercase">
+          <button id="promoApplyBtn" type="button">APPLY</button>
+        </div>
+
+        <div class="co-label" style="margin-top:18px">// CHOOSE_PAYMENT</div>
         <div class="pay-tabs">
           <button class="pay-tab active" data-pay="vodafone" type="button">
             <img src="vodafone.webp" alt="" class="pay-tab-icon" onerror="this.style.display='none'">
@@ -472,7 +517,7 @@
   </div>
 </div>
 
-<!-- ==================== SUCCESS MODAL ==================== -->
+<!-- SUCCESS MODAL -->
 <div class="modal" id="successModal" aria-hidden="true">
   <div class="modal-backdrop"></div>
   <div class="modal-box modal-success">
@@ -493,7 +538,7 @@
   </div>
 </div>
 
-<!-- ==================== CART MODAL ==================== -->
+<!-- CART MODAL -->
 <div class="modal" id="cartModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-cart></div>
   <div class="modal-box modal-cart">
@@ -507,7 +552,7 @@
   </div>
 </div>
 
-<!-- ==================== FAV MODAL ==================== -->
+<!-- FAV MODAL -->
 <div class="modal" id="favModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-fav></div>
   <div class="modal-box modal-cart">
@@ -517,7 +562,7 @@
   </div>
 </div>
 
-<!-- ==================== SEARCH MODAL ==================== -->
+<!-- SEARCH MODAL -->
 <div class="modal" id="searchModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-search></div>
   <div class="modal-box modal-search">
