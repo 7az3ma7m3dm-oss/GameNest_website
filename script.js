@@ -921,5 +921,53 @@
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
+  /* ============================================================
+     SUPPORT TICKET SUBMISSION
+     ============================================================ */
+  const submitTicketBtn = $("#submitTicket");
+  if (submitTicketBtn){
+    submitTicketBtn.addEventListener("click", async () => {
+      const name = ($("#ticketName") && $("#ticketName").value.trim()) || "";
+      const email = ($("#ticketEmail") && $("#ticketEmail").value.trim()) || "";
+      const order = ($("#ticketOrder") && $("#ticketOrder").value.trim()) || "";
+      const msg = ($("#ticketMsg") && $("#ticketMsg").value.trim()) || "";
+      const note = $("#ticketNote");
 
+      if (!name || !email || !msg){
+        if (note) note.textContent = "! Fill in name, email, and message.";
+        return;
+      }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+        if (note) note.textContent = "! Enter a valid email address.";
+        return;
+      }
+      if (!window.__gn_db){
+        if (note) note.textContent = "! Support system offline. Try again later.";
+        return;
+      }
+
+      submitTicketBtn.disabled = true;
+      if (note) note.textContent = "Submitting...";
+
+      try {
+        const { collection, addDoc, serverTimestamp } = window.__gn_fs;
+        await addDoc(collection(window.__gn_db, "support"), {
+          name, email,
+          order: order || "",
+          message: msg,
+          status: "open",
+          createdAt: serverTimestamp()
+        });
+        if (note) note.textContent = "✓ Ticket submitted — we'll reply by email.";
+        ["ticketName", "ticketEmail", "ticketOrder", "ticketMsg"].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = "";
+        });
+      } catch (e) {
+        if (note) note.textContent = "! Error: " + e.message;
+      } finally {
+        submitTicketBtn.disabled = false;
+      }
+    });
+  }
 })();
