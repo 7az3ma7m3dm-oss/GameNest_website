@@ -533,7 +533,23 @@
     <p class="review-note" id="ticketNote" style="font-family:var(--mono,monospace);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#8a8a8a);text-align:center;min-height:1em"></p>
   </div>
 </section>
-<section id="faq" class="section">
+<section id="track" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ ORDER_LOOKUP ]</span>
+    <h2 class="sec-title">TRACK_ORDER</h2>
+    <p class="sec-sub">ENTER YOUR ORDER CODE TO SEE LIVE STATUS</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div style="max-width:560px;margin:0 auto">
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <input id="trackInput" type="text" placeholder="GN-XXXXX-XXXXX" autocomplete="off" style="flex:1;min-width:220px;background:#111;border:1px solid #2a2a2a;color:#fff;padding:14px 16px;font-family:ui-monospace,monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;outline:none">
+      <button id="trackBtn" type="button" style="padding:14px 28px;background:#fff;color:#0a0a0a;border:1px solid #fff;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:.2s">TRACK</button>
+    </div>
+    <div id="trackResult" style="margin-top:22px"></div>
+  </div>
+</section>
+
+  <section id="faq" class="section">
   <div class="sec-head">
     <span class="sec-label">[FAQ // KNOWLEDGE_BASE]</span>
     <h2 class="sec-title">SYSTEM_FAQ</h2>
@@ -1055,6 +1071,97 @@
       });
     }
   })();
-</script>
+/* ============================================================
+   ORDER TRACKING
+   ============================================================ */
+const STATUS_LABELS = {
+  pending:    "Pending Payment Review",
+  paid:       "Payment Approved",
+  processing: "Being Processed",
+  delivered:  "Delivered",
+  rejected:   "Rejected",
+  refunded:   "Refunded"
+};
+
+async function trackOrder(){
+  const input = document.getElementById("trackInput");
+  const result = document.getElementById("trackResult");
+  const btn = document.getElementById("trackBtn");
+  if (!input || !result || !btn) return;
+
+  const code = input.value.trim().toUpperCase();
+  if (!code){ result.innerHTML = '<div style="color:#ffb454;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Enter your order code first</div>'; return; }
+  if (!window.__gn_db){ result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Tracking offline</div>'; return; }
+
+  btn.disabled = true;
+  btn.textContent = "SEARCHING...";
+  result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">Searching...</div>';
+
+  try {
+    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const q = query(collection(window.__gn_db, "orders"), where("orderId", "==", code));
+    const snap = await getDocs(q);
+
+    if (snap.empty){
+      result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:20px;border:1px dashed #2a2a2a">✕ Order not found — double-check your code or contact support</div>';
+      return;
+    }
+
+    const o = snap.docs[0].data();
+    const status = o.status || "pending";
+    const steps = ["pending", "paid", "processing", "delivered"];
+    const currentIdx = steps.indexOf(status);
+    const isFailed = status === "rejected" || status === "refunded";
+    const dateStr = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString("en-GB", {day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
+
+    result.innerHTML = `
+      <div style="background:#111;border:1px solid #2a2a2a;padding:26px 24px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #222">
+          <div>
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">ORDER_CODE</div>
+            <div style="font-family:ui-monospace,monospace;font-size:15px;font-weight:900;color:#fff;letter-spacing:.1em">${o.orderId || code}</div>
+            <div style="font-size:13px;color:#8a8a8a;margin-top:6px">${o.product || "—"}</div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">STATUS</div>
+            <div style="font-family:ui-monospace,monospace;font-size:12px;font-weight:800;padding:6px 14px;border:1px solid;letter-spacing:.14em;text-transform:uppercase;${isFailed ? "color:#ff4a4a;border-color:#ff4a4a;background:rgba(255,74,74,.08)" : status === "delivered" ? "color:#5fc85f;border-color:#5fc85f;background:rgba(95,200,95,.08)" : status === "pending" ? "color:#ffb454;border-color:#ffb454;background:rgba(255,180,84,.08)" : "color:#5fc8ff;border-color:#5fc8ff;background:rgba(95,200,255,.08)"}">${STATUS_LABELS[status] || status}</div>
+          </div>
+        </div>
+
+        ${isFailed ? "" : `
+        <div style="display:flex;justify-content:space-between;position:relative;margin-bottom:24px;padding:0 4px">
+          ${steps.map((s, i) => `
+            <div style="flex:1;text-align:center;position:relative">
+              <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${i <= currentIdx ? "#fff" : "#2a2a2a"};background:${i <= currentIdx ? "#fff" : "#111"};margin:0 auto 8px;position:relative;z-index:2"></div>
+              ${i < steps.length - 1 ? `<div style="position:absolute;top:10px;left:50%;right:-50%;height:2px;background:${i < currentIdx ? "#fff" : "#2a2a2a"};z-index:1"></div>` : ""}
+              <div style="font-family:ui-monospace,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${i <= currentIdx ? "#fff" : "#4a4a4a"};line-height:1.3">${STATUS_LABELS[s]}</div>
+            </div>
+          `).join("")}
+        </div>
+        `}
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+          <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">PLACED</span><div style="font-family:ui-monospace,monospace;color:#d8d8d8;margin-top:4px">${dateStr}</div></div>
+          <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">AMOUNT</span><div style="font-family:ui-monospace,monospace;color:#fff;font-weight:800;margin-top:4px">${(o.price || 0).toLocaleString("en-US")} EGP</div></div>
+        </div>
+
+        ${status === "delivered" ? '<div style="margin-top:18px;padding:12px;background:rgba(95,200,95,.06);border-left:3px solid #5fc85f;font-size:12px;color:#d8d8d8">✓ Delivered — check your Fortnite account</div>' : ""}
+        ${status === "pending" ? '<div style="margin-top:18px;padding:12px;background:rgba(255,180,84,.06);border-left:3px solid #ffb454;font-size:12px;color:#d8d8d8">⏱ Payment pending review — usually approved within 30 minutes</div>' : ""}
+      </div>
+    `;
+  } catch(e){
+    result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:16px">⚠ ' + e.message + '</div>';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "TRACK";
+  }
+}
+
+const trackBtn = document.getElementById("trackBtn");
+if (trackBtn) trackBtn.addEventListener("click", trackOrder);
+const trackInput = document.getElementById("trackInput");
+if (trackInput) trackInput.addEventListener("keypress", (e) => { if (e.key === "Enter") trackOrder(); });
+
+  </script>
 </body>
 </html>
