@@ -1,6 +1,9 @@
 (() => {
   "use strict";
 
+  /* ============================================================
+     FALLBACK PRODUCTS
+     ============================================================ */
   let PRODUCTS = [
     { id:"vb-800",   kind:"vb",   img:"vbucks.png", product:"800 V-Bucks",               price:199  },
     { id:"vb-2400",  kind:"vb",   img:"vbucks.png", product:"2400 V-Bucks",              price:479  },
@@ -20,9 +23,10 @@
   ];
 
   const DESC = {
-    vb:   { en:"Top up your Fortnite wallet with pure V-Bucks. Delivered straight to your Epic Games account in minutes." },
-    crew: { en:"Fortnite Crew subscription - monthly V-Bucks, a Crew Pack, and the current Battle Pass included." },
-    gift: { en:"Send a gift directly to any Fortnite friend's account. Perfect for birthdays and surprises." }
+    vb:   "Top up your Fortnite wallet with pure V-Bucks. Delivered straight to your Epic Games account in minutes.",
+    crew: "Fortnite Crew subscription — monthly V-Bucks, a Crew Pack, and the current Battle Pass included.",
+    gift: "Send a gift directly to any Fortnite friend's account. Perfect for birthdays and surprises.",
+    bundle: "Bundle deal — multiple items combined at a discounted price."
   };
 
   const PAYMENTS = {
@@ -45,6 +49,9 @@
   const $$ = (s, r=document) => [...r.querySelectorAll(s)];
   const fmt = (n) => Number(n).toLocaleString("en-US");
 
+  /* ============================================================
+     STORAGE
+     ============================================================ */
   const Storage = {
     get(k, f){ try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : f; } catch { return f; } },
     set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
@@ -85,7 +92,17 @@
   }
 
   /* ============================================================
-     FIRESTORE FETCHES
+     PRICE HELPERS
+     ============================================================ */
+  function priceOf(p){ return Number(p.salePrice || p.price || 0); }
+  function hasDeal(p){ return p.salePrice && Number(p.salePrice) < Number(p.price); }
+  function discountPct(p){
+    if (!hasDeal(p)) return 0;
+    return Math.round((1 - Number(p.salePrice)/Number(p.price)) * 100);
+  }
+
+  /* ============================================================
+     FIRESTORE
      ============================================================ */
   async function loadProductsFromFirestore(){
     if (!window.__gn_db) return;
@@ -101,22 +118,24 @@
           id: d.id,
           product: p.product || d.id,
           price: Number(p.price) || 0,
+          salePrice: p.salePrice ? Number(p.salePrice) : 0,
           kind: p.kind || "vb",
-          img: p.img || "vbucks.png"
+          img: p.img || "vbucks.png",
+          bundle: p.bundle === true || p.kind === "bundle",
+          bundleItems: p.bundleItems || ""
         });
       });
       if (fromDb.length) PRODUCTS = fromDb;
     } catch (e) {
-      console.warn("Products fetch failed, using defaults:", e);
+      console.warn("Products fetch failed:", e);
     }
   }
 
   async function loadSettings(){
-    if (!window.__gn_db) return;
+    if (!window.__gn_db) return false;
     try {
       const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
 
-      /* Payment info */
       const paySnap = await getDoc(doc(window.__gn_db, "settings", "payment"));
       if (paySnap.exists()){
         const d = paySnap.data();
@@ -126,7 +145,6 @@
         if (d.holder)   HOLDER = d.holder;
       }
 
-      /* Social links */
       const socSnap = await getDoc(doc(window.__gn_db, "settings", "social"));
       if (socSnap.exists()){
         const d = socSnap.data();
@@ -136,13 +154,11 @@
         if (dc && d.discord)   dc.href = d.discord;
       }
 
-      /* Banner */
       const banSnap = await getDoc(doc(window.__gn_db, "settings", "banner"));
       if (banSnap.exists() && banSnap.data().on && banSnap.data().text){
         showBanner(banSnap.data());
       }
 
-      /* Maintenance mode */
       const mainSnap = await getDoc(doc(window.__gn_db, "settings", "maintenance"));
       if (mainSnap.exists() && mainSnap.data().on === true){
         showMaintenance();
@@ -184,14 +200,29 @@
   }
 
   /* ============================================================
-     PRODUCT RENDERING
+     CARD RENDERING
      ============================================================ */
   function buildCardHTML(p){
     const isFav = getFavs().some(f => f.id === p.id);
-    const tag = p.kind === "vb" ? "// FORTNITE | V-BUCKS" : p.kind === "crew" ? "// FORTNITE | CREW" : "// FORTNITE | GIFTS";
-    return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + p.price + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
+    const tag = p.kind === "vb" ? "// FORTNITE | V-BUCKS"
+              : p.kind === "crew" ? "// FORTNITE | CREW"
+              : p.kind === "bundle" ? "// BUNDLE"
+              : "// FORTNITE | GIFTS";
+    const deal = hasDeal(p);
+    const pct = discountPct(p);
+
+    const priceHTML = deal
+      ? '<div class="pcard-price"><s style="color:#4a4a4a;font-family:ui-monospace,monospace;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
+      : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
+
+    const dealBadge = deal
+      ? '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '% OFF</div>'
+      : '';
+
+    return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
       '<div class="pcard-media">' +
         '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+        dealBadge +
         '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
           '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
             '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
@@ -201,7 +232,7 @@
       '<div class="pcard-info">' +
         '<div class="pcard-tag">' + tag + '</div>' +
         '<h3 class="pcard-title">' + p.product + '</h3>' +
-        '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>' +
+        priceHTML +
         '<div class="pcard-actions">' +
           '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
           '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
@@ -237,6 +268,142 @@
     });
   }
 
+  /* ============================================================
+     BEST SELLERS
+     ============================================================ */
+  async function loadBestSellers(){
+    const grid = document.getElementById("gridBest");
+    if (!grid) return;
+
+    let items = [];
+
+    if (window.__gn_db){
+      try {
+        const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const snap = await getDocs(collection(window.__gn_db, "orders"));
+        const counts = {};
+        snap.docs.forEach(d => {
+          const o = d.data();
+          const key = o.product || "";
+          if (!key) return;
+          counts[key] = (counts[key] || 0) + 1;
+        });
+        const top = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0,4).map(([name]) => name);
+        top.forEach(name => {
+          const p = PRODUCTS.find(x => x.product === name);
+          if (p) items.push(p);
+        });
+      } catch(e){ console.warn("Best sellers fetch failed:", e); }
+    }
+
+    if (!items.length){
+      ["800 V-Bucks", "2400 V-Bucks", "Fortnite Crew - 1 Month", "500 V-Bucks Gift"].forEach(name => {
+        const p = PRODUCTS.find(x => x.product === name);
+        if (p) items.push(p);
+      });
+    }
+
+    if (!items.length) items = PRODUCTS.slice(0, 4);
+
+    grid.innerHTML = items.slice(0, 4).map(p => {
+      const tag = p.kind === "vb" ? "// V-BUCKS" : p.kind === "crew" ? "// CREW" : "// GIFT";
+      const isFav = getFavs().some(f => f.id === p.id);
+      const deal = hasDeal(p);
+      const pct = discountPct(p);
+
+      const priceHTML = deal
+        ? '<div class="pcard-price"><s style="color:#4a4a4a;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
+        : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
+
+      return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
+        '<div class="pcard-media">' +
+          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+          '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🔥 HOT</div>' +
+          (deal ? '<div style="position:absolute;top:10px;right:52px;background:#ffb454;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '%</div>' : '') +
+          '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
+            '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
+              '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
+            '</svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="pcard-info">' +
+          '<div class="pcard-tag">' + tag + '</div>' +
+          '<h3 class="pcard-title">' + p.product + '</h3>' +
+          priceHTML +
+          '<div class="pcard-actions">' +
+            '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
+            '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+
+    bindCards();
+  }
+
+  /* ============================================================
+     DEALS
+     ============================================================ */
+  function renderDeals(){
+    const grid = document.getElementById("gridDeals");
+    if (!grid) return;
+    const deals = PRODUCTS.filter(hasDeal);
+    const section = document.getElementById("deals-section");
+    if (!deals.length){
+      if (section) section.style.display = "none";
+      return;
+    }
+    if (section) section.style.display = "";
+    grid.innerHTML = deals.map(buildCardHTML).join("");
+    bindCards();
+  }
+
+  /* ============================================================
+     BUNDLES
+     ============================================================ */
+  function renderBundles(){
+    const grid = document.getElementById("gridBundles");
+    if (!grid) return;
+    const bundles = PRODUCTS.filter(p => p.bundle);
+    const section = document.getElementById("bundles-section");
+    if (!bundles.length){
+      if (section) section.style.display = "none";
+      return;
+    }
+    if (section) section.style.display = "";
+    grid.innerHTML = bundles.map(p => {
+      const isFav = getFavs().some(f => f.id === p.id);
+      const deal = hasDeal(p);
+      const pct = discountPct(p);
+      const priceHTML = deal
+        ? '<div class="pcard-price"><s style="color:#4a4a4a;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
+        : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
+      return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
+        '<div class="pcard-media">' +
+          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+          '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🎁 BUNDLE</div>' +
+          (deal ? '<div style="position:absolute;top:10px;right:52px;background:#ffb454;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '%</div>' : '') +
+          '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
+            '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>' +
+          '</button>' +
+        '</div>' +
+        '<div class="pcard-info">' +
+          '<div class="pcard-tag">// BUNDLE' + (p.bundleItems ? ' · ' + p.bundleItems : '') + '</div>' +
+          '<h3 class="pcard-title">' + p.product + '</h3>' +
+          priceHTML +
+          '<div class="pcard-actions">' +
+            '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
+            '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+    bindCards();
+  }
+
+  /* ============================================================
+     BADGES
+     ============================================================ */
   function updateBadges(){
     const cc = getCart().reduce((s,i) => s + (i.qty||1), 0);
     const fc = getFavs().length;
@@ -253,7 +420,7 @@
     const cart = getCart();
     const f = cart.find(i => i.id === id);
     if (f) f.qty = (f.qty||1) + 1;
-    else cart.push({ id:p.id, product:p.product, price:p.price, kind:p.kind, img:p.img, qty:1 });
+    else cart.push({ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img, qty:1 });
     setCart(cart);
     toast("Added to cart");
   }
@@ -294,7 +461,7 @@
     const p = findProduct(id);
     if (!p) return;
     if (idx > -1){ favs.splice(idx, 1); toast("Removed from favorites"); }
-    else { favs.push({ id:p.id, product:p.product, price:p.price, kind:p.kind, img:p.img }); toast("Added to favorites"); }
+    else { favs.push({ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img }); toast("Added to favorites"); }
     setFavs(favs);
     renderAllProducts();
   }
@@ -327,6 +494,9 @@
     });
   }
 
+  /* ============================================================
+     MODALS
+     ============================================================ */
   function openModal(m){
     if (!m) return;
     m.classList.add("open");
@@ -356,11 +526,49 @@
     };
     activeOrderId = makeOrderId();
     if (detailTitle) detailTitle.textContent = activeProduct.product;
-    if (detailDesc)  detailDesc.textContent  = (DESC[activeProduct.kind]||DESC.vb).en;
+    if (detailDesc)  detailDesc.textContent  = DESC[activeProduct.kind] || DESC.vb;
     if (detailPrice) detailPrice.textContent = fmt(activeProduct.price) + " ";
     if (detailCode)  detailCode.textContent  = activeProduct.kind.toUpperCase() + " // " + activeOrderId;
     if (detailImg)   detailImg.src = activeProduct.img;
+
+    renderRelated(activeProduct);
     openModal(productModal);
+  }
+
+  function renderRelated(current){
+    const wrap = document.getElementById("relatedWrap");
+    const grid = document.getElementById("relatedGrid");
+    if (!wrap || !grid) return;
+
+    const related = PRODUCTS
+      .filter(p => p.id !== current.id && (p.kind === current.kind || p.bundle))
+      .slice(0, 3);
+
+    if (related.length === 0){ wrap.style.display = "none"; return; }
+    wrap.style.display = "";
+
+    grid.innerHTML = related.map(p => {
+      return '<article class="pcard-prod" data-id="' + p.id + '" style="animation:none;transform:none">' +
+        '<div class="pcard-media" style="aspect-ratio:1/1">' +
+          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+        '</div>' +
+        '<div class="pcard-info">' +
+          '<h3 class="pcard-title" style="font-size:13px">' + p.product + '</h3>' +
+          '<div class="pcard-price">From <b>' + fmt(priceOf(p)) + '</b> EGP</div>' +
+          '<div class="pcard-actions">' +
+            '<button class="pcard-btn fill" type="button" data-related-buy="' + p.id + '" style="grid-column:1 / -1">VIEW</button>' +
+          '</div>' +
+        '</div>' +
+      '</article>';
+    }).join("");
+
+    grid.querySelectorAll("[data-related-buy]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const p = findProduct(btn.dataset.relatedBuy);
+        if (!p) return;
+        openProductModal({ dataset:{ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img } });
+      });
+    });
   }
 
   if (productModal){
@@ -384,6 +592,9 @@
     });
   }
 
+  /* ============================================================
+     CHECKOUT
+     ============================================================ */
   const checkoutModal = $("#checkoutModal");
   const coTitle = $("#coTitle"), coSubtotal = $("#coSubtotal"), coTotal = $("#coTotal"),
         coUser = $("#coUser"), coEmail = $("#coEmail"),
@@ -444,26 +655,14 @@
     if (!fill || !pctEl || !msgEl) return;
     const count = getCartCount();
     const pct = getDiscountPct();
-    const target = 5;
-    const fillPct = Math.min((count / target) * 100, 100);
-    fill.style.width = fillPct + "%";
+    fill.style.width = Math.min((count / 5) * 100, 100) + "%";
     pctEl.textContent = pct + "%";
-    if (pct === 0){
-      msgEl.textContent = "Add 1 more item to unlock a 5% discount";
-      msgEl.classList.remove("unlocked");
-    } else if (pct === 5){
-      msgEl.textContent = "5% discount unlocked! Add 1 more for 10%";
-      msgEl.classList.add("unlocked");
-    } else if (pct === 10){
-      msgEl.textContent = "10% discount unlocked! Add 1 more for 15%";
-      msgEl.classList.add("unlocked");
-    } else if (pct === 15){
-      msgEl.textContent = "15% discount unlocked! Add 1 more for 20%";
-      msgEl.classList.add("unlocked");
-    } else {
-      msgEl.textContent = "20% MAX DISCOUNT UNLOCKED!";
-      msgEl.classList.add("unlocked");
-    }
+    if (pct === 0) msgEl.textContent = "Add 1 more item to unlock a 5% discount";
+    else if (pct === 5) msgEl.textContent = "5% unlocked! Add 1 more for 10%";
+    else if (pct === 10) msgEl.textContent = "10% unlocked! Add 1 more for 15%";
+    else if (pct === 15) msgEl.textContent = "15% unlocked! Add 1 more for 20%";
+    else msgEl.textContent = "20% MAX DISCOUNT UNLOCKED!";
+    msgEl.classList.toggle("unlocked", pct > 0);
   }
 
   function updatePaymentUI(){
@@ -502,9 +701,7 @@
       updateTotals();
       updateCheckoutPreview();
 
-      try {
-        await updateDoc(doc(window.__gn_db, "promotions", code), { uses: increment(1) });
-      } catch(e){ console.warn("Increment failed:", e); }
+      try { await updateDoc(doc(window.__gn_db, "promotions", code), { uses: increment(1) }); } catch(e){}
     } catch (e) {
       toast("Promo error: " + e.message);
     }
@@ -525,8 +722,7 @@
     const proof = proofFile ? proofFile.name : "to attach in DM";
 
     return [
-      "GAMENEST Ticket",
-      "",
+      "GAMENEST Ticket", "",
       "Ticket No: " + activeOrderId,
       "Full Name: " + user,
       "Email: " + email,
@@ -564,15 +760,11 @@
   function validateEmail(){
     if (!coEmail || !emailError) return true;
     const v = coEmail.value.trim();
-    if (!v) { coEmail.classList.remove("error"); emailError.hidden = true; return false; }
+    if (!v){ coEmail.classList.remove("error"); emailError.hidden = true; return false; }
     const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    if (ok) {
-      coEmail.classList.remove("error");
-      emailError.hidden = true;
-      return true;
-    }
+    if (ok){ coEmail.classList.remove("error"); emailError.hidden = true; return true; }
     coEmail.classList.add("error");
-    emailError.textContent = "! INVALID EMAIL - MUST CONTAIN @ AND A DOMAIN";
+    emailError.textContent = "! INVALID EMAIL";
     emailError.hidden = false;
     return false;
   }
@@ -580,13 +772,12 @@
   function validatePhone(){
     if (!coPhone || !phoneError || !coCountry) return true;
     const v = coPhone.value.replace(/\D/g, "");
-    if (!v) { coPhone.classList.remove("error"); phoneError.hidden = true; return false; }
+    if (!v){ coPhone.classList.remove("error"); phoneError.hidden = true; return false; }
     const opt = coCountry.options[coCountry.selectedIndex];
     const expected = parseInt(opt.dataset.len || "0", 10);
-    const country = opt.textContent.trim();
     if (expected && v.length !== expected){
       coPhone.classList.add("error");
-      phoneError.textContent = "! INCOMPLETE PHONE NUMBER - MUST BE EXACTLY " + expected + " DIGITS FOR " + country.toUpperCase();
+      phoneError.textContent = "! MUST BE " + expected + " DIGITS";
       phoneError.hidden = false;
       return false;
     }
@@ -609,6 +800,9 @@
     });
   }
 
+  /* ============================================================
+     PROOF UPLOAD
+     ============================================================ */
   const proofUpload  = $("#proofUpload");
   const proofPreview = $("#proofPreview");
   const proofRemove  = $("#proofRemove");
@@ -621,36 +815,20 @@
       proofUpload.click();
     });
     uploadBox.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " "){
-        e.preventDefault();
-        proofUpload.click();
-      }
+      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); proofUpload.click(); }
     });
     proofUpload.addEventListener("change", (e) => {
       const file = e.target.files && e.target.files[0];
       if (!file) return;
-      if (!file.type.startsWith("image/")){
-        toast("Please pick an image file");
-        return;
-      }
-      if (file.size > 8 * 1024 * 1024){
-        toast("Max file size is 8 MB");
-        return;
-      }
+      if (!file.type.startsWith("image/")){ toast("Please pick an image file"); return; }
+      if (file.size > 8 * 1024 * 1024){ toast("Max file size is 8 MB"); return; }
       proofFile = file;
       if (proofPreview){
         const reader = new FileReader();
-        reader.onload = (ev) => {
-          proofPreview.src = ev.target.result;
-          proofPreview.hidden = false;
-        };
+        reader.onload = (ev) => { proofPreview.src = ev.target.result; proofPreview.hidden = false; };
         reader.readAsDataURL(file);
       }
-      if (uploadLabel){
-        uploadLabel.textContent = file.name.length > 26
-          ? file.name.slice(0, 23) + "..."
-          : file.name;
-      }
+      if (uploadLabel) uploadLabel.textContent = file.name.length > 26 ? file.name.slice(0, 23) + "..." : file.name;
       if (uploadBox)   uploadBox.classList.add("has-file");
       if (proofRemove) proofRemove.hidden = false;
       updateCheckoutPreview();
@@ -664,10 +842,7 @@
       e.stopPropagation();
       proofFile = null;
       if (proofUpload) proofUpload.value = "";
-      if (proofPreview){
-        proofPreview.src = "";
-        proofPreview.hidden = true;
-      }
+      if (proofPreview){ proofPreview.src = ""; proofPreview.hidden = true; }
       if (uploadBox) uploadBox.classList.remove("has-file");
       if (proofRemove) proofRemove.hidden = true;
       if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
@@ -675,30 +850,19 @@
     });
   }
 
+  /* ============================================================
+     SUBMIT ORDER
+     ============================================================ */
   const submitOrderBtn = $("#submitOrder");
   const successModal = $("#successModal");
 
   if (submitOrderBtn){
     submitOrderBtn.addEventListener("click", () => {
-      if (!coUser || !coUser.value.trim()){
-        toast("Enter your full name first");
-        if (coUser) coUser.focus();
-        return;
-      }
-      if (!validateEmail() || !coEmail.value.trim()){
-        toast("Enter a valid email");
-        if (coEmail) coEmail.focus();
-        return;
-      }
-      if (!validatePhone() || !coPhone.value.trim()){
-        toast("Enter a valid phone number");
-        if (coPhone) coPhone.focus();
-        return;
-      }
-      if (!proofFile){
-        toast("Upload your payment screenshot first");
-        return;
-      }
+      if (!coUser || !coUser.value.trim()){ toast("Enter your full name first"); coUser && coUser.focus(); return; }
+      if (!validateEmail() || !coEmail.value.trim()){ toast("Enter a valid email"); coEmail && coEmail.focus(); return; }
+      if (!validatePhone() || !coPhone.value.trim()){ toast("Enter a valid phone"); coPhone && coPhone.focus(); return; }
+      if (!proofFile){ toast("Upload your payment screenshot first"); return; }
+
       const code = $("#successOrderCode");
       const gateway = $("#successGateway");
       const player = $("#successPlayer");
@@ -749,128 +913,6 @@
     });
   }
 
-  const cartModal = $("#cartModal"), favModal = $("#favModal"), searchModal = $("#searchModal");
-
-  const cartBtn = $("#cartBtn");
-  if (cartBtn && cartModal) cartBtn.addEventListener("click", () => openModal(cartModal));
-
-  const favBtn = $("#favBtn");
-  if (favBtn && favModal) favBtn.addEventListener("click", () => openModal(favModal));
-
-  const searchBtn = $("#searchBtn");
-  if (searchBtn && searchModal){
-    searchBtn.addEventListener("click", () => {
-      openModal(searchModal);
-      setTimeout(() => { const si = $("#searchInput"); if (si) si.focus(); }, 220);
-    });
-  }
-
-  if (cartModal) $$("[data-close-cart]", cartModal).forEach(el => el.addEventListener("click", () => closeModal(cartModal)));
-  if (favModal)  $$("[data-close-fav]",  favModal).forEach(el => el.addEventListener("click", () => closeModal(favModal)));
-  if (searchModal) $$("[data-close-search]", searchModal).forEach(el => el.addEventListener("click", () => closeModal(searchModal)));
-
-  const cartCheckout = $("#cartCheckout");
-  if (cartCheckout){
-    cartCheckout.addEventListener("click", () => {
-      const cart = getCart();
-      if (cart.length === 0){ toast("Cart is empty"); return; }
-      const first = cart[0];
-      activeProduct = { id:first.id, product:first.product, price:first.price, kind:first.kind, img:first.img };
-      activeOrderId = makeOrderId();
-      closeModal(cartModal);
-      openCheckoutModal();
-    });
-  }
-
-  const searchInput = $("#searchInput"), searchResults = $("#searchResults");
-  function updateSearchResults(){
-    if (!searchResults) return;
-    const q = (searchInput && searchInput.value || "").trim().toLowerCase();
-    if (!q){
-      searchResults.innerHTML = '<div class="empty-msg">Type to search the catalog.</div>';
-      return;
-    }
-    const results = PRODUCTS.filter(p => p.product.toLowerCase().indexOf(q) > -1 || p.kind.toLowerCase().indexOf(q) > -1);
-    if (results.length === 0){
-      searchResults.innerHTML = '<div class="empty-msg">No matches found.</div>';
-      return;
-    }
-    searchResults.innerHTML = results.map(p =>
-      '<div class="search-result" data-id="' + p.id + '">' +
-        '<img src="' + p.img + '" alt="" onerror="this.style.display=\'none\'">' +
-        '<div>' +
-          '<div class="sr-title">' + p.product + '</div>' +
-          '<div class="sr-price">' + fmt(p.price) + ' EGP</div>' +
-        '</div>' +
-        '<div class="sr-go">VIEW &gt;</div>' +
-      '</div>'
-    ).join("");
-    $$(".search-result", searchResults).forEach(row => {
-      row.addEventListener("click", () => {
-        const p = findProduct(row.dataset.id);
-        if (!p) return;
-        closeModal(searchModal);
-        openProductModal({ dataset:{ id:p.id, product:p.product, price:p.price, kind:p.kind, img:p.img } });
-      });
-    });
-  }
-  if (searchInput) searchInput.addEventListener("input", updateSearchResults);
-
-  $$(".gateway:not(.gateway-compact)").forEach(gate => {
-    const btn = $(".gw-btn", gate);
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const method = gate.dataset.method;
-      const link = gate.dataset.link;
-      const value = gate.dataset.value;
-      const name = gate.dataset.name;
-      if (method === "telda" || !link){
-        copyText(value);
-        toast("Copied: " + value);
-      } else {
-        window.open(link, "_blank", "noopener");
-        toast("Opening " + name + "...");
-      }
-      if (!activeProduct){
-        activeProduct = { id:"custom", product:"Custom Order", price:0, kind:"vb", img:"vbucks.png" };
-        activeOrderId = makeOrderId();
-      }
-      openCheckoutModal();
-    });
-  });
-
-  function startCountdown(){
-    const hEl = $("#cdH"), mEl = $("#cdM"), sEl = $("#cdS");
-    if (!hEl || !mEl || !sEl) return;
-    const now = new Date();
-    const target = new Date(now);
-    const day = target.getDay();
-    const daysUntilEnd = (7 - day) % 7;
-    target.setDate(target.getDate() + daysUntilEnd);
-    target.setHours(23, 59, 59, 0);
-    if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 7);
-    function tick(){
-      const diff = target.getTime() - Date.now();
-      if (diff <= 0){ hEl.textContent = "00"; mEl.textContent = "00"; sEl.textContent = "00"; return; }
-      const totalSec = Math.floor(diff / 1000);
-      hEl.textContent = String(Math.floor(totalSec/3600)).padStart(2,"0");
-      mEl.textContent = String(Math.floor((totalSec%3600)/60)).padStart(2,"0");
-      sEl.textContent = String(totalSec%60).padStart(2,"0");
-    }
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    const openEl = $(".modal.open");
-    if (openEl) closeModal(openEl);
-  });
-
-  document.addEventListener("click", (e) => {
-    if (e.target && e.target.id === "promoApplyBtn") applyPromoCode();
-  });
-
   async function saveOrderToFirebase(){
     if (!window.__gn_db) throw new Error("Firebase not ready");
     const { collection, addDoc, serverTimestamp } = window.__gn_fs;
@@ -909,61 +951,150 @@
     });
   }
 
-  async function init(){
-    const underMaintenance = await loadSettings();
-    if (underMaintenance) return;
-    await loadProductsFromFirestore();
-    renderAllProducts();
-    updateBadges();
-    renderCart();
-        renderFavs();
-    loadBestSellers();
-    startCountdown();
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
   /* ============================================================
-     SUPPORT TICKET SUBMISSION
+     CART / FAV / SEARCH MODALS
+     ============================================================ */
+  const cartModal = $("#cartModal"), favModal = $("#favModal"), searchModal = $("#searchModal");
+
+  const cartBtn = $("#cartBtn");
+  if (cartBtn && cartModal) cartBtn.addEventListener("click", () => openModal(cartModal));
+
+  const favBtn = $("#favBtn");
+  if (favBtn && favModal) favBtn.addEventListener("click", () => openModal(favModal));
+
+  const searchBtn = $("#searchBtn");
+  if (searchBtn && searchModal){
+    searchBtn.addEventListener("click", () => {
+      openModal(searchModal);
+      setTimeout(() => { const si = $("#searchInput"); if (si) si.focus(); }, 220);
+    });
+  }
+
+  if (cartModal) $$("[data-close-cart]", cartModal).forEach(el => el.addEventListener("click", () => closeModal(cartModal)));
+  if (favModal)  $$("[data-close-fav]",  favModal).forEach(el => el.addEventListener("click", () => closeModal(favModal)));
+  if (searchModal) $$("[data-close-search]", searchModal).forEach(el => el.addEventListener("click", () => closeModal(searchModal)));
+
+  const cartCheckout = $("#cartCheckout");
+  if (cartCheckout){
+    cartCheckout.addEventListener("click", () => {
+      const cart = getCart();
+      if (cart.length === 0){ toast("Cart is empty"); return; }
+      const first = cart[0];
+      activeProduct = { id:first.id, product:first.product, price:first.price, kind:first.kind, img:first.img };
+      activeOrderId = makeOrderId();
+      closeModal(cartModal);
+      openCheckoutModal();
+    });
+  }
+
+  const searchInput = $("#searchInput"), searchResults = $("#searchResults");
+  function updateSearchResults(){
+    if (!searchResults) return;
+    const q = (searchInput && searchInput.value || "").trim().toLowerCase();
+    if (!q){ searchResults.innerHTML = '<div class="empty-msg">Type to search the catalog.</div>'; return; }
+    const results = PRODUCTS.filter(p => p.product.toLowerCase().indexOf(q) > -1 || p.kind.toLowerCase().indexOf(q) > -1);
+    if (results.length === 0){ searchResults.innerHTML = '<div class="empty-msg">No matches found.</div>'; return; }
+    searchResults.innerHTML = results.map(p =>
+      '<div class="search-result" data-id="' + p.id + '">' +
+        '<img src="' + p.img + '" alt="" onerror="this.style.display=\'none\'">' +
+        '<div>' +
+          '<div class="sr-title">' + p.product + '</div>' +
+          '<div class="sr-price">' + fmt(priceOf(p)) + ' EGP</div>' +
+        '</div>' +
+        '<div class="sr-go">VIEW &gt;</div>' +
+      '</div>'
+    ).join("");
+    $$(".search-result", searchResults).forEach(row => {
+      row.addEventListener("click", () => {
+        const p = findProduct(row.dataset.id);
+        if (!p) return;
+        closeModal(searchModal);
+        openProductModal({ dataset:{ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img } });
+      });
+    });
+  }
+  if (searchInput) searchInput.addEventListener("input", updateSearchResults);
+
+  /* ============================================================
+     PAYMENT GATEWAY SHORTCUTS
+     ============================================================ */
+  $$(".gateway:not(.gateway-compact)").forEach(gate => {
+    const btn = $(".gw-btn", gate);
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const method = gate.dataset.method;
+      const link = gate.dataset.link;
+      const value = gate.dataset.value;
+      const name = gate.dataset.name;
+      if (method === "telda" || !link){
+        copyText(value);
+        toast("Copied: " + value);
+      } else {
+        window.open(link, "_blank", "noopener");
+        toast("Opening " + name + "...");
+      }
+      if (!activeProduct){
+        activeProduct = { id:"custom", product:"Custom Order", price:0, kind:"vb", img:"vbucks.png" };
+        activeOrderId = makeOrderId();
+      }
+      openCheckoutModal();
+    });
+  });
+
+  /* ============================================================
+     COUNTDOWN
+     ============================================================ */
+  function startCountdown(){
+    const hEl = $("#cdH"), mEl = $("#cdM"), sEl = $("#cdS");
+    if (!hEl || !mEl || !sEl) return;
+    const now = new Date();
+    const target = new Date(now);
+    const day = target.getDay();
+    const daysUntilEnd = (7 - day) % 7;
+    target.setDate(target.getDate() + daysUntilEnd);
+    target.setHours(23, 59, 59, 0);
+    if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 7);
+    function tick(){
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0){ hEl.textContent = "00"; mEl.textContent = "00"; sEl.textContent = "00"; return; }
+      const totalSec = Math.floor(diff / 1000);
+      hEl.textContent = String(Math.floor(totalSec/3600)).padStart(2,"0");
+      mEl.textContent = String(Math.floor((totalSec%3600)/60)).padStart(2,"0");
+      sEl.textContent = String(totalSec%60).padStart(2,"0");
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  /* ============================================================
+     SUPPORT TICKET
      ============================================================ */
   const submitTicketBtn = $("#submitTicket");
   if (submitTicketBtn){
     submitTicketBtn.addEventListener("click", async () => {
-      const name = ($("#ticketName") && $("#ticketName").value.trim()) || "";
-      const email = ($("#ticketEmail") && $("#ticketEmail").value.trim()) || "";
-      const order = ($("#ticketOrder") && $("#ticketOrder").value.trim()) || "";
-      const msg = ($("#ticketMsg") && $("#ticketMsg").value.trim()) || "";
-      const note = $("#ticketNote");
+      const nameEl = $("#ticketName"), emailEl = $("#ticketEmail"),
+            orderEl = $("#ticketOrder"), msgEl = $("#ticketMsg"), note = $("#ticketNote");
+      const name = (nameEl && nameEl.value.trim()) || "";
+      const email = (emailEl && emailEl.value.trim()) || "";
+      const order = (orderEl && orderEl.value.trim()) || "";
+      const msg = (msgEl && msgEl.value.trim()) || "";
 
-      if (!name || !email || !msg){
-        if (note) note.textContent = "! Fill in name, email, and message.";
-        return;
-      }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-        if (note) note.textContent = "! Enter a valid email address.";
-        return;
-      }
-      if (!window.__gn_db){
-        if (note) note.textContent = "! Support system offline. Try again later.";
-        return;
-      }
+      if (!name || !email || !msg){ if (note) note.textContent = "! Fill in name, email, and message."; return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ if (note) note.textContent = "! Invalid email."; return; }
+      if (!window.__gn_db){ if (note) note.textContent = "! Support offline."; return; }
 
       submitTicketBtn.disabled = true;
       if (note) note.textContent = "Submitting...";
-
       try {
         const { collection, addDoc, serverTimestamp } = window.__gn_fs;
         await addDoc(collection(window.__gn_db, "support"), {
-          name, email,
-          order: order || "",
-          message: msg,
-          status: "open",
-          createdAt: serverTimestamp()
+          name, email, order: order || "", message: msg, status: "open", createdAt: serverTimestamp()
         });
         if (note) note.textContent = "✓ Ticket submitted — we'll reply by email.";
-        ["ticketName", "ticketEmail", "ticketOrder", "ticketMsg"].forEach(id => {
-          const el = document.getElementById(id);
-          if (el) el.value = "";
-        });
+        if (nameEl) nameEl.value = "";
+        if (emailEl) emailEl.value = "";
+        if (orderEl) orderEl.value = "";
+        if (msgEl) msgEl.value = "";
       } catch (e) {
         if (note) note.textContent = "! Error: " + e.message;
       } finally {
@@ -971,71 +1102,115 @@
       }
     });
   }
-    /* ============================================================
-     BEST SELLERS — top ordered products
+
+  /* ============================================================
+     ORDER TRACKING
      ============================================================ */
-  async function loadBestSellers(){
-    const grid = document.getElementById("gridBest");
-    if (!grid || !window.__gn_db) return;
+  const STATUS_LABELS = {
+    pending:"Pending Payment Review", paid:"Payment Approved", processing:"Being Processed",
+    delivered:"Delivered", rejected:"Rejected", refunded:"Refunded"
+  };
+
+  async function trackOrder(){
+    const input = document.getElementById("trackInput");
+    const result = document.getElementById("trackResult");
+    const btn = document.getElementById("trackBtn");
+    if (!input || !result || !btn) return;
+
+    const code = input.value.trim().toUpperCase();
+    if (!code){ result.innerHTML = '<div style="color:#ffb454;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Enter your order code first</div>'; return; }
+    if (!window.__gn_db){ result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Tracking offline</div>'; return; }
+
+    btn.disabled = true; btn.textContent = "SEARCHING...";
+    result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">Searching...</div>';
+
     try {
-      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const snap = await getDocs(collection(window.__gn_db, "orders"));
-
-      const counts = {};
-      snap.docs.forEach(d => {
-        const o = d.data();
-        const key = o.product || "";
-        if (!key) return;
-        counts[key] = (counts[key] || 0) + 1;
-      });
-
-      const top = Object.entries(counts)
-        .sort((a, b) => b[1] - a[1])
-        .slice(0, 4)
-        .map(([name]) => name);
-
-      const items = [];
-      top.forEach(name => {
-        const p = PRODUCTS.find(x => x.product === name);
-        if (p) items.push(p);
-      });
-
-      if (!items.length){
-        ["800 V-Bucks", "2400 V-Bucks", "Fortnite Crew - 1 Month", "500 V-Bucks Gift"].forEach(name => {
-          const p = PRODUCTS.find(x => x.product === name);
-          if (p) items.push(p);
-        });
+      const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const q = query(collection(window.__gn_db, "orders"), where("orderId", "==", code));
+      const snap = await getDocs(q);
+      if (snap.empty){
+        result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:20px;border:1px dashed #2a2a2a">✕ Order not found — double-check your code</div>';
+        return;
       }
+      const o = snap.docs[0].data();
+      const status = o.status || "pending";
+      const steps = ["pending", "paid", "processing", "delivered"];
+      const currentIdx = steps.indexOf(status);
+      const isFailed = status === "rejected" || status === "refunded";
+      const dateStr = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString("en-GB", {day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
 
-      grid.innerHTML = items.slice(0, 4).map(p => {
-        const tag = p.kind === "vb" ? "// V-BUCKS" : p.kind === "crew" ? "// CREW" : "// GIFT";
-        const isFav = getFavs().some(f => f.id === p.id);
-        return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + p.price + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
-          '<div class="pcard-media">' +
-            '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-            '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🔥 HOT</div>' +
-            '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
-              '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
-                '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
-              '</svg>' +
-            '</button>' +
-          '</div>' +
-          '<div class="pcard-info">' +
-            '<div class="pcard-tag">' + tag + '</div>' +
-            '<h3 class="pcard-title">' + p.product + '</h3>' +
-            '<div class="pcard-price">From <b>' + Number(p.price).toLocaleString("en-US") + '</b> EGP</div>' +
-            '<div class="pcard-actions">' +
-              '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
-              '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
-            '</div>' +
-          '</div>' +
-        '</article>';
-      }).join("");
-
-      bindCards();
+      result.innerHTML = `
+        <div style="background:#111;border:1px solid #2a2a2a;padding:26px 24px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #222">
+            <div>
+              <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">ORDER_CODE</div>
+              <div style="font-family:ui-monospace,monospace;font-size:15px;font-weight:900;color:#fff;letter-spacing:.1em">${o.orderId || code}</div>
+              <div style="font-size:13px;color:#8a8a8a;margin-top:6px">${o.product || "—"}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">STATUS</div>
+              <div style="font-family:ui-monospace,monospace;font-size:12px;font-weight:800;padding:6px 14px;border:1px solid;letter-spacing:.14em;text-transform:uppercase;${isFailed ? "color:#ff4a4a;border-color:#ff4a4a;background:rgba(255,74,74,.08)" : status === "delivered" ? "color:#5fc85f;border-color:#5fc85f;background:rgba(95,200,95,.08)" : status === "pending" ? "color:#ffb454;border-color:#ffb454;background:rgba(255,180,84,.08)" : "color:#5fc8ff;border-color:#5fc8ff;background:rgba(95,200,255,.08)"}">${STATUS_LABELS[status] || status}</div>
+            </div>
+          </div>
+          ${isFailed ? "" : `
+          <div style="display:flex;justify-content:space-between;position:relative;margin-bottom:24px;padding:0 4px">
+            ${steps.map((s, i) => `
+              <div style="flex:1;text-align:center;position:relative">
+                <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${i <= currentIdx ? "#fff" : "#2a2a2a"};background:${i <= currentIdx ? "#fff" : "#111"};margin:0 auto 8px;position:relative;z-index:2"></div>
+                ${i < steps.length - 1 ? `<div style="position:absolute;top:10px;left:50%;right:-50%;height:2px;background:${i < currentIdx ? "#fff" : "#2a2a2a"};z-index:1"></div>` : ""}
+                <div style="font-family:ui-monospace,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${i <= currentIdx ? "#fff" : "#4a4a4a"};line-height:1.3">${STATUS_LABELS[s]}</div>
+              </div>
+            `).join("")}
+          </div>`}
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
+            <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">PLACED</span><div style="font-family:ui-monospace,monospace;color:#d8d8d8;margin-top:4px">${dateStr}</div></div>
+            <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">AMOUNT</span><div style="font-family:ui-monospace,monospace;color:#fff;font-weight:800;margin-top:4px">${(o.price || 0).toLocaleString("en-US")} EGP</div></div>
+          </div>
+          ${status === "delivered" ? '<div style="margin-top:18px;padding:12px;background:rgba(95,200,95,.06);border-left:3px solid #5fc85f;font-size:12px;color:#d8d8d8">✓ Delivered — check your Fortnite account</div>' : ""}
+          ${status === "pending" ? '<div style="margin-top:18px;padding:12px;background:rgba(255,180,84,.06);border-left:3px solid #ffb454;font-size:12px;color:#d8d8d8">⏱ Payment pending review — usually approved within 30 minutes</div>' : ""}
+        </div>`;
     } catch(e){
-      console.warn("Best sellers failed:", e);
+      result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:16px">⚠ ' + e.message + '</div>';
+    } finally {
+      btn.disabled = false; btn.textContent = "TRACK";
     }
   }
+
+  const trackBtn = document.getElementById("trackBtn");
+  if (trackBtn) trackBtn.addEventListener("click", trackOrder);
+  const trackInput = document.getElementById("trackInput");
+  if (trackInput) trackInput.addEventListener("keypress", (e) => { if (e.key === "Enter") trackOrder(); });
+
+  /* ============================================================
+     GLOBAL LISTENERS
+     ============================================================ */
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    const openEl = $(".modal.open");
+    if (openEl) closeModal(openEl);
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target && e.target.id === "promoApplyBtn") applyPromoCode();
+  });
+
+  /* ============================================================
+     INIT
+     ============================================================ */
+  async function init(){
+    const underMaintenance = await loadSettings();
+    if (underMaintenance) return;
+    await loadProductsFromFirestore();
+    renderAllProducts();
+    renderDeals();
+    renderBundles();
+    updateBadges();
+    renderCart();
+    renderFavs();
+    startCountdown();
+    loadBestSellers();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 
 })();
