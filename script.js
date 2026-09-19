@@ -916,7 +916,8 @@
     renderAllProducts();
     updateBadges();
     renderCart();
-    renderFavs();
+        renderFavs();
+    loadBestSellers();
     startCountdown();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
@@ -970,4 +971,71 @@
       }
     });
   }
+    /* ============================================================
+     BEST SELLERS — top ordered products
+     ============================================================ */
+  async function loadBestSellers(){
+    const grid = document.getElementById("gridBest");
+    if (!grid || !window.__gn_db) return;
+    try {
+      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const snap = await getDocs(collection(window.__gn_db, "orders"));
+
+      const counts = {};
+      snap.docs.forEach(d => {
+        const o = d.data();
+        const key = o.product || "";
+        if (!key) return;
+        counts[key] = (counts[key] || 0) + 1;
+      });
+
+      const top = Object.entries(counts)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name]) => name);
+
+      const items = [];
+      top.forEach(name => {
+        const p = PRODUCTS.find(x => x.product === name);
+        if (p) items.push(p);
+      });
+
+      if (!items.length){
+        ["800 V-Bucks", "2400 V-Bucks", "Fortnite Crew - 1 Month", "500 V-Bucks Gift"].forEach(name => {
+          const p = PRODUCTS.find(x => x.product === name);
+          if (p) items.push(p);
+        });
+      }
+
+      grid.innerHTML = items.slice(0, 4).map(p => {
+        const tag = p.kind === "vb" ? "// V-BUCKS" : p.kind === "crew" ? "// CREW" : "// GIFT";
+        const isFav = getFavs().some(f => f.id === p.id);
+        return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + p.price + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
+          '<div class="pcard-media">' +
+            '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
+            '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🔥 HOT</div>' +
+            '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
+              '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
+                '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
+              '</svg>' +
+            '</button>' +
+          '</div>' +
+          '<div class="pcard-info">' +
+            '<div class="pcard-tag">' + tag + '</div>' +
+            '<h3 class="pcard-title">' + p.product + '</h3>' +
+            '<div class="pcard-price">From <b>' + Number(p.price).toLocaleString("en-US") + '</b> EGP</div>' +
+            '<div class="pcard-actions">' +
+              '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
+              '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
+            '</div>' +
+          '</div>' +
+        '</article>';
+      }).join("");
+
+      bindCards();
+    } catch(e){
+      console.warn("Best sellers failed:", e);
+    }
+  }
+
 })();
