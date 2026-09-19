@@ -1,244 +1,81 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <link rel="icon" type="image/png" href="favicon.png">
-<link rel="apple-touch-icon" href="favicon.png">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#0a0a0a">
 <title>GAMENEST | Fortnite V-Bucks, Crew &amp; Gifts — Instant Delivery</title>
 <meta name="description" content="GAMENEST — Fortnite V-Bucks, Crew subscriptions and Gifts. Instant delivery, best prices in Egypt.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="favicon.png">
 <link rel="stylesheet" href="style.css">
 <style>
-  /* Banner injected by script.js */
-  .gn-banner{
-    display:none;align-items:center;justify-content:center;gap:12px;
-    background:linear-gradient(90deg,#ffffff,#e0e0e0);
-    color:#0a0a0a;padding:12px 20px;
-    font-family:var(--mono,ui-monospace,monospace);
-    font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;
-    text-align:center;position:relative;z-index:100;
-    box-shadow:0 4px 20px rgba(255,255,255,.15);
-  }
-  .gn-banner-dot{
-    width:8px;height:8px;border-radius:50%;background:#0a0a0a;
-    animation:gnPulse 1.6s infinite;
-  }
+  .gn-banner{display:none;align-items:center;justify-content:center;gap:12px;background:linear-gradient(90deg,#fff,#e0e0e0);color:#0a0a0a;padding:12px 20px;font-family:ui-monospace,monospace;font-size:12px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;text-align:center;position:relative;z-index:100;box-shadow:0 4px 20px rgba(255,255,255,.15)}
+  .gn-banner-dot{width:8px;height:8px;border-radius:50%;background:#0a0a0a;animation:gnPulse 1.6s infinite}
   @keyframes gnPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+  .promo-row{display:flex;gap:8px;margin-top:8px}
+  .promo-row input{flex:1;background:transparent;border:1px solid var(--border-2,#2a2a2a);color:var(--text,#f2f2f2);padding:10px 12px;font-family:ui-monospace,monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;outline:none;transition:.2s}
+  .promo-row input:focus{border-color:#fff}
+  .promo-row button{padding:10px 16px;border:1px solid #fff;background:transparent;color:#fff;font-family:ui-monospace,monospace;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:.2s;white-space:nowrap}
+  .promo-row button:hover{background:#fff;color:#0a0a0a}
 
-  /* Promo row inside checkout */
-  .promo-row{
-    display:flex;gap:8px;margin-top:8px;
-  }
-  .promo-row input{
-    flex:1;background:transparent;
-    border:1px solid var(--border-2, #2a2a2a);
-    color:var(--text, #f2f2f2);padding:10px 12px;
-    font-family:var(--mono,ui-monospace,monospace);font-size:12px;
-    letter-spacing:.1em;text-transform:uppercase;outline:none;
-    transition:.2s;
-  }
-  .promo-row input:focus{border-color:var(--accent, #fff)}
-  .promo-row button{
-    padding:10px 16px;border:1px solid var(--accent, #fff);
-    background:transparent;color:var(--accent, #fff);
-    font-family:var(--mono,ui-monospace,monospace);font-size:10px;
-    font-weight:800;letter-spacing:.14em;text-transform:uppercase;
-    cursor:pointer;transition:.2s;white-space:nowrap;
-  }
-  .promo-row button:hover{background:var(--accent, #fff);color:var(--bg, #0a0a0a)}
-</style>
-  <style>
-  /* ============================================================
-     GAMENEST — Polish Pack v1.0
-     ============================================================ */
+  /* Polish pack */
+  *,*::before,*::after{-webkit-tap-highlight-color:transparent}
+  html{scroll-behavior:smooth;scroll-padding-top:80px}
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-track{background:#0a0a0a}
+  ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#333,#1a1a1a);border:2px solid #0a0a0a;border-radius:5px}
+  ::-webkit-scrollbar-thumb:hover{background:#444}
+  :focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:2px}
+  .btn,.pcard-btn,.gw-btn,.pay-tab,.icon-btn,.float-btn{transition:transform .22s cubic-bezier(.34,1.56,.64,1),background-color .22s ease,color .22s ease,border-color .22s ease,box-shadow .28s ease !important}
+  .btn:active,.pcard-btn:active,.gw-btn:active,.pay-tab:active,.float-btn:active{transform:scale(.96)}
+  .pcard-prod{transition:transform .35s cubic-bezier(.34,1.4,.64,1),border-color .28s ease,box-shadow .35s ease !important}
+  .pcard-prod:hover{transform:translateY(-8px) scale(1.015) !important;box-shadow:0 14px 40px rgba(255,255,255,.1),0 0 0 1px rgba(255,255,255,.18) !important}
+  .pcard-prod:hover .pcard-media img{transform:scale(1.1) rotate(-1deg) !important}
+  .pcard-prod .pcard-media img{transition:transform .55s cubic-bezier(.34,1.4,.64,1) !important}
+  @keyframes gnCardIn{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .pcard-prod{animation:gnCardIn .55s cubic-bezier(.22,1,.36,1) both}
+  .pcard-prod:nth-child(1){animation-delay:.04s}
+  .pcard-prod:nth-child(2){animation-delay:.08s}
+  .pcard-prod:nth-child(3){animation-delay:.12s}
+  .pcard-prod:nth-child(4){animation-delay:.16s}
+  .pcard-prod:nth-child(5){animation-delay:.20s}
+  .pcard-prod:nth-child(6){animation-delay:.24s}
+  .pgrid:empty{min-height:260px}
+  .pgrid:empty::before{content:"";display:block;height:300px;border-radius:2px;background:linear-gradient(90deg,rgba(255,255,255,.02) 0%,rgba(255,255,255,.06) 50%,rgba(255,255,255,.02) 100%);background-size:200% 100%;animation:gnShimmer 1.6s infinite}
+  @keyframes gnShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  @keyframes gnModalIn{from{opacity:0;transform:translateY(16px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @keyframes gnBackdropIn{from{opacity:0;backdrop-filter:blur(0)}to{opacity:1;backdrop-filter:blur(10px)}}
+  .modal.open{animation:gnBackdropIn .25s ease forwards}
+  .modal.open .modal-box{animation:gnModalIn .35s cubic-bezier(.22,1,.36,1) both}
+  @keyframes gnToastIn{from{opacity:0;transform:translate(-50%,30px) scale(.92)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
+  .toast.show{animation:gnToastIn .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes gnBannerDrop{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
+  .gn-banner{animation:gnBannerDrop .5s cubic-bezier(.22,1,.36,1)}
+  .gn-reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1);will-change:opacity,transform}
+  .gn-reveal.gn-in{opacity:1;transform:translateY(0)}
+  input,textarea,select{transition:border-color .22s ease,box-shadow .22s ease}
+  input:focus,textarea:focus,select:focus{box-shadow:0 1px 0 0 #fff}
+  .nav-links a{transition:color .22s ease,transform .22s ease}
+  .nav-links a:hover{transform:translateY(-1px)}
+  .float-btn{position:relative}
+  .float-btn::after{content:"";position:absolute;inset:-4px;border:2px solid currentColor;border-radius:inherit;opacity:0;transition:opacity .3s ease,transform .3s ease;pointer-events:none}
+  .float-btn:hover::after{opacity:.35;transform:scale(1.15)}
+  @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}}
 
-  /* Smooth global easing */
-  *, *::before, *::after {
-    -webkit-tap-highlight-color: transparent;
-  }
+  /* Related products in modal */
+  #relatedWrap{margin-top:24px;padding-top:20px;border-top:1px solid #1f1f1f}
+  #relatedWrap .rp-head{font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:#4a4a4a;margin-bottom:14px}
+  #relatedGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
 
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 80px;
-  }
+  /* Verified purchase badge */
+  .verified-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(95,200,95,.1);border:1px solid rgba(95,200,95,.3);color:#5fc85f;font-family:ui-monospace,monospace;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-left:6px}
 
-  /* Better scrollbar */
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-track { background: #0a0a0a; }
-  ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #333, #1a1a1a);
-    border: 2px solid #0a0a0a;
-    border-radius: 5px;
-  }
-  ::-webkit-scrollbar-thumb:hover { background: #444; }
-
-  /* Better focus rings (accessibility + looks) */
-  :focus-visible {
-    outline: 2px solid #fff;
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
-
-  /* Smoother button feedback */
-  .btn, .pcard-btn, .gw-btn, .pay-tab, .icon-btn, .float-btn {
-    transition: transform .22s cubic-bezier(.34, 1.56, .64, 1),
-                background-color .22s ease,
-                color .22s ease,
-                border-color .22s ease,
-                box-shadow .28s ease !important;
-  }
-  .btn:active, .pcard-btn:active, .gw-btn:active,
-  .pay-tab:active, .float-btn:active {
-    transform: scale(.96);
-  }
-
-  /* Product card: springier hover */
-  .pcard-prod {
-    transition: transform .35s cubic-bezier(.34, 1.4, .64, 1),
-                border-color .28s ease,
-                box-shadow .35s ease !important;
-  }
-  .pcard-prod:hover {
-    transform: translateY(-8px) scale(1.015) !important;
-    box-shadow: 0 14px 40px rgba(255, 255, 255, .1),
-                0 0 0 1px rgba(255, 255, 255, .18) !important;
-  }
-  .pcard-prod:hover .pcard-media img {
-    transform: scale(1.1) rotate(-1deg) !important;
-  }
-  .pcard-prod .pcard-media img {
-    transition: transform .55s cubic-bezier(.34, 1.4, .64, 1) !important;
-  }
-
-  /* Card entrance stagger */
-  @keyframes gnCardIn {
-    from { opacity: 0; transform: translateY(20px) scale(.98); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  .pcard-prod {
-    animation: gnCardIn .55s cubic-bezier(.22, 1, .36, 1) both;
-  }
-  .pcard-prod:nth-child(1) { animation-delay: .04s; }
-  .pcard-prod:nth-child(2) { animation-delay: .08s; }
-  .pcard-prod:nth-child(3) { animation-delay: .12s; }
-  .pcard-prod:nth-child(4) { animation-delay: .16s; }
-  .pcard-prod:nth-child(5) { animation-delay: .20s; }
-  .pcard-prod:nth-child(6) { animation-delay: .24s; }
-  .pcard-prod:nth-child(n+7) { animation-delay: .28s; }
-
-  /* Loading skeleton for empty grids */
-  .pgrid:empty,
-  .pgrid:not(:has(.pcard-prod)) {
-    min-height: 260px;
-  }
-  .pgrid:empty::before {
-    content: "";
-    display: block;
-    height: 300px;
-    border-radius: 2px;
-    background: linear-gradient(
-      90deg,
-      rgba(255,255,255,.02) 0%,
-      rgba(255,255,255,.06) 50%,
-      rgba(255,255,255,.02) 100%
-    );
-    background-size: 200% 100%;
-    animation: gnShimmer 1.6s infinite;
-  }
-  @keyframes gnShimmer {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-  }
-
-  /* Smooth modal entrance */
-  @keyframes gnModalIn {
-    from { opacity: 0; transform: translateY(16px) scale(.97); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-  @keyframes gnBackdropIn {
-    from { opacity: 0; backdrop-filter: blur(0px); }
-    to   { opacity: 1; backdrop-filter: blur(10px); }
-  }
-  .modal.open {
-    animation: gnBackdropIn .25s ease forwards;
-  }
-  .modal.open .modal-box {
-    animation: gnModalIn .35s cubic-bezier(.22, 1, .36, 1) both;
-  }
-
-  /* Toast — nicer entrance */
-  @keyframes gnToastIn {
-    from { opacity: 0; transform: translate(-50%, 30px) scale(.92); }
-    to   { opacity: 1; transform: translate(-50%, 0) scale(1); }
-  }
-  .toast.show {
-    animation: gnToastIn .35s cubic-bezier(.34, 1.56, .64, 1);
-  }
-
-  /* Banner slide-down */
-  @keyframes gnBannerDrop {
-    from { opacity: 0; transform: translateY(-100%); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .gn-banner { animation: gnBannerDrop .5s cubic-bezier(.22, 1, .36, 1); }
-
-  /* Section reveal on scroll */
-  .gn-reveal {
-    opacity: 0;
-    transform: translateY(24px);
-    transition: opacity .7s cubic-bezier(.22, 1, .36, 1),
-                transform .7s cubic-bezier(.22, 1, .36, 1);
-    will-change: opacity, transform;
-  }
-  .gn-reveal.gn-in {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Smoother input focus */
-  input, textarea, select {
-    transition: border-color .22s ease, box-shadow .22s ease;
-  }
-  input:focus, textarea:focus, select:focus {
-    box-shadow: 0 1px 0 0 #fff;
-  }
-
-  /* Better hover on nav links */
-  .nav-links a {
-    transition: color .22s ease, transform .22s ease;
-  }
-  .nav-links a:hover {
-    transform: translateY(-1px);
-  }
-
-  /* Floating buttons — pulse ring on hover */
-  .float-btn {
-    position: relative;
-  }
-  .float-btn::after {
-    content: "";
-    position: absolute;
-    inset: -4px;
-    border: 2px solid currentColor;
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity .3s ease, transform .3s ease;
-    pointer-events: none;
-  }
-  .float-btn:hover::after {
-    opacity: .35;
-    transform: scale(1.15);
-  }
-
-  /* Reduce motion for accessibility */
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: .01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: .01ms !important;
-    }
-  }
+  /* Order history table */
+  .order-history-table{width:100%;border-collapse:collapse;font-size:13px;background:#111;border:1px solid #1f1f1f}
+  .order-history-table th{text-align:left;font-family:ui-monospace,monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:#4a4a4a;font-weight:600;padding:12px 14px;border-bottom:1px solid #1f1f1f;background:#0d0d0d}
+  .order-history-table td{padding:12px 14px;border-bottom:1px solid #1f1f1f;vertical-align:middle}
+  .order-history-table tr:hover td{background:rgba(255,255,255,.02)}
 </style>
 </head>
 <body>
@@ -250,13 +87,15 @@
       <span class="brand-text">GAMENEST<small>.shop</small></span>
     </a>
     <div class="nav-links" id="navLinks">
+      <a href="#best">Best Sellers</a>
+      <a href="#deals-section">Deals</a>
+      <a href="#bundles-section">Bundles</a>
       <a href="#vbucks">V-Bucks</a>
       <a href="#crew">Crew</a>
       <a href="#gifts">Gifts</a>
-      <a href="#process">Process</a>
       <a href="#reviews">Reviews</a>
-      <a href="#payment">Payment</a>
-      <a href="#faq">FAQ</a>
+      <a href="#track">Track</a>
+      <a href="#support">Support</a>
       <button class="lang-btn" id="langBtn" type="button">عربي</button>
     </div>
     <div class="nav-icons">
@@ -278,6 +117,7 @@
 
 <main>
 
+<!-- ==================== HERO ==================== -->
 <section class="hero" id="top">
   <div class="marquee marquee-top" aria-hidden="true">
     <span>/// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// LEVEL UP /// GAMENEST /// NO LIMITS /// </span>
@@ -296,14 +136,10 @@
   <div class="corner corner-tr" aria-hidden="true"></div>
   <div class="corner corner-bl" aria-hidden="true"></div>
   <div class="corner corner-br" aria-hidden="true"></div>
-  <div class="hero-meta hero-meta-right" aria-hidden="true">GAMENEST // METADATA_SYNCED</div>
-  <div class="hero-meta hero-meta-left" aria-hidden="true">TERMINAL_ONLINE // PORT_8080</div>
   <div class="hero-inner">
     <img src="logo.png" alt="" class="hero-mark" onerror="this.style.display='none'">
     <div class="hero-status">
-      <span class="tag"><span class="dot"></span>
-        <span>SYSTEM ACTIVE // CORE_v1.0.4</span>
-      </span>
+      <span class="tag"><span class="dot"></span><span>SYSTEM ACTIVE // CORE_v1.0.4</span></span>
       <span class="tag-sub">SECURE_LINK // USER: GUEST_09</span>
     </div>
     <h1 class="glitch" data-text="GAMENEST">GAMENEST</h1>
@@ -318,13 +154,10 @@
       <li><span class="tick">✓</span><span>24/7 Support</span></li>
       <li><span class="tick">✓</span><span>Verified Seller</span></li>
     </ul>
-    <a href="#process" class="scroll-hint">
-      <span>SCROLL</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7-7-7M19 5l-7 7-7-7"/></svg>
-    </a>
   </div>
 </section>
 
+<!-- ==================== TICKER ==================== -->
 <section class="ticker" aria-hidden="true">
   <div class="ticker-track">
     <span>⚡ 800 VB — 199 EGP</span><span class="sep">///</span>
@@ -346,6 +179,40 @@
   </div>
 </section>
 
+<!-- ==================== BEST SELLERS ==================== -->
+<section id="best" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ HOT_SELLERS ]</span>
+    <h2 class="sec-title">BEST_SELLERS</h2>
+    <p class="sec-sub">WHAT PLAYERS ARE BUYING MOST</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridBest"></div>
+</section>
+
+<!-- ==================== DEALS ==================== -->
+<section id="deals-section" class="section" style="display:none">
+  <div class="sec-head">
+    <span class="sec-label">[ LIMITED_TIME_DROP ]</span>
+    <h2 class="sec-title">DEALS_&amp;_OFFERS</h2>
+    <p class="sec-sub">LIMITED-TIME DISCOUNTS — GRAB THEM FAST</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridDeals"></div>
+</section>
+
+<!-- ==================== BUNDLES ==================== -->
+<section id="bundles-section" class="section" style="display:none">
+  <div class="sec-head">
+    <span class="sec-label">[ SAVE_MORE ]</span>
+    <h2 class="sec-title">BUNDLES</h2>
+    <p class="sec-sub">COMBO PACKS AT A DISCOUNTED PRICE</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="pgrid" id="gridBundles"></div>
+</section>
+
+<!-- ==================== HOW IT WORKS ==================== -->
 <section id="process" class="section">
   <div class="glow glow-tr"></div>
   <div class="glow glow-bl"></div>
@@ -386,17 +253,8 @@
     </article>
   </div>
 </section>
-  
-<section id="best" class="section">
-  <div class="sec-head">
-    <span class="sec-label">[ HOT_SELLERS ]</span>
-    <h2 class="sec-title">BEST_SELLERS</h2>
-    <p class="sec-sub">WHAT PLAYERS ARE BUYING MOST</p>
-    <div class="sec-bar"></div>
-  </div>
-  <div class="pgrid" id="gridBest"></div>
-</section>
 
+<!-- ==================== V-BUCKS ==================== -->
 <section id="vbucks" class="section">
   <div class="sec-head">
     <span class="sec-label">[ V-BUCKS ]</span>
@@ -408,6 +266,7 @@
   <div class="pgrid" id="gridVB"></div>
 </section>
 
+<!-- ==================== WEEKLY DROP ==================== -->
 <section class="deal-banner section">
   <div class="deal-inner">
     <div class="deal-tag">[ LIMITED_TIME_DROP ]</div>
@@ -422,6 +281,7 @@
   </div>
 </section>
 
+<!-- ==================== CREW ==================== -->
 <section id="crew" class="section">
   <div class="sec-head">
     <span class="sec-label">[ FORTNITE CREW ]</span>
@@ -433,6 +293,7 @@
   <div class="pgrid" id="gridCrew"></div>
 </section>
 
+<!-- ==================== GIFTS ==================== -->
 <section id="gifts" class="section">
   <div class="sec-head">
     <span class="sec-label">[ FORTNITE GIFTS ]</span>
@@ -443,6 +304,7 @@
   <div class="pgrid" id="gridGift"></div>
 </section>
 
+<!-- ==================== WHY US ==================== -->
 <section class="why section">
   <div class="sec-head">
     <span class="sec-label">[ WHY_GAMENEST ]</span>
@@ -459,6 +321,7 @@
   </div>
 </section>
 
+<!-- ==================== REVIEWS ==================== -->
 <section id="reviews" class="section">
   <div class="sec-head">
     <span class="sec-label">[ COMMUNITY_FEEDBACK ]</span>
@@ -475,6 +338,7 @@
       <button type="button" class="star" data-value="5">★</button>
     </div>
     <input id="reviewName" maxlength="40" placeholder="Your name (optional)" autocomplete="off">
+    <input id="reviewOrderId" maxlength="30" placeholder="Order code (optional — for verified badge)" autocomplete="off" style="text-transform:uppercase">
     <textarea id="reviewText" maxlength="280" placeholder="Tell us about your order (optional)"></textarea>
     <button class="btn" id="submitReview" type="button">Submit Rating</button>
     <p class="review-note" id="reviewNote"></p>
@@ -482,6 +346,7 @@
   <div class="review-list" id="reviewList"></div>
 </section>
 
+<!-- ==================== PAYMENT ==================== -->
 <section id="payment" class="section">
   <div class="glow glow-tr"></div>
   <div class="glow glow-bl"></div>
@@ -515,34 +380,8 @@
     </div>
   </div>
 </section>
-<section id="support" class="section">
-  <div class="sec-head">
-    <span class="sec-label">[ SUPPORT_DESK ]</span>
-    <h2 class="sec-title">NEED_HELP?</h2>
-    <p class="sec-sub">OPEN A TICKET — WE REPLY WITHIN 24 HOURS</p>
-    <div class="sec-bar"></div>
-  </div>
-  <div class="support-form" style="max-width:640px;margin:0 auto;background:var(--panel,#111);border:1px solid var(--border,#222);padding:32px 28px;display:flex;flex-direction:column;gap:18px">
-    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
-      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">YOUR_NAME</label>
-      <input id="ticketName" type="text" placeholder="Enter your name" maxlength="60" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
-    </div>
-    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
-      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">EMAIL_ADDRESS</label>
-      <input id="ticketEmail" type="email" placeholder="you@example.com" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
-    </div>
-    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
-      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">ORDER_CODE (OPTIONAL)</label>
-      <input id="ticketOrder" type="text" placeholder="GN-XXXXX-XXXXX" maxlength="30" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid var(--border,#222);color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
-    </div>
-    <div class="co-field" style="display:flex;flex-direction:column;gap:9px">
-      <label style="font-family:var(--mono,monospace);font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--dim,#4a4a4a)">MESSAGE</label>
-      <textarea id="ticketMsg" placeholder="Describe your issue..." maxlength="1000" rows="4" style="background:transparent;border:1.5px solid var(--border,#222);color:#fff;padding:12px;outline:none;font-family:inherit;font-size:14px;resize:vertical;min-height:100px"></textarea>
-    </div>
-    <button class="btn" id="submitTicket" type="button">SUBMIT_TICKET</button>
-    <p class="review-note" id="ticketNote" style="font-family:var(--mono,monospace);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted,#8a8a8a);text-align:center;min-height:1em"></p>
-  </div>
-</section>
+
+<!-- ==================== ORDER TRACKING ==================== -->
 <section id="track" class="section">
   <div class="sec-head">
     <span class="sec-label">[ ORDER_LOOKUP ]</span>
@@ -559,7 +398,55 @@
   </div>
 </section>
 
-  <section id="faq" class="section">
+<!-- ==================== ORDER HISTORY ==================== -->
+<section id="history" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ MY_ORDERS ]</span>
+    <h2 class="sec-title">ORDER_HISTORY</h2>
+    <p class="sec-sub">LOOK UP YOUR ORDER HISTORY BY EMAIL</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div style="max-width:640px;margin:0 auto">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <input id="historyEmail" type="email" placeholder="you@example.com" autocomplete="off" style="flex:1;min-width:220px;background:#111;border:1px solid #2a2a2a;color:#fff;padding:14px 16px;font-family:ui-monospace,monospace;font-size:13px;outline:none">
+      <button id="historyBtn" type="button" style="padding:14px 28px;background:#fff;color:#0a0a0a;border:1px solid #fff;font-family:ui-monospace,monospace;font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;transition:.2s">SEARCH</button>
+    </div>
+    <div id="historyResult"></div>
+  </div>
+</section>
+
+<!-- ==================== SUPPORT ==================== -->
+<section id="support" class="section">
+  <div class="sec-head">
+    <span class="sec-label">[ SUPPORT_DESK ]</span>
+    <h2 class="sec-title">NEED_HELP?</h2>
+    <p class="sec-sub">OPEN A TICKET — WE REPLY WITHIN 24 HOURS</p>
+    <div class="sec-bar"></div>
+  </div>
+  <div class="support-form" style="max-width:640px;margin:0 auto;background:#111;border:1px solid #222;padding:32px 28px;display:flex;flex-direction:column;gap:18px">
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#4a4a4a">YOUR_NAME</label>
+      <input id="ticketName" type="text" placeholder="Enter your name" maxlength="60" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid #222;color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#4a4a4a">EMAIL_ADDRESS</label>
+      <input id="ticketEmail" type="email" placeholder="you@example.com" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid #222;color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#4a4a4a">ORDER_CODE (OPTIONAL)</label>
+      <input id="ticketOrder" type="text" placeholder="GN-XXXXX-XXXXX" maxlength="30" autocomplete="off" style="background:transparent;border:none;border-bottom:1.5px solid #222;color:#fff;padding:12px 0;outline:none;font-family:inherit;font-size:15px">
+    </div>
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <label style="font-family:ui-monospace,monospace;font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:#4a4a4a">MESSAGE</label>
+      <textarea id="ticketMsg" placeholder="Describe your issue..." maxlength="1000" rows="4" style="background:transparent;border:1.5px solid #222;color:#fff;padding:12px;outline:none;font-family:inherit;font-size:14px;resize:vertical;min-height:100px"></textarea>
+    </div>
+    <button class="btn" id="submitTicket" type="button">SUBMIT_TICKET</button>
+    <p class="review-note" id="ticketNote" style="font-family:ui-monospace,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#8a8a8a;text-align:center;min-height:1em"></p>
+  </div>
+</section>
+
+<!-- ==================== FAQ ==================== -->
+<section id="faq" class="section">
   <div class="sec-head">
     <span class="sec-label">[FAQ // KNOWLEDGE_BASE]</span>
     <h2 class="sec-title">SYSTEM_FAQ</h2>
@@ -574,6 +461,7 @@
   </div>
 </section>
 
+<!-- ==================== FINAL CTA ==================== -->
 <section class="final-cta section">
   <div class="cta-inner">
     <span class="sec-label">[ READY_TO_PLAY ]</span>
@@ -588,7 +476,7 @@
 
 </main>
 
-<!-- PRODUCT MODAL -->
+<!-- ==================== PRODUCT MODAL ==================== -->
 <div class="modal" id="productModal" aria-hidden="true">
   <div class="modal-backdrop" data-close></div>
   <div class="modal-box modal-detail">
@@ -629,10 +517,15 @@
         </div>
       </div>
     </div>
+
+    <div id="relatedWrap" style="display:none;padding:0 36px 36px">
+      <div class="rp-head">// YOU_MAY_ALSO_LIKE</div>
+      <div id="relatedGrid"></div>
+    </div>
   </div>
 </div>
 
-<!-- CHECKOUT MODAL -->
+<!-- ==================== CHECKOUT MODAL ==================== -->
 <div class="modal" id="checkoutModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-checkout></div>
   <div class="modal-box modal-checkout">
@@ -643,13 +536,8 @@
         <h3 id="coTitle">—</h3>
 
         <div class="discount-box">
-          <div class="discount-head">
-            <span>// DISCOUNT_SYSTEM_METRICS</span>
-            <span id="discountPct">0%</span>
-          </div>
-          <div class="discount-track">
-            <div class="discount-fill" id="discountFill" style="width:0%"></div>
-          </div>
+          <div class="discount-head"><span>// DISCOUNT_SYSTEM_METRICS</span><span id="discountPct">0%</span></div>
+          <div class="discount-track"><div class="discount-fill" id="discountFill" style="width:0%"></div></div>
           <div class="discount-msg" id="discountMsg">Add 2 more item(s) to unlock a 10% discount</div>
         </div>
 
@@ -689,17 +577,8 @@
       </div>
 
       <div class="checkout-right">
-        <div class="co-field">
-          <label>FULL_NAME</label>
-          <input id="coUser" type="text" placeholder="ENTER PLAYER HANDLE..." maxlength="50" autocomplete="off">
-        </div>
-
-        <div class="co-field">
-          <label>EMAIL_ADDRESS</label>
-          <input id="coEmail" type="email" placeholder="ENTER SECURE EMAIL NODE..." autocomplete="off">
-          <p class="co-error" id="emailError" hidden></p>
-        </div>
-
+        <div class="co-field"><label>FULL_NAME</label><input id="coUser" type="text" placeholder="ENTER PLAYER HANDLE..." maxlength="50" autocomplete="off"></div>
+        <div class="co-field"><label>EMAIL_ADDRESS</label><input id="coEmail" type="email" placeholder="ENTER SECURE EMAIL NODE..." autocomplete="off"><p class="co-error" id="emailError" hidden></p></div>
         <div class="co-field">
           <label>PHONE_NUMBER</label>
           <div class="phone-row">
@@ -732,7 +611,6 @@
           </div>
           <p class="co-error" id="phoneError" hidden></p>
         </div>
-
         <div class="co-field">
           <label>PAYMENT_PROOF_RECEIPT</label>
           <div class="upload-box" id="uploadBox" role="button" tabindex="0">
@@ -748,12 +626,7 @@
           <img id="proofPreview" class="proof-preview" alt="" hidden>
           <span class="proof-remove" id="proofRemove" hidden>✕ Remove file</span>
         </div>
-
-        <div class="co-field">
-          <label>PAYMENT_REFERENCE</label>
-          <div class="co-pre" id="coReference">—</div>
-        </div>
-
+        <div class="co-field"><label>PAYMENT_REFERENCE</label><div class="co-pre" id="coReference">—</div></div>
         <div class="co-actions">
           <button class="btn" id="submitOrder" type="button">SUBMIT_ORDER</button>
           <button class="btn ghost" id="copyTicket" type="button">COPY TICKET</button>
@@ -763,14 +636,13 @@
   </div>
 </div>
 
-<!-- SUCCESS MODAL -->
+<!-- ==================== SUCCESS MODAL ==================== -->
 <div class="modal" id="successModal" aria-hidden="true">
   <div class="modal-backdrop"></div>
   <div class="modal-box modal-success">
     <div class="success-check">✓</div>
     <h2 class="success-title">[ TRANSACTION_RECEIVED ]</h2>
     <p class="success-sub">AWAITING_ADMIN_APPROVAL.</p>
-
     <div class="success-details">
       <div class="sd-row"><span>SYS_STATUS:</span><span>VERIFYING_RECEIPT</span></div>
       <div class="sd-row"><span>ORDER_CODE:</span><span id="successOrderCode">—</span></div>
@@ -779,12 +651,11 @@
       <div class="sd-row"><span>PLAYER:</span><span id="successPlayer">—</span></div>
       <div class="sd-row"><span>COMM_LINK:</span><span>ACTIVE</span></div>
     </div>
-
     <button class="btn success-terminate" id="terminateLink" type="button">// TERMINATE_COMM_LINK</button>
   </div>
 </div>
 
-<!-- CART MODAL -->
+<!-- ==================== CART MODAL ==================== -->
 <div class="modal" id="cartModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-cart></div>
   <div class="modal-box modal-cart">
@@ -798,7 +669,7 @@
   </div>
 </div>
 
-<!-- FAV MODAL -->
+<!-- ==================== FAV MODAL ==================== -->
 <div class="modal" id="favModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-fav></div>
   <div class="modal-box modal-cart">
@@ -808,7 +679,7 @@
   </div>
 </div>
 
-<!-- SEARCH MODAL -->
+<!-- ==================== SEARCH MODAL ==================== -->
 <div class="modal" id="searchModal" aria-hidden="true">
   <div class="modal-backdrop" data-close-search></div>
   <div class="modal-box modal-search">
@@ -849,17 +720,20 @@
       </div>
       <div>
         <h4>SHOP</h4>
+        <a href="#best">Best Sellers</a>
+        <a href="#deals-section">Deals</a>
+        <a href="#bundles-section">Bundles</a>
         <a href="#vbucks">V-Bucks</a>
         <a href="#crew">Crew</a>
         <a href="#gifts">Gifts</a>
-        <a href="#reviews">Reviews</a>
       </div>
       <div>
-        <h4>COMMUNITY</h4>
-        <a href="https://www.instagram.com/gamenestshop/" target="_blank" rel="noopener">Instagram · @GamenestGifts</a>
-        <a href="https://discord.gg/X3qCVbnW3K" target="_blank" rel="noopener">Discord Server</a>
+        <h4>HELP</h4>
+        <a href="#track">Track Order</a>
+        <a href="#history">Order History</a>
+        <a href="#support">Support</a>
         <a href="#faq">FAQ</a>
-        <a href="#payment">Payment</a>
+        <a href="#reviews">Reviews</a>
       </div>
       <div>
         <h4>PAYMENT</h4>
@@ -878,9 +752,10 @@
 
 <script src="script.js"></script>
 
+<!-- Firebase reviews + rating widget -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, getDocs, query, orderBy, limit, serverTimestamp, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
@@ -895,6 +770,7 @@
   const stars = Array.from(starInput.querySelectorAll('.star'));
   const reviewTextEl = document.getElementById('reviewText');
   const reviewNameEl = document.getElementById('reviewName');
+  const reviewOrderEl = document.getElementById('reviewOrderId');
   const submitBtn = document.getElementById('submitReview');
   const reviewNote = document.getElementById('reviewNote');
   const reviewList = document.getElementById('reviewList');
@@ -912,7 +788,7 @@
     reviewNote.textContent = 'Ratings are not connected yet.';
   }
 
-  function paintStars(upTo, className) {
+  function paintStars(upTo, className){
     stars.forEach(s => s.classList.toggle(className, Number(s.dataset.value) <= upTo));
   }
 
@@ -925,15 +801,24 @@
     });
   });
 
-  function escapeHtml(str) {
+  function escapeHtml(str){
     const div = document.createElement('div');
     div.textContent = str;
     return div.innerHTML;
   }
 
-  function renderReviews(reviews) {
+  async function checkVerified(orderId){
+    if (!orderId || !db) return false;
+    try {
+      const q = query(collection(db, 'orders'), where('orderId', '==', orderId.trim().toUpperCase()), limit(1));
+      const snap = await getDocs(q);
+      return !snap.empty;
+    } catch(e){ return false; }
+  }
+
+  async function renderReviews(reviews){
     reviewList.innerHTML = '';
-    if (!reviews.length) {
+    if (!reviews.length){
       reviewList.innerHTML = '<div class="review-empty">No ratings yet — be the first.</div>';
       reviewSummary.textContent = 'Be the first to leave a rating.';
       return;
@@ -941,29 +826,30 @@
     const avg = (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1);
     reviewSummary.textContent = `${avg} average from ${reviews.length} rating${reviews.length === 1 ? '' : 's'}`;
 
-    reviews.forEach(r => {
+    for (const r of reviews){
       const card = document.createElement('div');
       card.className = 'review-card';
       const starsStr = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
       const date = r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
       const name = r.name ? escapeHtml(r.name) : 'Anonymous';
+      const verified = r.orderId ? await checkVerified(r.orderId) : false;
       card.innerHTML = `
         <div class="review-stars">${starsStr}</div>
         <p>${r.text ? escapeHtml(r.text) : '<span class="review-muted">No comment left.</span>'}</p>
-        <div class="review-meta">${name}${date ? ' · ' + date : ''}</div>
+        <div class="review-meta">${name}${verified ? '<span class="verified-badge">✓ Verified</span>' : ''}${date ? ' · ' + date : ''}</div>
       `;
       reviewList.appendChild(card);
-    });
+    }
   }
 
-  async function loadReviews() {
+  async function loadReviews(){
     if (!db) return;
     try {
       const q = query(collection(db, 'reviews'), orderBy('createdAt', 'desc'), limit(30));
       const snap = await getDocs(q);
       const reviews = snap.docs.map(doc => {
         const d = doc.data();
-        return { rating: d.rating, text: d.text, name: d.name, createdAt: d.createdAt ? d.createdAt.toMillis() : null };
+        return { rating: d.rating, text: d.text, name: d.name, orderId: d.orderId || "", createdAt: d.createdAt ? d.createdAt.toMillis() : null };
       });
       renderReviews(reviews);
     } catch (err) {
@@ -972,8 +858,8 @@
   }
 
   submitBtn.addEventListener('click', async () => {
-    if (!selectedRating) { reviewNote.textContent = 'Pick a star rating first.'; return; }
-    if (!db) { reviewNote.textContent = 'Ratings are not connected yet.'; return; }
+    if (!selectedRating){ reviewNote.textContent = 'Pick a star rating first.'; return; }
+    if (!db){ reviewNote.textContent = 'Ratings are not connected yet.'; return; }
     submitBtn.disabled = true;
     reviewNote.textContent = 'Submitting…';
     try {
@@ -981,11 +867,13 @@
         rating: selectedRating,
         text: reviewTextEl.value.trim().slice(0, 280),
         name: reviewNameEl.value.trim().slice(0, 40),
+        orderId: reviewOrderEl ? reviewOrderEl.value.trim().toUpperCase().slice(0, 30) : "",
         createdAt: serverTimestamp()
       });
       reviewNote.textContent = 'Thanks — your rating has been saved.';
       reviewTextEl.value = '';
       reviewNameEl.value = '';
+      if (reviewOrderEl) reviewOrderEl.value = '';
       selectedRating = 0;
       paintStars(0, 'selected');
       loadReviews();
@@ -998,48 +886,87 @@
 
   loadReviews();
 </script>
-  <script>
-  /* ============================================================
-     GAMENEST — Smooth reveals + micro-interactions
-     ============================================================ */
-  (function () {
-    "use strict";
 
-    /* 1. Auto-reveal sections on scroll */
-    const revealTargets = document.querySelectorAll(
-      ".section, .pcard, .why-card, .process-grid, .review-form, .gateway, .deal-inner, .final-cta .cta-inner"
-    );
+<!-- Order History logic -->
+<script>
+  (function(){
+    const btn = document.getElementById("historyBtn");
+    const input = document.getElementById("historyEmail");
+    const result = document.getElementById("historyResult");
+    if (!btn || !input || !result) return;
 
-    revealTargets.forEach(el => el.classList.add("gn-reveal"));
+    async function searchHistory(){
+      const email = input.value.trim().toLowerCase();
+      if (!email){ result.innerHTML = '<div style="color:#ffb454;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:12px">⚠ Enter your email</div>'; return; }
+      if (!window.__gn_db){ result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:12px">⚠ Offline</div>'; return; }
 
-    if ("IntersectionObserver" in window) {
-      const io = new IntersectionObserver((entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) {
-            e.target.classList.add("gn-in");
-            io.unobserve(e.target);
-          }
+      btn.disabled = true; btn.textContent = "SEARCHING...";
+      result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">Searching...</div>';
+
+      try {
+        const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const q = query(collection(window.__gn_db, "orders"), where("email", "==", email));
+        const snap = await getDocs(q);
+
+        if (snap.empty){
+          result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:20px;border:1px dashed #2a2a2a">No orders found for that email</div>';
+          return;
+        }
+
+        const orders = snap.docs.map(d => d.data()).sort((a,b) => {
+          const ta = a.createdAt?.toDate?.() || 0;
+          const tb = b.createdAt?.toDate?.() || 0;
+          return tb - ta;
         });
-      }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
 
+        result.innerHTML = '<div style="overflow-x:auto"><table class="order-history-table">' +
+          '<thead><tr><th>Order</th><th>Date</th><th>Product</th><th>Price</th><th>Status</th></tr></thead><tbody>' +
+          orders.map(o => {
+            const d = o.createdAt?.toDate?.();
+            const dateStr = d ? d.toLocaleDateString("en-GB", {day:"2-digit",month:"short",year:"numeric"}) : "—";
+            return '<tr>' +
+              '<td style="font-family:ui-monospace,monospace">' + (o.orderId || "—") + '</td>' +
+              '<td style="font-family:ui-monospace,monospace;font-size:11.5px">' + dateStr + '</td>' +
+              '<td>' + (o.product || "—") + '</td>' +
+              '<td style="font-family:ui-monospace,monospace">' + (o.price || 0).toLocaleString("en-US") + ' EGP</td>' +
+              '<td><span class="badge ' + (o.status || "pending") + '">' + (o.status || "pending") + '</span></td>' +
+            '</tr>';
+          }).join("") +
+          '</tbody></table></div>';
+      } catch (e){
+        result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:12px">⚠ ' + e.message + '</div>';
+      } finally {
+        btn.disabled = false; btn.textContent = "SEARCH";
+      }
+    }
+
+    btn.addEventListener("click", searchHistory);
+    input.addEventListener("keypress", (e) => { if (e.key === "Enter") searchHistory(); });
+  })();
+</script>
+
+<!-- Smooth reveals -->
+<script>
+  (function(){
+    "use strict";
+    const revealTargets = document.querySelectorAll(".section, .pcard, .why-card, .process-grid, .review-form, .gateway, .deal-inner, .final-cta .cta-inner");
+    revealTargets.forEach(el => el.classList.add("gn-reveal"));
+    if ("IntersectionObserver" in window){
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add("gn-in"); io.unobserve(e.target); } });
+      }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
       revealTargets.forEach(el => io.observe(el));
     } else {
       revealTargets.forEach(el => el.classList.add("gn-in"));
     }
-
-    /* 2. Re-run reveal check when products are injected */
-    const grids = ["gridVB", "gridCrew", "gridGift"].map(id => document.getElementById(id));
+    const grids = ["gridVB","gridCrew","gridGift","gridBest","gridDeals","gridBundles"].map(id => document.getElementById(id));
     grids.forEach(grid => {
       if (!grid) return;
       const mo = new MutationObserver(() => {
-        grid.querySelectorAll(".pcard-prod").forEach((card, i) => {
-          card.style.animationDelay = (i * 0.04) + "s";
-        });
+        grid.querySelectorAll(".pcard-prod").forEach((card, i) => { card.style.animationDelay = (i * 0.04) + "s"; });
       });
       mo.observe(grid, { childList: true });
     });
-
-    /* 3. Smooth scroll for anchor links (fallback for older browsers) */
     document.querySelectorAll('a[href^="#"]').forEach(a => {
       a.addEventListener("click", (e) => {
         const href = a.getAttribute("href");
@@ -1051,126 +978,10 @@
         window.scrollTo({ top, behavior: "smooth" });
       });
     });
-
-    /* 4. Subtle parallax on hero marquee */
-    const hero = document.querySelector(".hero");
-    if (hero) {
-      let ticking = false;
-      window.addEventListener("scroll", () => {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(() => {
-          const y = window.pageYOffset;
-          const marquees = hero.querySelectorAll(".marquee");
-          marquees.forEach((m, i) => {
-            m.style.transform = "translateY(" + (y * (0.05 + i * 0.03)) + "px)";
-          });
-          ticking = false;
-        });
-      }, { passive: true });
-    }
-
-    /* 5. Prefetch product images when idle */
-    if ("requestIdleCallback" in window) {
-      requestIdleCallback(() => {
-        ["vbucks.png", "crew.png", "gift.png"].forEach(src => {
-          const img = new Image();
-          img.src = src;
-        });
-      });
+    if ("requestIdleCallback" in window){
+      requestIdleCallback(() => { ["vbucks.png","crew.png","gift.png"].forEach(src => { const img = new Image(); img.src = src; }); });
     }
   })();
-/* ============================================================
-   ORDER TRACKING
-   ============================================================ */
-const STATUS_LABELS = {
-  pending:    "Pending Payment Review",
-  paid:       "Payment Approved",
-  processing: "Being Processed",
-  delivered:  "Delivered",
-  rejected:   "Rejected",
-  refunded:   "Refunded"
-};
-
-async function trackOrder(){
-  const input = document.getElementById("trackInput");
-  const result = document.getElementById("trackResult");
-  const btn = document.getElementById("trackBtn");
-  if (!input || !result || !btn) return;
-
-  const code = input.value.trim().toUpperCase();
-  if (!code){ result.innerHTML = '<div style="color:#ffb454;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Enter your order code first</div>'; return; }
-  if (!window.__gn_db){ result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Tracking offline</div>'; return; }
-
-  btn.disabled = true;
-  btn.textContent = "SEARCHING...";
-  result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">Searching...</div>';
-
-  try {
-    const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-    const q = query(collection(window.__gn_db, "orders"), where("orderId", "==", code));
-    const snap = await getDocs(q);
-
-    if (snap.empty){
-      result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:20px;border:1px dashed #2a2a2a">✕ Order not found — double-check your code or contact support</div>';
-      return;
-    }
-
-    const o = snap.docs[0].data();
-    const status = o.status || "pending";
-    const steps = ["pending", "paid", "processing", "delivered"];
-    const currentIdx = steps.indexOf(status);
-    const isFailed = status === "rejected" || status === "refunded";
-    const dateStr = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString("en-GB", {day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
-
-    result.innerHTML = `
-      <div style="background:#111;border:1px solid #2a2a2a;padding:26px 24px">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #222">
-          <div>
-            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">ORDER_CODE</div>
-            <div style="font-family:ui-monospace,monospace;font-size:15px;font-weight:900;color:#fff;letter-spacing:.1em">${o.orderId || code}</div>
-            <div style="font-size:13px;color:#8a8a8a;margin-top:6px">${o.product || "—"}</div>
-          </div>
-          <div style="text-align:right">
-            <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">STATUS</div>
-            <div style="font-family:ui-monospace,monospace;font-size:12px;font-weight:800;padding:6px 14px;border:1px solid;letter-spacing:.14em;text-transform:uppercase;${isFailed ? "color:#ff4a4a;border-color:#ff4a4a;background:rgba(255,74,74,.08)" : status === "delivered" ? "color:#5fc85f;border-color:#5fc85f;background:rgba(95,200,95,.08)" : status === "pending" ? "color:#ffb454;border-color:#ffb454;background:rgba(255,180,84,.08)" : "color:#5fc8ff;border-color:#5fc8ff;background:rgba(95,200,255,.08)"}">${STATUS_LABELS[status] || status}</div>
-          </div>
-        </div>
-
-        ${isFailed ? "" : `
-        <div style="display:flex;justify-content:space-between;position:relative;margin-bottom:24px;padding:0 4px">
-          ${steps.map((s, i) => `
-            <div style="flex:1;text-align:center;position:relative">
-              <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${i <= currentIdx ? "#fff" : "#2a2a2a"};background:${i <= currentIdx ? "#fff" : "#111"};margin:0 auto 8px;position:relative;z-index:2"></div>
-              ${i < steps.length - 1 ? `<div style="position:absolute;top:10px;left:50%;right:-50%;height:2px;background:${i < currentIdx ? "#fff" : "#2a2a2a"};z-index:1"></div>` : ""}
-              <div style="font-family:ui-monospace,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${i <= currentIdx ? "#fff" : "#4a4a4a"};line-height:1.3">${STATUS_LABELS[s]}</div>
-            </div>
-          `).join("")}
-        </div>
-        `}
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
-          <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">PLACED</span><div style="font-family:ui-monospace,monospace;color:#d8d8d8;margin-top:4px">${dateStr}</div></div>
-          <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">AMOUNT</span><div style="font-family:ui-monospace,monospace;color:#fff;font-weight:800;margin-top:4px">${(o.price || 0).toLocaleString("en-US")} EGP</div></div>
-        </div>
-
-        ${status === "delivered" ? '<div style="margin-top:18px;padding:12px;background:rgba(95,200,95,.06);border-left:3px solid #5fc85f;font-size:12px;color:#d8d8d8">✓ Delivered — check your Fortnite account</div>' : ""}
-        ${status === "pending" ? '<div style="margin-top:18px;padding:12px;background:rgba(255,180,84,.06);border-left:3px solid #ffb454;font-size:12px;color:#d8d8d8">⏱ Payment pending review — usually approved within 30 minutes</div>' : ""}
-      </div>
-    `;
-  } catch(e){
-    result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:16px">⚠ ' + e.message + '</div>';
-  } finally {
-    btn.disabled = false;
-    btn.textContent = "TRACK";
-  }
-}
-
-const trackBtn = document.getElementById("trackBtn");
-if (trackBtn) trackBtn.addEventListener("click", trackOrder);
-const trackInput = document.getElementById("trackInput");
-if (trackInput) trackInput.addEventListener("keypress", (e) => { if (e.key === "Enter") trackOrder(); });
-
-  </script>
+</script>
 </body>
 </html>
