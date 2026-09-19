@@ -883,6 +883,39 @@
     });
   }
 
+   /* ============================================================
+     SEND ORDER TO INSTAGRAM
+     ============================================================ */
+  const sendToInstaBtn = $("#sendToInsta");
+  if (sendToInstaBtn){
+    sendToInstaBtn.addEventListener("click", async () => {
+      const code = activeOrderId || "";
+      if (!code){ toast("No order code yet"); return; }
+
+      /* Build the message */
+      const msg = [
+        "Hi GAMENEST! I just placed an order:",
+        "",
+        "Order: " + code,
+        "Product: " + (activeProduct ? activeProduct.product : "—"),
+        "Name: " + ((coUser && coUser.value.trim()) || "—"),
+        "Email: " + ((coEmail && coEmail.value.trim()) || "—"),
+        "Payment: " + PAYMENTS[activePayment].label,
+        "",
+        "Attaching payment screenshot now."
+      ].join("\n");
+
+      /* Copy to clipboard */
+      const ok = await copyText(msg);
+      toast(ok ? "✓ Code copied — paste in Instagram" : "Copy the code manually");
+
+      /* Open Instagram DM */
+      setTimeout(() => {
+        window.open("https://ig.me/m/gamenestshop", "_blank", "noopener");
+      }, 300);
+    });
+  }
+ 
   const terminateLink = $("#terminateLink");
   if (terminateLink){
     terminateLink.addEventListener("click", () => {
