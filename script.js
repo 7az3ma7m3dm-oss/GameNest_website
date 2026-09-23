@@ -241,11 +241,13 @@
     '</article>';
   }
 
-  function renderAllProducts(){
+    function renderAllProducts(){
+    const byPrice = (a, b) => priceOf(a) - priceOf(b);
+
     const vb = $("#gridVB"), cr = $("#gridCrew"), gf = $("#gridGift");
-    if (vb) vb.innerHTML = PRODUCTS.filter(p => p.kind === "vb").map(buildCardHTML).join("");
-    if (cr) cr.innerHTML = PRODUCTS.filter(p => p.kind === "crew").map(buildCardHTML).join("");
-    if (gf) gf.innerHTML = PRODUCTS.filter(p => p.kind === "gift").map(buildCardHTML).join("");
+    if (vb) vb.innerHTML = PRODUCTS.filter(p => p.kind === "vb").sort(byPrice).map(buildCardHTML).join("");
+    if (cr) cr.innerHTML = PRODUCTS.filter(p => p.kind === "crew").sort(byPrice).map(buildCardHTML).join("");
+    if (gf) gf.innerHTML = PRODUCTS.filter(p => p.kind === "gift").sort(byPrice).map(buildCardHTML).join("");
     bindCards();
   }
 
