@@ -1,1251 +1,642 @@
+/* ==========================================================================
+   NEXIFING — script.js
+   Version 3.0
+   Full interactive layer — menu, animations, forms, utilities, UX polish
+   ========================================================================== */
+
 (() => {
   "use strict";
 
-  /* ============================================================
-     FALLBACK PRODUCTS
-     ============================================================ */
-  let PRODUCTS = [
-    { id:"vb-800",   kind:"vb",   img:"vbucks.png", product:"800 V-Bucks",               price:199  },
-    { id:"vb-2400",  kind:"vb",   img:"vbucks.png", product:"2400 V-Bucks",              price:479  },
-    { id:"vb-4500",  kind:"vb",   img:"vbucks.png", product:"4500 V-Bucks",              price:759  },
-    { id:"vb-12500", kind:"vb",   img:"vbucks.png", product:"12500 V-Bucks",             price:1749 },
-    { id:"cr-1",     kind:"crew", img:"crew.png",   product:"Fortnite Crew - 1 Month",   price:210  },
-    { id:"cr-2",     kind:"crew", img:"crew.png",   product:"Fortnite Crew - 2 Months",  price:379  },
-    { id:"cr-3",     kind:"crew", img:"crew.png",   product:"Fortnite Crew - 3 Months",  price:559  },
-    { id:"cr-6",     kind:"crew", img:"crew.png",   product:"Fortnite Crew - 6 Months",  price:1049 },
-    { id:"cr-12",    kind:"crew", img:"crew.png",   product:"Fortnite Crew - 12 Months", price:1959 },
-    { id:"gf-500",   kind:"gift", img:"gift.png",   product:"500 V-Bucks Gift",           price:95   },
-    { id:"gf-800",   kind:"gift", img:"gift.png",   product:"800 V-Bucks Gift",           price:150  },
-    { id:"gf-1200",  kind:"gift", img:"gift.png",   product:"1200 V-Bucks Gift",          price:225  },
-    { id:"gf-1500",  kind:"gift", img:"gift.png",   product:"1500 V-Bucks Gift",          price:280  },
-    { id:"gf-1800",  kind:"gift", img:"gift.png",   product:"1800 V-Bucks Gift",          price:330  },
-    { id:"gf-2000",  kind:"gift", img:"gift.png",   product:"2000 V-Bucks Gift",          price:375  }
-  ];
+  /* ==========================================================================
+     0. UTILITIES
+     ========================================================================== */
+  const $  = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  const DESC = {
-    vb:   "Top up your Fortnite wallet with pure V-Bucks. Delivered straight to your Epic Games account in minutes.",
-    crew: "Fortnite Crew subscription — monthly V-Bucks, a Crew Pack, and the current Battle Pass included.",
-    gift: "Send a gift directly to any Fortnite friend's account. Perfect for birthdays and surprises.",
-    bundle: "Bundle deal — multiple items combined at a discounted price."
-  };
-
-  const PAYMENTS = {
-    vodafone: { label:"VODAFONE CASH", value:"0104 264 1080", link:"http://vf.eg/vfcash?id=mt&qrId=wgmEpY" },
-    instapay: { label:"INSTAPAY",      value:"0115 893 4284", link:"https://ipn.eg/S/iadqm/instapay/9n2XjE" },
-    telda:    { label:"TELDA",         value:"@itzadam",       link:"" }
-  };
-
-  let HOLDER = "Adam Mohamed Omar";
-  const HANDLE = "@GamenestGifts";
-
-  let activeProduct = null;
-  let activePayment = "vodafone";
-  let activeOrderId = null;
-  let toastTimer = null;
-  let proofFile = null;
-  let appliedPromo = null;
-
-  const $  = (s, r=document) => r.querySelector(s);
-  const $$ = (s, r=document) => [...r.querySelectorAll(s)];
-  const fmt = (n) => Number(n).toLocaleString("en-US");
-
-  /* ============================================================
-     STORAGE
-     ============================================================ */
-  const Storage = {
-    get(k, f){ try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : f; } catch { return f; } },
-    set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
-  };
-  const getCart = () => Storage.get("gn_cart", []);
-  const setCart = (c) => { Storage.set("gn_cart", c); updateBadges(); renderCart(); };
-  const getFavs = () => Storage.get("gn_favs", []);
-  const setFavs = (f) => { Storage.set("gn_favs", f); updateBadges(); renderFavs(); };
-
-  function makeOrderId(){
-    const n = new Date();
-    const s = n.getFullYear().toString().slice(-2) +
-      String(n.getMonth()+1).padStart(2,"0") +
-      String(n.getDate()).padStart(2,"0");
-    return "GN-" + s + "-" + Math.random().toString(36).slice(2,7).toUpperCase();
-  }
-
-  async function copyText(text){
-    try { await navigator.clipboard.writeText(text); return true; }
-    catch {
-      const ta = document.createElement("textarea");
-      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
-      document.body.appendChild(ta); ta.select();
-      let ok = false;
-      try { ok = document.execCommand("copy"); } catch {}
-      document.body.removeChild(ta);
-      return ok;
-    }
-  }
-
-  function toast(msg){
-    const el = $("#toast");
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove("show"), 1900);
-  }
-
-  /* ============================================================
-     PRICE HELPERS
-     ============================================================ */
-  function priceOf(p){ return Number(p.salePrice || p.price || 0); }
-  function hasDeal(p){ return p.salePrice && Number(p.salePrice) < Number(p.price); }
-  function discountPct(p){
-    if (!hasDeal(p)) return 0;
-    return Math.round((1 - Number(p.salePrice)/Number(p.price)) * 100);
-  }
-
-  /* ============================================================
-     FIRESTORE
-     ============================================================ */
-  async function loadProductsFromFirestore(){
-    if (!window.__gn_db) return;
-    try {
-      const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const snap = await getDocs(collection(window.__gn_db, "products"));
-      if (snap.empty) return;
-      const fromDb = [];
-      snap.docs.forEach(d => {
-        const p = d.data();
-        if (p.status === "disabled") return;
-        fromDb.push({
-          id: d.id,
-          product: p.product || d.id,
-          price: Number(p.price) || 0,
-          salePrice: p.salePrice ? Number(p.salePrice) : 0,
-          kind: p.kind || "vb",
-          img: p.img || "vbucks.png",
-          bundle: p.bundle === true || p.kind === "bundle",
-          bundleItems: p.bundleItems || ""
-        });
-      });
-      if (fromDb.length) PRODUCTS = fromDb;
-    } catch (e) {
-      console.warn("Products fetch failed:", e);
-    }
-  }
-
-  async function loadSettings(){
-    if (!window.__gn_db) return false;
-    try {
-      const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-
-      const paySnap = await getDoc(doc(window.__gn_db, "settings", "payment"));
-      if (paySnap.exists()){
-        const d = paySnap.data();
-        if (d.vodafone) PAYMENTS.vodafone.value = d.vodafone;
-        if (d.instapay) PAYMENTS.instapay.value = d.instapay;
-        if (d.telda)    PAYMENTS.telda.value    = d.telda;
-        if (d.holder)   HOLDER = d.holder;
+  const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
+  const throttle = (fn, wait) => {
+    let last = 0, timer = null;
+    return function(...args){
+      const now = Date.now();
+      const remaining = wait - (now - last);
+      if (remaining <= 0){
+        clearTimeout(timer);
+        timer = null;
+        last = now;
+        fn.apply(this, args);
+      } else if (!timer){
+        timer = setTimeout(() => {
+          last = Date.now();
+          timer = null;
+          fn.apply(this, args);
+        }, remaining);
       }
-
-      const socSnap = await getDoc(doc(window.__gn_db, "settings", "social"));
-      if (socSnap.exists()){
-        const d = socSnap.data();
-        const ig = document.querySelector('.float-btn[href*="instagram"]');
-        const dc = document.querySelector('.float-btn[href*="discord"]');
-        if (ig && d.instagram) ig.href = d.instagram;
-        if (dc && d.discord)   dc.href = d.discord;
-      }
-
-      const banSnap = await getDoc(doc(window.__gn_db, "settings", "banner"));
-      if (banSnap.exists() && banSnap.data().on && banSnap.data().text){
-        showBanner(banSnap.data());
-      }
-
-      const mainSnap = await getDoc(doc(window.__gn_db, "settings", "maintenance"));
-      if (mainSnap.exists() && mainSnap.data().on === true){
-        showMaintenance();
-        return true;
-      }
-    } catch (e) {
-      console.warn("Settings load failed:", e);
-    }
-    return false;
-  }
-
-  function showBanner(data){
-    let banner = document.getElementById("gnBanner");
-    if (!banner){
-      banner = document.createElement("div");
-      banner.id = "gnBanner";
-      banner.className = "gn-banner";
-      document.body.insertBefore(banner, document.body.firstChild);
-    }
-    banner.innerHTML = '<span class="gn-banner-dot"></span><span>' + (data.text || "") + '</span>';
-    banner.style.display = "flex";
-    if (data.link){
-      banner.style.cursor = "pointer";
-      banner.onclick = () => window.location.href = data.link;
-    }
-  }
-
-  function showMaintenance(){
-    document.body.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0a0a;color:#fff;font-family:ui-monospace,monospace;text-align:center;padding:20px">
-        <div>
-          <div style="font-size:4rem;margin-bottom:20px">🚧</div>
-          <h1 style="font-size:1.8rem;letter-spacing:.3em;margin-bottom:20px;text-transform:uppercase">Maintenance</h1>
-          <p style="color:#8a8a8a;font-size:14px;letter-spacing:.1em;max-width:400px;margin:0 auto">
-            We'll be right back. Come check us out soon!
-          </p>
-        </div>
-      </div>`;
-  }
-
-  /* ============================================================
-     CARD RENDERING
-     ============================================================ */
-  function buildCardHTML(p){
-    const isFav = getFavs().some(f => f.id === p.id);
-    const tag = p.kind === "vb" ? "// FORTNITE | V-BUCKS"
-              : p.kind === "crew" ? "// FORTNITE | CREW"
-              : p.kind === "bundle" ? "// BUNDLE"
-              : "// FORTNITE | GIFTS";
-    const deal = hasDeal(p);
-    const pct = discountPct(p);
-
-    const priceHTML = deal
-      ? '<div class="pcard-price"><s style="color:#4a4a4a;font-family:ui-monospace,monospace;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
-      : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
-
-    const dealBadge = deal
-      ? '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '% OFF</div>'
-      : '';
-
-    return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
-      '<div class="pcard-media">' +
-        '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-        dealBadge +
-        '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
-          '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
-            '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
-          '</svg>' +
-        '</button>' +
-      '</div>' +
-      '<div class="pcard-info">' +
-        '<div class="pcard-tag">' + tag + '</div>' +
-        '<h3 class="pcard-title">' + p.product + '</h3>' +
-        priceHTML +
-        '<div class="pcard-actions">' +
-          '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
-          '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
-        '</div>' +
-      '</div>' +
-    '</article>';
-  }
-
-    function renderAllProducts(){
-    const byPrice = (a, b) => priceOf(a) - priceOf(b);
-
-    const vb = $("#gridVB"), cr = $("#gridCrew"), gf = $("#gridGift");
-    if (vb) vb.innerHTML = PRODUCTS.filter(p => p.kind === "vb").sort(byPrice).map(buildCardHTML).join("");
-    if (cr) cr.innerHTML = PRODUCTS.filter(p => p.kind === "crew").sort(byPrice).map(buildCardHTML).join("");
-    if (gf) gf.innerHTML = PRODUCTS.filter(p => p.kind === "gift").sort(byPrice).map(buildCardHTML).join("");
-    bindCards();
-  }
-
-  function bindCards(){
-    $$(".pcard-prod").forEach(card => {
-      $$(".pcard-btn", card).forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          const a = btn.dataset.action;
-          if (a === "cart") addToCartById(card.dataset.id);
-          else if (a === "buy") openProductModal(card);
-        });
-      });
-      $$(".fav-btn", card).forEach(btn => {
-        btn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          toggleFavorite(card.dataset.id);
-        });
-      });
-    });
-  }
-
-  /* ============================================================
-     BEST SELLERS
-     ============================================================ */
-  async function loadBestSellers(){
-    const grid = document.getElementById("gridBest");
-    if (!grid) return;
-
-    let items = [];
-
-    if (window.__gn_db){
-      try {
-        const { collection, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-        const snap = await getDocs(collection(window.__gn_db, "orders"));
-        const counts = {};
-        snap.docs.forEach(d => {
-          const o = d.data();
-          const key = o.product || "";
-          if (!key) return;
-          counts[key] = (counts[key] || 0) + 1;
-        });
-        const top = Object.entries(counts).sort((a,b) => b[1] - a[1]).slice(0,4).map(([name]) => name);
-        top.forEach(name => {
-          const p = PRODUCTS.find(x => x.product === name);
-          if (p) items.push(p);
-        });
-      } catch(e){ console.warn("Best sellers fetch failed:", e); }
-    }
-
-    if (!items.length){
-      ["800 V-Bucks", "2400 V-Bucks", "Fortnite Crew - 1 Month", "500 V-Bucks Gift"].forEach(name => {
-        const p = PRODUCTS.find(x => x.product === name);
-        if (p) items.push(p);
-      });
-    }
-
-    if (!items.length) items = PRODUCTS.slice(0, 4);
-
-    grid.innerHTML = items.slice(0, 4).map(p => {
-      const tag = p.kind === "vb" ? "// V-BUCKS" : p.kind === "crew" ? "// CREW" : "// GIFT";
-      const isFav = getFavs().some(f => f.id === p.id);
-      const deal = hasDeal(p);
-      const pct = discountPct(p);
-
-      const priceHTML = deal
-        ? '<div class="pcard-price"><s style="color:#4a4a4a;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
-        : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
-
-      return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
-        '<div class="pcard-media">' +
-          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-          '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🔥 HOT</div>' +
-          (deal ? '<div style="position:absolute;top:10px;right:52px;background:#ffb454;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '%</div>' : '') +
-          '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
-            '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2">' +
-              '<path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/>' +
-            '</svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="pcard-info">' +
-          '<div class="pcard-tag">' + tag + '</div>' +
-          '<h3 class="pcard-title">' + p.product + '</h3>' +
-          priceHTML +
-          '<div class="pcard-actions">' +
-            '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
-            '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join("");
-
-    bindCards();
-  }
-
-  /* ============================================================
-     DEALS
-     ============================================================ */
-  function renderDeals(){
-    const grid = document.getElementById("gridDeals");
-    if (!grid) return;
-    const deals = PRODUCTS.filter(hasDeal);
-    const section = document.getElementById("deals-section");
-    if (!deals.length){
-      if (section) section.style.display = "none";
-      return;
-    }
-    if (section) section.style.display = "";
-    grid.innerHTML = deals.map(buildCardHTML).join("");
-    bindCards();
-  }
-
-  /* ============================================================
-     BUNDLES
-     ============================================================ */
-  function renderBundles(){
-    const grid = document.getElementById("gridBundles");
-    if (!grid) return;
-    const bundles = PRODUCTS.filter(p => p.bundle);
-    const section = document.getElementById("bundles-section");
-    if (!bundles.length){
-      if (section) section.style.display = "none";
-      return;
-    }
-    if (section) section.style.display = "";
-    grid.innerHTML = bundles.map(p => {
-      const isFav = getFavs().some(f => f.id === p.id);
-      const deal = hasDeal(p);
-      const pct = discountPct(p);
-      const priceHTML = deal
-        ? '<div class="pcard-price"><s style="color:#4a4a4a;font-size:11px;margin-right:6px">' + fmt(p.price) + '</s> From <b>' + fmt(p.salePrice) + '</b> EGP</div>'
-        : '<div class="pcard-price">From <b>' + fmt(p.price) + '</b> EGP</div>';
-      return '<article class="pcard-prod" data-id="' + p.id + '" data-product="' + p.product + '" data-price="' + priceOf(p) + '" data-kind="' + p.kind + '" data-img="' + p.img + '">' +
-        '<div class="pcard-media">' +
-          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-          '<div style="position:absolute;top:10px;left:10px;background:#fff;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.16em;padding:4px 8px;z-index:3">🎁 BUNDLE</div>' +
-          (deal ? '<div style="position:absolute;top:10px;right:52px;background:#ffb454;color:#0a0a0a;font-family:ui-monospace,monospace;font-size:9px;font-weight:900;letter-spacing:.14em;padding:4px 8px;z-index:3">-' + pct + '%</div>' : '') +
-          '<button class="fav-btn' + (isFav ? " active" : "") + '" type="button" aria-label="Favorite" data-fav="' + p.id + '">' +
-            '<svg viewBox="0 0 24 24" fill="' + (isFav ? "currentColor" : "none") + '" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"/></svg>' +
-          '</button>' +
-        '</div>' +
-        '<div class="pcard-info">' +
-          '<div class="pcard-tag">// BUNDLE' + (p.bundleItems ? ' · ' + p.bundleItems : '') + '</div>' +
-          '<h3 class="pcard-title">' + p.product + '</h3>' +
-          priceHTML +
-          '<div class="pcard-actions">' +
-            '<button class="pcard-btn ghost" type="button" data-action="cart">ADD_TO_CART</button>' +
-            '<button class="pcard-btn fill"  type="button" data-action="buy">PURCHASE</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join("");
-    bindCards();
-  }
-
-  /* ============================================================
-     BADGES
-     ============================================================ */
-  function updateBadges(){
-    const cc = getCart().reduce((s,i) => s + (i.qty||1), 0);
-    const fc = getFavs().length;
-    const ccEl = $("#cartCount"), fcEl = $("#favCount");
-    if (ccEl){ ccEl.textContent = cc; ccEl.hidden = cc === 0; }
-    if (fcEl){ fcEl.textContent = fc; fcEl.hidden = fc === 0; }
-  }
-
-  const findProduct = (id) => PRODUCTS.find(p => p.id === id);
-
-  function addToCartById(id){
-    const p = findProduct(id);
-    if (!p) return;
-    const cart = getCart();
-    const f = cart.find(i => i.id === id);
-    if (f) f.qty = (f.qty||1) + 1;
-    else cart.push({ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img, qty:1 });
-    setCart(cart);
-    toast("Added to cart");
-  }
-
-  function renderCart(){
-    const box = $("#cartItems"), total = $("#cartTotal");
-    if (!box) return;
-    const cart = getCart();
-    if (cart.length === 0){
-      box.innerHTML = '<div class="empty-msg">Your cart is empty.</div>';
-      if (total) total.textContent = "0 EGP";
-      return;
-    }
-    box.innerHTML = cart.map((it,i) =>
-      '<div class="cart-item">' +
-        '<img src="' + it.img + '" alt="" onerror="this.style.display=\'none\'">' +
-        '<div class="ci-info">' +
-          '<div class="ci-title">' + it.product + '</div>' +
-          '<div class="ci-price">' + fmt(it.price) + ' EGP x ' + (it.qty||1) + '</div>' +
-        '</div>' +
-        '<button class="ci-remove" type="button" data-remove="' + i + '">x</button>' +
-      '</div>'
-    ).join("");
-    const sum = cart.reduce((s,i) => s + i.price * (i.qty||1), 0);
-    if (total) total.textContent = fmt(sum) + " EGP";
-    $$("[data-remove]", box).forEach(btn => {
-      btn.addEventListener("click", () => {
-        const c = getCart();
-        c.splice(Number(btn.dataset.remove), 1);
-        setCart(c);
-      });
-    });
-  }
-
-  function toggleFavorite(id){
-    const favs = getFavs();
-    const idx = favs.findIndex(f => f.id === id);
-    const p = findProduct(id);
-    if (!p) return;
-    if (idx > -1){ favs.splice(idx, 1); toast("Removed from favorites"); }
-    else { favs.push({ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img }); toast("Added to favorites"); }
-    setFavs(favs);
-    renderAllProducts();
-  }
-
-  function renderFavs(){
-    const box = $("#favItems");
-    if (!box) return;
-    const favs = getFavs();
-    if (favs.length === 0){
-      box.innerHTML = '<div class="empty-msg">No favorites yet.</div>';
-      return;
-    }
-    box.innerHTML = favs.map((it,i) =>
-      '<div class="cart-item">' +
-        '<img src="' + it.img + '" alt="" onerror="this.style.display=\'none\'">' +
-        '<div class="ci-info">' +
-          '<div class="ci-title">' + it.product + '</div>' +
-          '<div class="ci-price">' + fmt(it.price) + ' EGP</div>' +
-        '</div>' +
-        '<button class="ci-remove" type="button" data-fav-remove="' + i + '">x</button>' +
-      '</div>'
-    ).join("");
-    $$("[data-fav-remove]", box).forEach(btn => {
-      btn.addEventListener("click", () => {
-        const f = getFavs();
-        f.splice(Number(btn.dataset.favRemove), 1);
-        setFavs(f);
-        renderAllProducts();
-      });
-    });
-  }
-
-  /* ============================================================
-     MODALS
-     ============================================================ */
-  function openModal(m){
-    if (!m) return;
-    m.classList.add("open");
-    m.setAttribute("aria-hidden", "false");
-    document.body.style.overflow = "hidden";
-  }
-  function closeModal(m){
-    if (!m) return;
-    m.classList.remove("open");
-    m.setAttribute("aria-hidden", "true");
-    if ($$(".modal.open").length === 0) document.body.style.overflow = "";
-  }
-
-  const productModal = $("#productModal");
-  const detailTitle = $("#detailTitle"), detailDesc = $("#detailDesc"),
-        detailPrice = $("#detailPrice"), detailCode = $("#detailCode"),
-        detailImg = $("#detailImg");
-
-  function openProductModal(card){
-    if (!productModal || !card) return;
-    activeProduct = {
-      id: card.dataset.id,
-      product: card.dataset.product,
-      price: Number(card.dataset.price),
-      kind: card.dataset.kind,
-      img: card.dataset.img
     };
-    activeOrderId = makeOrderId();
-    if (detailTitle) detailTitle.textContent = activeProduct.product;
-    if (detailDesc)  detailDesc.textContent  = DESC[activeProduct.kind] || DESC.vb;
-    if (detailPrice) detailPrice.textContent = fmt(activeProduct.price) + " ";
-    if (detailCode)  detailCode.textContent  = activeProduct.kind.toUpperCase() + " // " + activeOrderId;
-    if (detailImg)   detailImg.src = activeProduct.img;
-
-    renderRelated(activeProduct);
-    openModal(productModal);
-  }
-
-  function renderRelated(current){
-    const wrap = document.getElementById("relatedWrap");
-    const grid = document.getElementById("relatedGrid");
-    if (!wrap || !grid) return;
-
-    const related = PRODUCTS
-      .filter(p => p.id !== current.id && (p.kind === current.kind || p.bundle))
-      .slice(0, 3);
-
-    if (related.length === 0){ wrap.style.display = "none"; return; }
-    wrap.style.display = "";
-
-    grid.innerHTML = related.map(p => {
-      return '<article class="pcard-prod" data-id="' + p.id + '" style="animation:none;transform:none">' +
-        '<div class="pcard-media" style="aspect-ratio:1/1">' +
-          '<img src="' + p.img + '" alt="' + p.product + '" loading="lazy" onerror="this.style.display=\'none\'">' +
-        '</div>' +
-        '<div class="pcard-info">' +
-          '<h3 class="pcard-title" style="font-size:13px">' + p.product + '</h3>' +
-          '<div class="pcard-price">From <b>' + fmt(priceOf(p)) + '</b> EGP</div>' +
-          '<div class="pcard-actions">' +
-            '<button class="pcard-btn fill" type="button" data-related-buy="' + p.id + '" style="grid-column:1 / -1">VIEW</button>' +
-          '</div>' +
-        '</div>' +
-      '</article>';
-    }).join("");
-
-    grid.querySelectorAll("[data-related-buy]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const p = findProduct(btn.dataset.relatedBuy);
-        if (!p) return;
-        openProductModal({ dataset:{ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img } });
-      });
-    });
-  }
-
-  if (productModal){
-    $$("[data-close]", productModal).forEach(el => el.addEventListener("click", () => closeModal(productModal)));
-  }
-
-  const addCartBtn = $("#addCartBtn");
-  if (addCartBtn){
-    addCartBtn.addEventListener("click", () => {
-      if (!activeProduct) return;
-      addToCartById(activeProduct.id);
-      closeModal(productModal);
-    });
-  }
-
-  const buyNowBtn = $("#buyNowBtn");
-  if (buyNowBtn){
-    buyNowBtn.addEventListener("click", () => {
-      if (!activeProduct) return;
-      openCheckoutModal();
-    });
-  }
-
-  /* ============================================================
-     CHECKOUT
-     ============================================================ */
-  const checkoutModal = $("#checkoutModal");
-  const coTitle = $("#coTitle"), coSubtotal = $("#coSubtotal"), coTotal = $("#coTotal"),
-        coUser = $("#coUser"), coEmail = $("#coEmail"),
-        coPhone = $("#coPhone"), coCountry = $("#coCountry"),
-        coReference = $("#coReference"), coMethod = $("#coMethod"), coAddress = $("#coAddress"),
-        emailError = $("#emailError"), phoneError = $("#phoneError");
-
-  function openCheckoutModal(){
-    if (!checkoutModal || !activeProduct) return;
-    closeModal(productModal);
-    if (coTitle) coTitle.textContent = activeProduct.product;
-    appliedPromo = null;
-    updateDiscountBar();
-    updateTotals();
-    updatePaymentUI();
-    updateCheckoutPreview();
-    openModal(checkoutModal);
-    setTimeout(() => coUser && coUser.focus(), 220);
-  }
-
-  function calcPromoDiscount(basePrice){
-    if (!appliedPromo) return 0;
-    if (appliedPromo.type === "percent") return Math.round(basePrice * appliedPromo.value / 100);
-    return Math.min(appliedPromo.value, basePrice);
-  }
-
-  function updateTotals(){
-    if (!activeProduct) return;
-    const base = activeProduct.price;
-    const pct = getDiscountPct();
-    const tierDiscount = Math.round(base * pct / 100);
-    const promoDiscount = calcPromoDiscount(base - tierDiscount);
-    const finalPrice = base - tierDiscount - promoDiscount;
-    if (coSubtotal) coSubtotal.textContent = fmt(base) + " EGP";
-    if (coTotal) coTotal.textContent = fmt(Math.max(0, finalPrice)) + " EGP" +
-      (promoDiscount ? " (-" + fmt(promoDiscount) + " promo)" : "");
-  }
-
-  function getCartCount(){
-    const cart = getCart();
-    const inCart = cart.reduce((s,i) => s + (i.qty||1), 0);
-    return inCart + 1;
-  }
-
-  function getDiscountPct(){
-    const count = getCartCount();
-    if (count >= 5) return 20;
-    if (count >= 4) return 15;
-    if (count >= 3) return 10;
-    if (count >= 2) return 5;
-    return 0;
-  }
-
-  function updateDiscountBar(){
-    const fill = $("#discountFill");
-    const pctEl = $("#discountPct");
-    const msgEl = $("#discountMsg");
-    if (!fill || !pctEl || !msgEl) return;
-    const count = getCartCount();
-    const pct = getDiscountPct();
-    fill.style.width = Math.min((count / 5) * 100, 100) + "%";
-    pctEl.textContent = pct + "%";
-    if (pct === 0) msgEl.textContent = "Add 1 more item to unlock a 5% discount";
-    else if (pct === 5) msgEl.textContent = "5% unlocked! Add 1 more for 10%";
-    else if (pct === 10) msgEl.textContent = "10% unlocked! Add 1 more for 15%";
-    else if (pct === 15) msgEl.textContent = "15% unlocked! Add 1 more for 20%";
-    else msgEl.textContent = "20% MAX DISCOUNT UNLOCKED!";
-    msgEl.classList.toggle("unlocked", pct > 0);
-  }
-
-  function updatePaymentUI(){
-    const pay = PAYMENTS[activePayment];
-    if (coMethod) coMethod.textContent = pay.label;
-    if (coAddress) coAddress.textContent = pay.value;
-    $$(".pay-tab").forEach(t => t.classList.toggle("active", t.dataset.pay === activePayment));
-  }
-
-  $$(".pay-tab").forEach(tab => {
-    tab.addEventListener("click", () => {
-      activePayment = tab.dataset.pay;
-      updatePaymentUI();
-      updateCheckoutPreview();
-    });
-  });
-
-  async function applyPromoCode(){
-    const input = $("#promoInput");
-    if (!input) return;
-    const code = input.value.trim().toUpperCase();
-    if (!code){ toast("Enter a code first"); return; }
-    if (!window.__gn_db){ toast("Promo system offline"); return; }
-
-    try {
-      const { doc, getDoc, updateDoc, increment } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const snap = await getDoc(doc(window.__gn_db, "promotions", code));
-      if (!snap.exists()){ toast("Invalid code"); return; }
-      const p = snap.data();
-      if (p.status === "disabled"){ toast("Code disabled"); return; }
-      if (p.expires && new Date(p.expires) < new Date()){ toast("Code expired"); return; }
-      if (p.maxUses && (p.uses || 0) >= p.maxUses){ toast("Code used up"); return; }
-
-      appliedPromo = { code, type: p.type || "percent", value: Number(p.value) || 0 };
-      toast("✓ Code applied: " + code);
-      updateTotals();
-      updateCheckoutPreview();
-
-      try { await updateDoc(doc(window.__gn_db, "promotions", code), { uses: increment(1) }); } catch(e){}
-    } catch (e) {
-      toast("Promo error: " + e.message);
-    }
-  }
-
-  function buildTicket(){
-    if (!activeProduct || !activeOrderId) return "";
-    const user = (coUser && coUser.value.trim()) || "-";
-    const email = (coEmail && coEmail.value.trim()) || "-";
-    const phone = (coPhone && coPhone.value.trim()) || "-";
-    const country = (coCountry && coCountry.value) || "+20";
-    const pay = PAYMENTS[activePayment];
-    const pct = getDiscountPct();
-    const base = activeProduct.price;
-    const tierDiscount = Math.round(base * pct / 100);
-    const promoDiscount = calcPromoDiscount(base - tierDiscount);
-    const finalPrice = Math.max(0, Math.round(base - tierDiscount - promoDiscount));
-    const proof = proofFile ? proofFile.name : "to attach in DM";
-
-    return [
-      "GAMENEST Ticket", "",
-      "Ticket No: " + activeOrderId,
-      "Full Name: " + user,
-      "Email: " + email,
-      "Phone: " + country + " " + phone,
-      "Product: " + activeProduct.product,
-      "Price: " + fmt(finalPrice) + " EGP" + (pct ? " (" + pct + "% off)" : "") + (appliedPromo ? " (promo " + appliedPromo.code + ")" : ""),
-      "",
-      "Payment Method: " + pay.label,
-      "Pay to: " + pay.value,
-      "Account Holder: " + HOLDER,
-      "Payment Proof: " + proof,
-      "",
-      "Sending this ticket + payment screenshot to " + HANDLE + "."
-    ].join("\n");
-  }
-
-  function updateCheckoutPreview(){
-    if (coReference) coReference.textContent = buildTicket();
-  }
-
-  if (coUser) coUser.addEventListener("input", updateCheckoutPreview);
-  if (coEmail) coEmail.addEventListener("input", () => { validateEmail(); updateCheckoutPreview(); });
-  if (coPhone) coPhone.addEventListener("input", () => { validatePhone(); updateCheckoutPreview(); });
-  if (coCountry) coCountry.addEventListener("change", () => {
-    const opt = coCountry.options[coCountry.selectedIndex];
-    if (coPhone) coPhone.placeholder = "e.g. " + (opt.dataset.example || "");
-    validatePhone();
-    updateCheckoutPreview();
-  });
-
-  if (checkoutModal){
-    $$("[data-close-checkout]", checkoutModal).forEach(el => el.addEventListener("click", () => closeModal(checkoutModal)));
-  }
-
-  function validateEmail(){
-    if (!coEmail || !emailError) return true;
-    const v = coEmail.value.trim();
-    if (!v){ coEmail.classList.remove("error"); emailError.hidden = true; return false; }
-    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-    if (ok){ coEmail.classList.remove("error"); emailError.hidden = true; return true; }
-    coEmail.classList.add("error");
-    emailError.textContent = "! INVALID EMAIL";
-    emailError.hidden = false;
-    return false;
-  }
-
-  function validatePhone(){
-    if (!coPhone || !phoneError || !coCountry) return true;
-    const v = coPhone.value.replace(/\D/g, "");
-    if (!v){ coPhone.classList.remove("error"); phoneError.hidden = true; return false; }
-    const opt = coCountry.options[coCountry.selectedIndex];
-    const expected = parseInt(opt.dataset.len || "0", 10);
-    if (expected && v.length !== expected){
-      coPhone.classList.add("error");
-      phoneError.textContent = "! MUST BE " + expected + " DIGITS";
-      phoneError.hidden = false;
-      return false;
-    }
-    coPhone.classList.remove("error");
-    phoneError.hidden = true;
-    return true;
-  }
-
-  const payNowBtn = $("#payNowBtn");
-  if (payNowBtn){
-    payNowBtn.addEventListener("click", () => {
-      const pay = PAYMENTS[activePayment];
-      if (pay.link){
-        window.open(pay.link, "_blank", "noopener");
-        toast("Opening " + pay.label + "...");
-      } else {
-        copyText(pay.value);
-        toast("Telda handle copied");
-      }
-    });
-  }
-
-  /* ============================================================
-     PROOF UPLOAD
-     ============================================================ */
-  const proofUpload  = $("#proofUpload");
-  const proofPreview = $("#proofPreview");
-  const proofRemove  = $("#proofRemove");
-  const uploadLabel  = $("#uploadLabel");
-  const uploadBox    = $("#uploadBox");
-
-  if (uploadBox && proofUpload){
-    uploadBox.addEventListener("click", (e) => {
-      if (e.target.closest(".proof-remove")) return;
-      proofUpload.click();
-    });
-    uploadBox.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" || e.key === " "){ e.preventDefault(); proofUpload.click(); }
-    });
-    proofUpload.addEventListener("change", (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      if (!file.type.startsWith("image/")){ toast("Please pick an image file"); return; }
-      if (file.size > 8 * 1024 * 1024){ toast("Max file size is 8 MB"); return; }
-      proofFile = file;
-      if (proofPreview){
-        const reader = new FileReader();
-        reader.onload = (ev) => { proofPreview.src = ev.target.result; proofPreview.hidden = false; };
-        reader.readAsDataURL(file);
-      }
-      if (uploadLabel) uploadLabel.textContent = file.name.length > 26 ? file.name.slice(0, 23) + "..." : file.name;
-      if (uploadBox)   uploadBox.classList.add("has-file");
-      if (proofRemove) proofRemove.hidden = false;
-      updateCheckoutPreview();
-      toast("Screenshot attached");
-    });
-  }
-
-  if (proofRemove){
-    proofRemove.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      proofFile = null;
-      if (proofUpload) proofUpload.value = "";
-      if (proofPreview){ proofPreview.src = ""; proofPreview.hidden = true; }
-      if (uploadBox) uploadBox.classList.remove("has-file");
-      if (proofRemove) proofRemove.hidden = true;
-      if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
-      updateCheckoutPreview();
-    });
-  }
-
-  /* ============================================================
-     SUBMIT ORDER
-     ============================================================ */
-  const submitOrderBtn = $("#submitOrder");
-  const successModal = $("#successModal");
-
-  if (submitOrderBtn){
-    submitOrderBtn.addEventListener("click", () => {
-      if (!coUser || !coUser.value.trim()){ toast("Enter your full name first"); coUser && coUser.focus(); return; }
-      if (!validateEmail() || !coEmail.value.trim()){ toast("Enter a valid email"); coEmail && coEmail.focus(); return; }
-      if (!validatePhone() || !coPhone.value.trim()){ toast("Enter a valid phone"); coPhone && coPhone.focus(); return; }
-      if (!proofFile){ toast("Upload your payment screenshot first"); return; }
-
-      const code = $("#successOrderCode");
-      const gateway = $("#successGateway");
-      const player = $("#successPlayer");
-      if (code)    code.textContent = activeOrderId || "-";
-      if (gateway) gateway.textContent = PAYMENTS[activePayment].label;
-      if (player)  player.textContent = coUser.value.trim() || "-";
-
-      saveOrderToFirebase().then(() => {
-        closeModal(checkoutModal);
-        if (successModal) openModal(successModal);
-        toast("Order submitted");
-      }).catch(err => {
-        console.error("Save failed:", err);
-        closeModal(checkoutModal);
-        if (successModal) openModal(successModal);
-        toast("Order submitted (offline)");
-      });
-    });
-  }
-
-   /* ============================================================
-     SEND ORDER TO INSTAGRAM
-     ============================================================ */
-  const sendToInstaBtn = $("#sendToInsta");
-  if (sendToInstaBtn){
-    sendToInstaBtn.addEventListener("click", async () => {
-      const code = activeOrderId || "";
-      if (!code){ toast("No order code yet"); return; }
-
-      /* Build the message */
-      const msg = [
-        "Hi GAMENEST! I just placed an order:",
-        "",
-        "Order: " + code,
-        "Product: " + (activeProduct ? activeProduct.product : "—"),
-        "Name: " + ((coUser && coUser.value.trim()) || "—"),
-        "Email: " + ((coEmail && coEmail.value.trim()) || "—"),
-        "Payment: " + PAYMENTS[activePayment].label,
-        "",
-        "Attaching payment screenshot now."
-      ].join("\n");
-
-      /* Copy to clipboard */
-      const ok = await copyText(msg);
-      toast(ok ? "✓ Code copied — paste in Instagram" : "Copy the code manually");
-
-      /* Open Instagram DM */
-      setTimeout(() => {
-        window.open("https://ig.me/m/gamenestshop", "_blank", "noopener");
-      }, 300);
-    });
-  }
- 
-  const terminateLink = $("#terminateLink");
-  if (terminateLink){
-    terminateLink.addEventListener("click", () => {
-      closeModal(successModal);
-      if (coUser) coUser.value = "";
-      if (coEmail) coEmail.value = "";
-      if (coPhone) coPhone.value = "";
-      if (coReference) coReference.textContent = "-";
-      proofFile = null;
-      appliedPromo = null;
-      if (proofUpload) proofUpload.value = "";
-      if (proofPreview){ proofPreview.src = ""; proofPreview.hidden = true; }
-      if (proofRemove) proofRemove.hidden = true;
-      if (uploadBox) uploadBox.classList.remove("has-file");
-      if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
-      if (coEmail){ coEmail.classList.remove("error"); if (emailError) emailError.hidden = true; }
-      if (coPhone){ coPhone.classList.remove("error"); if (phoneError) phoneError.hidden = true; }
-    });
-  }
-
-  const copyTicketBtn = $("#copyTicket");
-  if (copyTicketBtn){
-    copyTicketBtn.addEventListener("click", async () => {
-      updateCheckoutPreview();
-      const text = (coReference && coReference.textContent) || "";
-      const ok = await copyText(text);
-      toast(ok ? "Ticket copied" : "Copy failed");
-    });
-  }
-
-  async function saveOrderToFirebase(){
-    if (!window.__gn_db) throw new Error("Firebase not ready");
-    const { collection, addDoc, serverTimestamp } = window.__gn_fs;
-    const pct = getDiscountPct();
-    const base = activeProduct.price;
-    const tierDiscount = Math.round(base * pct / 100);
-    const promoDiscount = calcPromoDiscount(base - tierDiscount);
-    const finalPrice = Math.max(0, Math.round(base - tierDiscount - promoDiscount));
-
-    let proofData = "";
-    if (proofFile && proofFile.size < 800 * 1024) {
-      proofData = await new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onload = (ev) => resolve(ev.target.result);
-        reader.onerror = () => resolve("");
-        reader.readAsDataURL(proofFile);
-      });
-    }
-
-    await addDoc(collection(window.__gn_db, "orders"), {
-      orderId: activeOrderId,
-      name: coUser?.value.trim() || "—",
-      email: coEmail?.value.trim() || "—",
-      phone: coPhone?.value.trim() || "—",
-      country: coCountry?.value || "+20",
-      product: activeProduct.product,
-      price: finalPrice,
-      discount: pct,
-      promoCode: appliedPromo ? appliedPromo.code : "",
-      promoDiscount: promoDiscount,
-      payment: PAYMENTS[activePayment].label,
-      proofName: proofFile ? proofFile.name : "",
-      proofData: proofData,
-      status: "pending",
-      createdAt: serverTimestamp()
-    });
-  }
-
-  /* ============================================================
-     CART / FAV / SEARCH MODALS
-     ============================================================ */
-  const cartModal = $("#cartModal"), favModal = $("#favModal"), searchModal = $("#searchModal");
-
-  const cartBtn = $("#cartBtn");
-  if (cartBtn && cartModal) cartBtn.addEventListener("click", () => openModal(cartModal));
-
-  const favBtn = $("#favBtn");
-  if (favBtn && favModal) favBtn.addEventListener("click", () => openModal(favModal));
-
-  const searchBtn = $("#searchBtn");
-  if (searchBtn && searchModal){
-    searchBtn.addEventListener("click", () => {
-      openModal(searchModal);
-      setTimeout(() => { const si = $("#searchInput"); if (si) si.focus(); }, 220);
-    });
-  }
-
-  if (cartModal) $$("[data-close-cart]", cartModal).forEach(el => el.addEventListener("click", () => closeModal(cartModal)));
-  if (favModal)  $$("[data-close-fav]",  favModal).forEach(el => el.addEventListener("click", () => closeModal(favModal)));
-  if (searchModal) $$("[data-close-search]", searchModal).forEach(el => el.addEventListener("click", () => closeModal(searchModal)));
-
-  const cartCheckout = $("#cartCheckout");
-  if (cartCheckout){
-    cartCheckout.addEventListener("click", () => {
-      const cart = getCart();
-      if (cart.length === 0){ toast("Cart is empty"); return; }
-      const first = cart[0];
-      activeProduct = { id:first.id, product:first.product, price:first.price, kind:first.kind, img:first.img };
-      activeOrderId = makeOrderId();
-      closeModal(cartModal);
-      openCheckoutModal();
-    });
-  }
-
-  const searchInput = $("#searchInput"), searchResults = $("#searchResults");
-  function updateSearchResults(){
-    if (!searchResults) return;
-    const q = (searchInput && searchInput.value || "").trim().toLowerCase();
-    if (!q){ searchResults.innerHTML = '<div class="empty-msg">Type to search the catalog.</div>'; return; }
-    const results = PRODUCTS.filter(p => p.product.toLowerCase().indexOf(q) > -1 || p.kind.toLowerCase().indexOf(q) > -1);
-    if (results.length === 0){ searchResults.innerHTML = '<div class="empty-msg">No matches found.</div>'; return; }
-    searchResults.innerHTML = results.map(p =>
-      '<div class="search-result" data-id="' + p.id + '">' +
-        '<img src="' + p.img + '" alt="" onerror="this.style.display=\'none\'">' +
-        '<div>' +
-          '<div class="sr-title">' + p.product + '</div>' +
-          '<div class="sr-price">' + fmt(priceOf(p)) + ' EGP</div>' +
-        '</div>' +
-        '<div class="sr-go">VIEW &gt;</div>' +
-      '</div>'
-    ).join("");
-    $$(".search-result", searchResults).forEach(row => {
-      row.addEventListener("click", () => {
-        const p = findProduct(row.dataset.id);
-        if (!p) return;
-        closeModal(searchModal);
-        openProductModal({ dataset:{ id:p.id, product:p.product, price:priceOf(p), kind:p.kind, img:p.img } });
-      });
-    });
-  }
-  if (searchInput) searchInput.addEventListener("input", updateSearchResults);
-
-  /* ============================================================
-     PAYMENT GATEWAY SHORTCUTS
-     ============================================================ */
-  $$(".gateway:not(.gateway-compact)").forEach(gate => {
-    const btn = $(".gw-btn", gate);
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const method = gate.dataset.method;
-      const link = gate.dataset.link;
-      const value = gate.dataset.value;
-      const name = gate.dataset.name;
-      if (method === "telda" || !link){
-        copyText(value);
-        toast("Copied: " + value);
-      } else {
-        window.open(link, "_blank", "noopener");
-        toast("Opening " + name + "...");
-      }
-      if (!activeProduct){
-        activeProduct = { id:"custom", product:"Custom Order", price:0, kind:"vb", img:"vbucks.png" };
-        activeOrderId = makeOrderId();
-      }
-      openCheckoutModal();
-    });
-  });
-
-  /* ============================================================
-     COUNTDOWN
-     ============================================================ */
-  function startCountdown(){
-    const hEl = $("#cdH"), mEl = $("#cdM"), sEl = $("#cdS");
-    if (!hEl || !mEl || !sEl) return;
-    const now = new Date();
-    const target = new Date(now);
-    const day = target.getDay();
-    const daysUntilEnd = (7 - day) % 7;
-    target.setDate(target.getDate() + daysUntilEnd);
-    target.setHours(23, 59, 59, 0);
-    if (target.getTime() <= now.getTime()) target.setDate(target.getDate() + 7);
-    function tick(){
-      const diff = target.getTime() - Date.now();
-      if (diff <= 0){ hEl.textContent = "00"; mEl.textContent = "00"; sEl.textContent = "00"; return; }
-      const totalSec = Math.floor(diff / 1000);
-      hEl.textContent = String(Math.floor(totalSec/3600)).padStart(2,"0");
-      mEl.textContent = String(Math.floor((totalSec%3600)/60)).padStart(2,"0");
-      sEl.textContent = String(totalSec%60).padStart(2,"0");
-    }
-    tick();
-    setInterval(tick, 1000);
-  }
-
-  /* ============================================================
-     SUPPORT TICKET
-     ============================================================ */
-  const submitTicketBtn = $("#submitTicket");
-  if (submitTicketBtn){
-    submitTicketBtn.addEventListener("click", async () => {
-      const nameEl = $("#ticketName"), emailEl = $("#ticketEmail"),
-            orderEl = $("#ticketOrder"), msgEl = $("#ticketMsg"), note = $("#ticketNote");
-      const name = (nameEl && nameEl.value.trim()) || "";
-      const email = (emailEl && emailEl.value.trim()) || "";
-      const order = (orderEl && orderEl.value.trim()) || "";
-      const msg = (msgEl && msgEl.value.trim()) || "";
-
-      if (!name || !email || !msg){ if (note) note.textContent = "! Fill in name, email, and message."; return; }
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ if (note) note.textContent = "! Invalid email."; return; }
-      if (!window.__gn_db){ if (note) note.textContent = "! Support offline."; return; }
-
-      submitTicketBtn.disabled = true;
-      if (note) note.textContent = "Submitting...";
-      try {
-        const { collection, addDoc, serverTimestamp } = window.__gn_fs;
-        await addDoc(collection(window.__gn_db, "support"), {
-          name, email, order: order || "", message: msg, status: "open", createdAt: serverTimestamp()
-        });
-        if (note) note.textContent = "✓ Ticket submitted — we'll reply by email.";
-        if (nameEl) nameEl.value = "";
-        if (emailEl) emailEl.value = "";
-        if (orderEl) orderEl.value = "";
-        if (msgEl) msgEl.value = "";
-      } catch (e) {
-        if (note) note.textContent = "! Error: " + e.message;
-      } finally {
-        submitTicketBtn.disabled = false;
-      }
-    });
-  }
-
-  /* ============================================================
-     ORDER TRACKING
-     ============================================================ */
-  const STATUS_LABELS = {
-    pending:"Pending Payment Review", paid:"Payment Approved", processing:"Being Processed",
-    delivered:"Delivered", rejected:"Rejected", refunded:"Refunded"
+  };
+  const debounce = (fn, wait) => {
+    let timer;
+    return function(...args){
+      clearTimeout(timer);
+      timer = setTimeout(() => fn.apply(this, args), wait);
+    };
   };
 
-  async function trackOrder(){
-    const input = document.getElementById("trackInput");
-    const result = document.getElementById("trackResult");
-    const btn = document.getElementById("trackBtn");
-    if (!input || !result || !btn) return;
+  const safeLog = (label, ...args) => {
+    try { console.log(`%c NEXIFING · ${label}`, "color:#5b8cff;font-weight:600", ...args); }
+    catch(e){}
+  };
 
-    const code = input.value.trim().toUpperCase();
-    if (!code){ result.innerHTML = '<div style="color:#ffb454;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Enter your order code first</div>'; return; }
-    if (!window.__gn_db){ result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">⚠ Tracking offline</div>'; return; }
+  /* ==========================================================================
+     1. MOBILE MENU
+     ========================================================================== */
+  const menuToggle = $("#menuToggle");
+  const nav = $("#nav");
 
-    btn.disabled = true; btn.textContent = "SEARCHING...";
-    result.innerHTML = '<div style="color:#8a8a8a;font-family:ui-monospace,monospace;font-size:12px;text-align:center">Searching...</div>';
+  function openMenu(){
+    if (!nav) return;
+    menuToggle.classList.add("active");
+    nav.classList.add("open");
+    document.body.style.overflow = "hidden";
+    menuToggle.setAttribute("aria-expanded", "true");
+  }
+  function closeMenu(){
+    if (!nav) return;
+    menuToggle.classList.remove("active");
+    nav.classList.remove("open");
+    document.body.style.overflow = "";
+    menuToggle.setAttribute("aria-expanded", "false");
+  }
+  function toggleMenu(){
+    if (!nav) return;
+    nav.classList.contains("open") ? closeMenu() : openMenu();
+  }
 
+  if (menuToggle && nav){
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.addEventListener("click", toggleMenu);
+
+    nav.querySelectorAll("a").forEach(link => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && nav.classList.contains("open")) closeMenu();
+    });
+
+    window.addEventListener("resize", debounce(() => {
+      if (window.innerWidth > 900 && nav.classList.contains("open")) closeMenu();
+    }, 150));
+  }
+
+  /* ==========================================================================
+     2. HEADER SHADOW ON SCROLL
+     ========================================================================== */
+  const header = $(".header");
+  if (header){
+    const updateHeader = throttle(() => {
+      if (window.pageYOffset > 20){
+        header.style.boxShadow = "0 1px 0 rgba(255,255,255,.02), 0 8px 24px rgba(0,0,0,.4)";
+      } else {
+        header.style.boxShadow = "none";
+      }
+    }, 100);
+    window.addEventListener("scroll", updateHeader, { passive: true });
+  }
+
+  /* ==========================================================================
+     3. READING PROGRESS BAR
+     ========================================================================== */
+  const progressBar = document.createElement("div");
+  progressBar.className = "read-progress";
+  progressBar.setAttribute("aria-hidden", "true");
+  document.body.appendChild(progressBar);
+
+  const updateProgress = throttle(() => {
+    const scrollTop = window.pageYOffset;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressBar.style.transform = `scaleX(${pct / 100})`;
+  }, 40);
+  window.addEventListener("scroll", updateProgress, { passive: true });
+
+  /* ==========================================================================
+     4. SCROLL REVEAL
+     ========================================================================== */
+  const revealTargets = $$(
+    ".service, .process-step, .work-card, .industry, .tech-group, " +
+    ".why-item, .faq details, .section-head, .testimonial, .pricing-card, " +
+    ".intro-p, .intro-left, .clients-label, .pricing-note, .cta-note"
+  );
+
+  if ("IntersectionObserver" in window && !prefersReducedMotion){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          entry.target.style.opacity = "1";
+          entry.target.style.transform = "translateY(0)";
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
+
+    revealTargets.forEach((el, i) => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(24px)";
+      const delay = Math.min(i * 0.03, 0.3);
+      el.style.transition =
+        `opacity .7s cubic-bezier(.22,1,.36,1) ${delay}s, ` +
+        `transform .7s cubic-bezier(.22,1,.36,1) ${delay}s`;
+      io.observe(el);
+    });
+  } else {
+    revealTargets.forEach(el => {
+      el.style.opacity = "1";
+      el.style.transform = "none";
+    });
+  }
+
+  /* ==========================================================================
+     5. SMOOTH SCROLL FOR ANCHORS
+     ========================================================================== */
+  $$('a[href^="#"]').forEach(link => {
+    link.addEventListener("click", (e) => {
+      const href = link.getAttribute("href");
+      if (!href || href === "#" || href.length < 2) return;
+      const target = document.querySelector(href);
+      if (!target) return;
+      e.preventDefault();
+      const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
+      if (history.pushState) history.pushState(null, "", href);
+    });
+  });
+
+  /* ==========================================================================
+     6. FAQ ACCORDION — one open at a time
+     ========================================================================== */
+  const faqItems = $$(".faq details");
+  faqItems.forEach(item => {
+    item.addEventListener("toggle", () => {
+      if (item.open){
+        faqItems.forEach(other => {
+          if (other !== item && other.open) other.open = false;
+        });
+      }
+    });
+  });
+
+  /* ==========================================================================
+     7. ACTIVE NAV HIGHLIGHT
+     ========================================================================== */
+  const sections = $$("section[id]");
+  const navLinks = $$(".nav a[href^='#']");
+
+  if (sections.length && navLinks.length && "IntersectionObserver" in window){
+    const map = new Map();
+    navLinks.forEach(link => {
+      const id = link.getAttribute("href").slice(1);
+      const sec = document.getElementById(id);
+      if (sec) map.set(sec, link);
+    });
+
+    const navObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const link = map.get(entry.target);
+        if (!link) return;
+        if (entry.isIntersecting){
+          navLinks.forEach(l => l.style.color = "");
+          link.style.color = "var(--text)";
+        }
+      });
+    }, { rootMargin: "-40% 0px -55% 0px", threshold: 0 });
+
+    map.forEach((link, sec) => navObs.observe(sec));
+  }
+
+  /* ==========================================================================
+     8. COUNT-UP ANIMATION FOR HERO STATS
+     ========================================================================== */
+  const heroStats = $$(".hero-stats .stat-n");
+
+  function animateCount(el){
+    if (prefersReducedMotion) return;
+
+    const originalText = el.textContent.trim();
+
+    /* Detect non-numeric values like "< 24h", "99.9%", "3+ yrs" */
+    const suffixMatch = originalText.match(/([%+a-zA-Z<>\s]+)$/);
+    const suffix = suffixMatch ? suffixMatch[1] : "";
+    const numericPart = originalText.replace(suffix, "").trim();
+
+    /* Handle decimal values like 99.9 */
+    const isDecimal = numericPart.includes(".");
+    const target = parseFloat(numericPart);
+    if (isNaN(target)) return;
+
+    const duration = 1400;
+    const startTime = performance.now();
+
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      const current = target * eased;
+
+      if (isDecimal){
+        el.textContent = current.toFixed(1) + suffix;
+      } else {
+        el.textContent = Math.round(current).toLocaleString("en-US") + suffix;
+      }
+      if (progress < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }
+
+  if (heroStats.length && "IntersectionObserver" in window){
+    const statObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting){
+          heroStats.forEach(animateCount);
+          statObs.disconnect();
+        }
+      });
+    }, { threshold: 0.4 });
+    const heroStatsEl = $(".hero-stats");
+    if (heroStatsEl) statObs.observe(heroStatsEl);
+  }
+
+  /* ==========================================================================
+     9. BACK TO TOP
+     ========================================================================== */
+  const backToTop = document.createElement("button");
+  backToTop.className = "back-to-top";
+  backToTop.setAttribute("aria-label", "Back to top");
+  backToTop.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
+  document.body.appendChild(backToTop);
+
+  backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
+  });
+
+  const toggleBackTop = throttle(() => {
+    backToTop.classList.toggle("visible", window.pageYOffset > 600);
+  }, 100);
+  window.addEventListener("scroll", toggleBackTop, { passive: true });
+
+  /* ==========================================================================
+     10. EXTERNAL LINK SAFETY
+     ========================================================================== */
+  const hostname = window.location.hostname;
+  $$("a[href^='http']").forEach(link => {
     try {
-      const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
-      const q = query(collection(window.__gn_db, "orders"), where("orderId", "==", code));
-      const snap = await getDocs(q);
-      if (snap.empty){
-        result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:20px;border:1px dashed #2a2a2a">✕ Order not found — double-check your code</div>';
+      const url = new URL(link.href);
+      if (url.hostname !== hostname && !link.hasAttribute("target")){
+        link.setAttribute("target", "_blank");
+        link.setAttribute("rel", "noopener noreferrer");
+      }
+    } catch(e){}
+  });
+
+  /* ==========================================================================
+     11. FORM VALIDATION HELPERS
+     ========================================================================== */
+  const validators = {
+    required: (v) => v.trim().length > 0 || "This field is required",
+    email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) || "Invalid email address",
+    minLength: (n) => (v) => v.trim().length >= n || `Must be at least ${n} characters`,
+    maxLength: (n) => (v) => v.trim().length <= n || `Must be under ${n} characters`,
+    phone: (v) => /^[\d\s+()-]{7,}$/.test(v.trim()) || "Invalid phone number"
+  };
+
+  function validateField(input, rules){
+    const value = input.value;
+    for (const rule of rules){
+      const result = rule(value);
+      if (result !== true){
+        return { valid: false, message: result };
+      }
+    }
+    return { valid: true };
+  }
+
+  /* ==========================================================================
+     12. CONTACT FORM
+     ========================================================================== */
+  const contactForm = $("#contactForm");
+  if (contactForm){
+    const name = $("#cfName");
+    const email = $("#cfEmail");
+    const project = $("#cfProject");
+    const message = $("#cfMessage");
+    const submitBtn = $("#cfSubmit");
+    const noteEl = $("#cfNote");
+
+    /* Inline error display */
+    function showError(input, msg){
+      if (!input) return;
+      input.classList.add("error");
+      const errEl = input.parentElement.querySelector(".form-error");
+      if (errEl) errEl.textContent = msg;
+    }
+    function clearError(input){
+      if (!input) return;
+      input.classList.remove("error");
+      const errEl = input.parentElement.querySelector(".form-error");
+      if (errEl) errEl.textContent = "";
+    }
+
+    [name, email, message].forEach(input => {
+      if (!input) return;
+      input.addEventListener("input", () => clearError(input));
+    });
+
+    contactForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      let valid = true;
+
+      const nameCheck = validateField(name, [validators.required, validators.minLength(2)]);
+      if (!nameCheck.valid){ showError(name, nameCheck.message); valid = false; }
+
+      const emailCheck = validateField(email, [validators.required, validators.email]);
+      if (!emailCheck.valid){ showError(email, emailCheck.message); valid = false; }
+
+      const msgCheck = validateField(message, [validators.required, validators.minLength(10)]);
+      if (!msgCheck.valid){ showError(message, msgCheck.message); valid = false; }
+
+      if (!valid){
+        if (noteEl){
+          noteEl.textContent = "Please fix the errors above";
+          noteEl.style.color = "var(--danger)";
+        }
         return;
       }
-      const o = snap.docs[0].data();
-      const status = o.status || "pending";
-      const steps = ["pending", "paid", "processing", "delivered"];
-      const currentIdx = steps.indexOf(status);
-      const isFailed = status === "rejected" || status === "refunded";
-      const dateStr = o.createdAt ? new Date(o.createdAt.toDate()).toLocaleString("en-GB", {day:"2-digit",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}) : "—";
 
-      result.innerHTML = `
-        <div style="background:#111;border:1px solid #2a2a2a;padding:26px 24px">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;margin-bottom:20px;padding-bottom:18px;border-bottom:1px solid #222">
-            <div>
-              <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">ORDER_CODE</div>
-              <div style="font-family:ui-monospace,monospace;font-size:15px;font-weight:900;color:#fff;letter-spacing:.1em">${o.orderId || code}</div>
-              <div style="font-size:13px;color:#8a8a8a;margin-top:6px">${o.product || "—"}</div>
-            </div>
-            <div style="text-align:right">
-              <div style="font-family:ui-monospace,monospace;font-size:11px;color:#4a4a4a;letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px">STATUS</div>
-              <div style="font-family:ui-monospace,monospace;font-size:12px;font-weight:800;padding:6px 14px;border:1px solid;letter-spacing:.14em;text-transform:uppercase;${isFailed ? "color:#ff4a4a;border-color:#ff4a4a;background:rgba(255,74,74,.08)" : status === "delivered" ? "color:#5fc85f;border-color:#5fc85f;background:rgba(95,200,95,.08)" : status === "pending" ? "color:#ffb454;border-color:#ffb454;background:rgba(255,180,84,.08)" : "color:#5fc8ff;border-color:#5fc8ff;background:rgba(95,200,255,.08)"}">${STATUS_LABELS[status] || status}</div>
-            </div>
-          </div>
-          ${isFailed ? "" : `
-          <div style="display:flex;justify-content:space-between;position:relative;margin-bottom:24px;padding:0 4px">
-            ${steps.map((s, i) => `
-              <div style="flex:1;text-align:center;position:relative">
-                <div style="width:22px;height:22px;border-radius:50%;border:2px solid ${i <= currentIdx ? "#fff" : "#2a2a2a"};background:${i <= currentIdx ? "#fff" : "#111"};margin:0 auto 8px;position:relative;z-index:2"></div>
-                ${i < steps.length - 1 ? `<div style="position:absolute;top:10px;left:50%;right:-50%;height:2px;background:${i < currentIdx ? "#fff" : "#2a2a2a"};z-index:1"></div>` : ""}
-                <div style="font-family:ui-monospace,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:${i <= currentIdx ? "#fff" : "#4a4a4a"};line-height:1.3">${STATUS_LABELS[s]}</div>
-              </div>
-            `).join("")}
-          </div>`}
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px">
-            <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">PLACED</span><div style="font-family:ui-monospace,monospace;color:#d8d8d8;margin-top:4px">${dateStr}</div></div>
-            <div><span style="font-family:ui-monospace,monospace;font-size:10px;color:#4a4a4a;letter-spacing:.14em;text-transform:uppercase">AMOUNT</span><div style="font-family:ui-monospace,monospace;color:#fff;font-weight:800;margin-top:4px">${(o.price || 0).toLocaleString("en-US")} EGP</div></div>
-          </div>
-          ${status === "delivered" ? '<div style="margin-top:18px;padding:12px;background:rgba(95,200,95,.06);border-left:3px solid #5fc85f;font-size:12px;color:#d8d8d8">✓ Delivered — check your Fortnite account</div>' : ""}
-          ${status === "pending" ? '<div style="margin-top:18px;padding:12px;background:rgba(255,180,84,.06);border-left:3px solid #ffb454;font-size:12px;color:#d8d8d8">⏱ Payment pending review — usually approved within 30 minutes</div>' : ""}
-        </div>`;
-    } catch(e){
-      result.innerHTML = '<div style="color:#ff4a4a;font-family:ui-monospace,monospace;font-size:12px;text-align:center;padding:16px">⚠ ' + e.message + '</div>';
-    } finally {
-      btn.disabled = false; btn.textContent = "TRACK";
+      /* Persist draft on submit (so it's not lost) */
+      saveFormDraft(contactForm);
+
+      submitBtn.disabled = true;
+      const original = submitBtn.textContent;
+      submitBtn.textContent = "Sending...";
+      if (noteEl){ noteEl.textContent = ""; }
+
+      setTimeout(() => {
+        if (noteEl){
+          noteEl.textContent = "✓ Message sent — we'll reply within 24 hours.";
+          noteEl.style.color = "var(--success)";
+        }
+        submitBtn.disabled = false;
+        submitBtn.textContent = original;
+        contactForm.reset();
+        clearFormDraft(contactForm);
+      }, 1200);
+    });
+
+    /* Draft persistence */
+    function saveFormDraft(form){
+      try {
+        const data = {};
+        new FormData(form).forEach((v, k) => { data[k] = v; });
+        localStorage.setItem("nexifing_contact_draft", JSON.stringify(data));
+      } catch(e){}
     }
+    function clearFormDraft(form){
+      try { localStorage.removeItem("nexifing_contact_draft"); } catch(e){}
+    }
+    function restoreFormDraft(form){
+      try {
+        const raw = localStorage.getItem("nexifing_contact_draft");
+        if (!raw) return;
+        const data = JSON.parse(raw);
+        Object.entries(data).forEach(([k, v]) => {
+          const el = form.querySelector(`[name="${k}"]`);
+          if (el) el.value = v;
+        });
+      } catch(e){}
+    }
+    restoreFormDraft(contactForm);
+
+    /* Auto-save draft every 3 seconds while typing */
+    let draftTimer;
+    contactForm.addEventListener("input", () => {
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(() => saveFormDraft(contactForm), 3000);
+    });
   }
 
-  const trackBtn = document.getElementById("trackBtn");
-  if (trackBtn) trackBtn.addEventListener("click", trackOrder);
-  const trackInput = document.getElementById("trackInput");
-  if (trackInput) trackInput.addEventListener("keypress", (e) => { if (e.key === "Enter") trackOrder(); });
+  /* ==========================================================================
+     13. HERO PARALLAX
+     ========================================================================== */
+  const heroGlows = $$(".hero .glow");
+  if (heroGlows.length && !prefersReducedMotion){
+    const parallax = throttle(() => {
+      const y = window.pageYOffset;
+      heroGlows.forEach((glow, i) => {
+        glow.style.transform = `translateY(${y * (0.15 + i * 0.1)}px)`;
+      });
+    }, 40);
+    window.addEventListener("scroll", parallax, { passive: true });
+  }
 
-  /* ============================================================
-     GLOBAL LISTENERS
-     ============================================================ */
+  /* ==========================================================================
+     14. IMAGE PREFETCH
+     ========================================================================== */
+  if ("requestIdleCallback" in window){
+    requestIdleCallback(() => {
+      ["nexifing-logo.png", "favicon.png"].forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    });
+  }
+
+  /* ==========================================================================
+     15. HOVER WILL-CHANGE HINTS
+     ========================================================================== */
+  $$(".work-card, .service, .pricing-card").forEach(card => {
+    card.addEventListener("mouseenter", () => { card.style.willChange = "transform"; });
+    card.addEventListener("mouseleave", () => { card.style.willChange = "auto"; });
+  });
+
+  /* ==========================================================================
+     16. KEYBOARD SHORTCUTS
+     ========================================================================== */
   document.addEventListener("keydown", (e) => {
-    if (e.key !== "Escape") return;
-    const openEl = $(".modal.open");
-    if (openEl) closeModal(openEl);
+    /* "/" focuses search (if exists) */
+    if (e.key === "/" && !isTyping(e.target)){
+      const searchInput = $("#searchInput");
+      if (searchInput){
+        e.preventDefault();
+        searchInput.focus();
+      }
+    }
+    /* "g h" → home (github-style) */
+    if (e.key === "g" && !isTyping(e.target)){
+      const handler = (ev) => {
+        if (ev.key === "h"){ window.location.href = "/"; }
+        document.removeEventListener("keydown", handler);
+      };
+      document.addEventListener("keydown", handler);
+      setTimeout(() => document.removeEventListener("keydown", handler), 800);
+    }
   });
 
-  document.addEventListener("click", (e) => {
-    if (e.target && e.target.id === "promoApplyBtn") applyPromoCode();
-  });
-
-  /* ============================================================
-     INIT
-     ============================================================ */
-  async function init(){
-    const underMaintenance = await loadSettings();
-    if (underMaintenance) return;
-    await loadProductsFromFirestore();
-    renderAllProducts();
-    renderDeals();
-    renderBundles();
-    updateBadges();
-    renderCart();
-    renderFavs();
-    startCountdown();
-    loadBestSellers();
+  function isTyping(el){
+    if (!el) return false;
+    const tag = el.tagName.toLowerCase();
+    return tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable;
   }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
+
+  /* ==========================================================================
+     17. TOAST NOTIFICATIONS
+     ========================================================================== */
+  function showToast(message, type = "info", duration = 3000){
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add("visible"));
+
+    setTimeout(() => {
+      toast.classList.remove("visible");
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+  window.NEXIFING = window.NEXIFING || {};
+  window.NEXIFING.showToast = showToast;
+
+  /* ==========================================================================
+     18. COPY-TO-CLIPBOARD BUTTONS
+     ========================================================================== */
+  $$("[data-copy]").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const text = btn.dataset.copy;
+      if (!text) return;
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast("Copied to clipboard", "success", 1800);
+        btn.classList.add("copied");
+        setTimeout(() => btn.classList.remove("copied"), 1500);
+      } catch(e){
+        showToast("Copy failed", "error", 1800);
+      }
+    });
+  });
+
+  /* ==========================================================================
+     19. YEAR AUTO-FILL
+     ========================================================================== */
+  $$("[data-year]").forEach(el => {
+    el.textContent = new Date().getFullYear();
+  });
+
+  /* ==========================================================================
+     20. INJECTED STYLES (toast, progress, back-to-top)
+     ========================================================================== */
+  const styleEl = document.createElement("style");
+  styleEl.textContent = `
+    /* Reading progress */
+    .read-progress{
+      position:fixed;top:0;left:0;right:0;height:2px;
+      background:linear-gradient(90deg,#5b8cff,#7b5bff);
+      transform:scaleX(0);transform-origin:left;
+      z-index:200;pointer-events:none;
+      transition:transform .1s linear;
+    }
+
+    /* Back to top */
+    .back-to-top{
+      position:fixed;bottom:24px;right:24px;
+      width:48px;height:48px;border-radius:50%;
+      background:var(--surface);border:1px solid var(--border-2);
+      color:var(--text-2);
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;z-index:90;
+      opacity:0;pointer-events:none;
+      transform:translateY(12px);
+      transition:all .3s cubic-bezier(.22,1,.36,1);
+      box-shadow:0 8px 24px rgba(0,0,0,.4);
+    }
+    .back-to-top.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
+    .back-to-top:hover{
+      background:linear-gradient(135deg,#5b8cff,#7b5bff);
+      border-color:transparent;color:#fff;
+      transform:translateY(-2px);
+      box-shadow:0 12px 32px rgba(91,140,255,.4);
+    }
+    .back-to-top svg{display:block}
+
+    /* Toast */
+    .toast{
+      position:fixed;bottom:32px;left:50%;
+      transform:translate(-50%,20px);
+      padding:14px 24px;border-radius:10px;
+      background:var(--surface);border:1px solid var(--border-2);
+      color:var(--text);font-size:14px;font-weight:500;
+      box-shadow:0 20px 60px rgba(0,0,0,.5);
+      z-index:250;pointer-events:none;
+      opacity:0;
+      transition:opacity .25s cubic-bezier(.22,1,.36,1),
+                 transform .25s cubic-bezier(.22,1,.36,1);
+      max-width:calc(100vw - 40px);
+    }
+    .toast.visible{opacity:1;transform:translate(-50%,0)}
+    .toast-success{border-color:rgba(74,222,128,.4);color:#4ade80}
+    .toast-error{border-color:rgba(248,113,113,.4);color:#f87171}
+    .toast-info{border-color:rgba(91,140,255,.4);color:#5b8cff}
+
+    /* Form error states */
+    .form-error{
+      display:block;margin-top:6px;
+      font-family:var(--mono);font-size:12px;
+      color:var(--danger);letter-spacing:.02em;
+      min-height:0;
+    }
+    input.error, textarea.error{
+      border-color:var(--danger) !important;
+    }
+
+    /* Copied state */
+    .copied{
+      background:rgba(74,222,128,.15) !important;
+      border-color:rgba(74,222,128,.5) !important;
+      color:#4ade80 !important;
+    }
+
+    @media(max-width:640px){
+      .back-to-top{bottom:16px;right:16px;width:42px;height:42px}
+      .toast{font-size:13px;padding:12px 18px}
+    }
+    @media(prefers-reduced-motion:reduce){
+      .back-to-top,.toast,.read-progress{transition:none}
+    }
+  `;
+  document.head.appendChild(styleEl);
+
+  /* ==========================================================================
+     21. CONSOLE BANNER
+     ========================================================================== */
+  try {
+    console.log(
+      "%c NEXIFING ",
+      "background:linear-gradient(135deg,#5b8cff,#7b5bff);color:#fff;font-weight:800;padding:6px 12px;border-radius:6px;letter-spacing:.14em;font-size:12px"
+    );
+    console.log(
+      "%c Web Development Studio · https://7az3ma7m3dm-oss.github.io/nexifing/",
+      "color:#7a7a92;font-size:11px"
+    );
+    console.log(
+      "%c Tip: press '/' to focus search · type 'g h' to jump home",
+      "color:#5b8cff;font-size:11px;font-style:italic"
+    );
+  } catch(e){}
+
+  /* ==========================================================================
+     22. READY
+     ========================================================================== */
+  safeLog("init", "all systems ready");
+  document.documentElement.setAttribute("data-nexifing-ready", "true");
 
 })();
