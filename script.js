@@ -1,642 +1,1148 @@
-/* ==========================================================================
-   NEXIFING — script.js
-   Version 3.0
-   Full interactive layer — menu, animations, forms, utilities, UX polish
-   ========================================================================== */
+/* ============================================================
+   GAMENEST — script.js
+   Cart · Favorites · Search · Checkout · Orders · Reviews
+   ============================================================ */
 
-(() => {
+(function () {
   "use strict";
 
-  /* ==========================================================================
-     0. UTILITIES
-     ========================================================================== */
-  const $  = (s, r = document) => r.querySelector(s);
-  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  const clamp = (n, min, max) => Math.min(Math.max(n, min), max);
-  const throttle = (fn, wait) => {
-    let last = 0, timer = null;
-    return function(...args){
-      const now = Date.now();
-      const remaining = wait - (now - last);
-      if (remaining <= 0){
-        clearTimeout(timer);
-        timer = null;
-        last = now;
-        fn.apply(this, args);
-      } else if (!timer){
-        timer = setTimeout(() => {
-          last = Date.now();
-          timer = null;
-          fn.apply(this, args);
-        }, remaining);
-      }
-    };
-  };
-  const debounce = (fn, wait) => {
-    let timer;
-    return function(...args){
-      clearTimeout(timer);
-      timer = setTimeout(() => fn.apply(this, args), wait);
-    };
+  /* ============================================================
+     0. CONFIG
+     ============================================================ */
+  const CFG = {
+    storeName: "GAMENEST",
+    currency: "EGP",
+    currencySymbol: "EGP",
+    orderPrefix: "GN",
+    instagramUser: "gamenestshop", // IG username for DM link
+    instagramUrl: "https://www.instagram.com/gamenestshop/",
+    discordUrl: "https://discord.gg/X3qCVbnW3K",
+    /* Weekly drop resets every Friday at 23:59:59 local time */
+    weeklyDropDay: 5, // 0=Sun, 5=Fri
+    weeklyDropHour: 23,
+    weeklyDropMinute: 59,
+    /* Discount tiers (by item count) */
+    discountTiers: [
+      { min: 2, pct: 10, label: "10% OFF" },
+      { min: 3, pct: 15, label: "15% OFF" },
+      { min: 5, pct: 20, label: "20% OFF" }
+    ],
+    /* Promo codes */
+    promos: {
+      GAMENEST10: { pct: 10, label: "10% OFF" },
+      DROP15:      { pct: 15, label: "15% OFF" },
+      LEVELUP20:   { pct: 20, label: "20% OFF" }
+    }
   };
 
-  const safeLog = (label, ...args) => {
-    try { console.log(`%c NEXIFING · ${label}`, "color:#5b8cff;font-weight:600", ...args); }
-    catch(e){}
+  /* ============================================================
+     1. FIREBASE (loaded lazily by index.html module script)
+     ============================================================ */
+  const firebaseConfig = {
+    apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
+    authDomain: "gamenest-reviews.firebaseapp.com",
+    projectId: "gamenest-reviews",
+    storageBucket: "gamenest-reviews.firebasestorage.app",
+    messagingSenderId: "480446593066",
+    appId: "1:480446593066:web:97a76d0cf5a1aeb7c7ab53"
   };
 
-  /* ==========================================================================
-     1. MOBILE MENU
-     ========================================================================== */
-  const menuToggle = $("#menuToggle");
-  const nav = $("#nav");
+  let db = null;
 
-  function openMenu(){
-    if (!nav) return;
-    menuToggle.classList.add("active");
-    nav.classList.add("open");
-    document.body.style.overflow = "hidden";
-    menuToggle.setAttribute("aria-expanded", "true");
-  }
-  function closeMenu(){
-    if (!nav) return;
-    menuToggle.classList.remove("active");
-    nav.classList.remove("open");
-    document.body.style.overflow = "";
-    menuToggle.setAttribute("aria-expanded", "false");
-  }
-  function toggleMenu(){
-    if (!nav) return;
-    nav.classList.contains("open") ? closeMenu() : openMenu();
-  }
-
-  if (menuToggle && nav){
-    menuToggle.setAttribute("aria-expanded", "false");
-    menuToggle.addEventListener("click", toggleMenu);
-
-    nav.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", closeMenu);
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && nav.classList.contains("open")) closeMenu();
-    });
-
-    window.addEventListener("resize", debounce(() => {
-      if (window.innerWidth > 900 && nav.classList.contains("open")) closeMenu();
-    }, 150));
-  }
-
-  /* ==========================================================================
-     2. HEADER SHADOW ON SCROLL
-     ========================================================================== */
-  const header = $(".header");
-  if (header){
-    const updateHeader = throttle(() => {
-      if (window.pageYOffset > 20){
-        header.style.boxShadow = "0 1px 0 rgba(255,255,255,.02), 0 8px 24px rgba(0,0,0,.4)";
-      } else {
-        header.style.boxShadow = "none";
-      }
-    }, 100);
-    window.addEventListener("scroll", updateHeader, { passive: true });
-  }
-
-  /* ==========================================================================
-     3. READING PROGRESS BAR
-     ========================================================================== */
-  const progressBar = document.createElement("div");
-  progressBar.className = "read-progress";
-  progressBar.setAttribute("aria-hidden", "true");
-  document.body.appendChild(progressBar);
-
-  const updateProgress = throttle(() => {
-    const scrollTop = window.pageYOffset;
-    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-    const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-    progressBar.style.transform = `scaleX(${pct / 100})`;
-  }, 40);
-  window.addEventListener("scroll", updateProgress, { passive: true });
-
-  /* ==========================================================================
-     4. SCROLL REVEAL
-     ========================================================================== */
-  const revealTargets = $$(
-    ".service, .process-step, .work-card, .industry, .tech-group, " +
-    ".why-item, .faq details, .section-head, .testimonial, .pricing-card, " +
-    ".intro-p, .intro-left, .clients-label, .pricing-note, .cta-note"
-  );
-
-  if ("IntersectionObserver" in window && !prefersReducedMotion){
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting){
-          entry.target.style.opacity = "1";
-          entry.target.style.transform = "translateY(0)";
-          io.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08, rootMargin: "0px 0px -40px 0px" });
-
-    revealTargets.forEach((el, i) => {
-      el.style.opacity = "0";
-      el.style.transform = "translateY(24px)";
-      const delay = Math.min(i * 0.03, 0.3);
-      el.style.transition =
-        `opacity .7s cubic-bezier(.22,1,.36,1) ${delay}s, ` +
-        `transform .7s cubic-bezier(.22,1,.36,1) ${delay}s`;
-      io.observe(el);
-    });
-  } else {
-    revealTargets.forEach(el => {
-      el.style.opacity = "1";
-      el.style.transform = "none";
-    });
-  }
-
-  /* ==========================================================================
-     5. SMOOTH SCROLL FOR ANCHORS
-     ========================================================================== */
-  $$('a[href^="#"]').forEach(link => {
-    link.addEventListener("click", (e) => {
-      const href = link.getAttribute("href");
-      if (!href || href === "#" || href.length < 2) return;
-      const target = document.querySelector(href);
-      if (!target) return;
-      e.preventDefault();
-      const top = target.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({ top, behavior: prefersReducedMotion ? "auto" : "smooth" });
-      if (history.pushState) history.pushState(null, "", href);
-    });
-  });
-
-  /* ==========================================================================
-     6. FAQ ACCORDION — one open at a time
-     ========================================================================== */
-  const faqItems = $$(".faq details");
-  faqItems.forEach(item => {
-    item.addEventListener("toggle", () => {
-      if (item.open){
-        faqItems.forEach(other => {
-          if (other !== item && other.open) other.open = false;
-        });
-      }
-    });
-  });
-
-  /* ==========================================================================
-     7. ACTIVE NAV HIGHLIGHT
-     ========================================================================== */
-  const sections = $$("section[id]");
-  const navLinks = $$(".nav a[href^='#']");
-
-  if (sections.length && navLinks.length && "IntersectionObserver" in window){
-    const map = new Map();
-    navLinks.forEach(link => {
-      const id = link.getAttribute("href").slice(1);
-      const sec = document.getElementById(id);
-      if (sec) map.set(sec, link);
-    });
-
-    const navObs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        const link = map.get(entry.target);
-        if (!link) return;
-        if (entry.isIntersecting){
-          navLinks.forEach(l => l.style.color = "");
-          link.style.color = "var(--text)";
-        }
-      });
-    }, { rootMargin: "-40% 0px -55% 0px", threshold: 0 });
-
-    map.forEach((link, sec) => navObs.observe(sec));
-  }
-
-  /* ==========================================================================
-     8. COUNT-UP ANIMATION FOR HERO STATS
-     ========================================================================== */
-  const heroStats = $$(".hero-stats .stat-n");
-
-  function animateCount(el){
-    if (prefersReducedMotion) return;
-
-    const originalText = el.textContent.trim();
-
-    /* Detect non-numeric values like "< 24h", "99.9%", "3+ yrs" */
-    const suffixMatch = originalText.match(/([%+a-zA-Z<>\s]+)$/);
-    const suffix = suffixMatch ? suffixMatch[1] : "";
-    const numericPart = originalText.replace(suffix, "").trim();
-
-    /* Handle decimal values like 99.9 */
-    const isDecimal = numericPart.includes(".");
-    const target = parseFloat(numericPart);
-    if (isNaN(target)) return;
-
-    const duration = 1400;
-    const startTime = performance.now();
-
-    const tick = (now) => {
-      const elapsed = now - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      const current = target * eased;
-
-      if (isDecimal){
-        el.textContent = current.toFixed(1) + suffix;
-      } else {
-        el.textContent = Math.round(current).toLocaleString("en-US") + suffix;
-      }
-      if (progress < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }
-
-  if (heroStats.length && "IntersectionObserver" in window){
-    const statObs = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting){
-          heroStats.forEach(animateCount);
-          statObs.disconnect();
-        }
-      });
-    }, { threshold: 0.4 });
-    const heroStatsEl = $(".hero-stats");
-    if (heroStatsEl) statObs.observe(heroStatsEl);
-  }
-
-  /* ==========================================================================
-     9. BACK TO TOP
-     ========================================================================== */
-  const backToTop = document.createElement("button");
-  backToTop.className = "back-to-top";
-  backToTop.setAttribute("aria-label", "Back to top");
-  backToTop.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>';
-  document.body.appendChild(backToTop);
-
-  backToTop.addEventListener("click", () => {
-    window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" });
-  });
-
-  const toggleBackTop = throttle(() => {
-    backToTop.classList.toggle("visible", window.pageYOffset > 600);
-  }, 100);
-  window.addEventListener("scroll", toggleBackTop, { passive: true });
-
-  /* ==========================================================================
-     10. EXTERNAL LINK SAFETY
-     ========================================================================== */
-  const hostname = window.location.hostname;
-  $$("a[href^='http']").forEach(link => {
+  async function initFirebase() {
+    if (db) return db;
+    if (window.__gn_db) { db = window.__gn_db; return db; }
     try {
-      const url = new URL(link.href);
-      if (url.hostname !== hostname && !link.hasAttribute("target")){
-        link.setAttribute("target", "_blank");
-        link.setAttribute("rel", "noopener noreferrer");
-      }
-    } catch(e){}
-  });
-
-  /* ==========================================================================
-     11. FORM VALIDATION HELPERS
-     ========================================================================== */
-  const validators = {
-    required: (v) => v.trim().length > 0 || "This field is required",
-    email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) || "Invalid email address",
-    minLength: (n) => (v) => v.trim().length >= n || `Must be at least ${n} characters`,
-    maxLength: (n) => (v) => v.trim().length <= n || `Must be under ${n} characters`,
-    phone: (v) => /^[\d\s+()-]{7,}$/.test(v.trim()) || "Invalid phone number"
-  };
-
-  function validateField(input, rules){
-    const value = input.value;
-    for (const rule of rules){
-      const result = rule(value);
-      if (result !== true){
-        return { valid: false, message: result };
-      }
+      const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+      const { getFirestore } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      window.__gn_db = db;
+      return db;
+    } catch (err) {
+      console.warn("Firebase not initialized:", err);
+      return null;
     }
-    return { valid: true };
   }
 
-  /* ==========================================================================
-     12. CONTACT FORM
-     ========================================================================== */
-  const contactForm = $("#contactForm");
-  if (contactForm){
-    const name = $("#cfName");
-    const email = $("#cfEmail");
-    const project = $("#cfProject");
-    const message = $("#cfMessage");
-    const submitBtn = $("#cfSubmit");
-    const noteEl = $("#cfNote");
+  async function fsAdd(collection, data) {
+    const database = await initFirebase();
+    if (!database) throw new Error("Firebase offline");
+    const { collection: c, addDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    return addDoc(c(database, collection), { ...data, createdAt: serverTimestamp() });
+  }
 
-    /* Inline error display */
-    function showError(input, msg){
-      if (!input) return;
-      input.classList.add("error");
-      const errEl = input.parentElement.querySelector(".form-error");
-      if (errEl) errEl.textContent = msg;
+  async function fsFindOrder(orderId) {
+    const database = await initFirebase();
+    if (!database) return null;
+    const { collection, query, where, getDocs, limit } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+    const q = query(collection(database, "orders"), where("orderId", "==", orderId.trim().toUpperCase()), limit(1));
+    const snap = await getDocs(q);
+    if (snap.empty) return null;
+    return snap.docs[0].data();
+  }
+
+  /* ============================================================
+     2. PRODUCTS DATA
+     ============================================================ */
+  /* price: in EGP · v: V-Bucks amount for price-per-1000 calc · stock · delivery */
+  const PRODUCTS = [
+    /* ---------- V-BUCKS ---------- */
+    { id: "vb-800",   kind: "vb",   code: "VB_800",   title: "800 V-Bucks",   desc: "Starter pack — perfect for a skin or emote.",                 price: 199,  v: 800,   img: "vbucks.png", stock: 50, delivery: "5 min",  hot: false },
+    { id: "vb-2400",  kind: "vb",   code: "VB_2400",  title: "2,400 V-Bucks", desc: "Most popular — full Battle Pass + extras.",                    price: 479,  v: 2400,  img: "vbucks.png", stock: 40, delivery: "5 min",  hot: true  },
+    { id: "vb-4500",  kind: "vb",   code: "VB_4500",  title: "4,500 V-Bucks", desc: "Best mid-tier value for regular players.",                     price: 759,  v: 4500,  img: "vbucks.png", stock: 28, delivery: "10 min", hot: false },
+    { id: "vb-12500", kind: "vb",   code: "VB_12500", title: "12,500 V-Bucks",desc: "Mega pack — bundle of legendary skins + Battle Pass.",         price: 1749, v: 12500, img: "vbucks.png", stock: 14, delivery: "15 min", hot: true  },
+
+    /* ---------- FORTNITE CREW ---------- */
+    { id: "crew-1",   kind: "crew", code: "CREW_1M",  title: "Crew · 1 Month",  desc: "Monthly V-Bucks + Crew Pack + current Battle Pass.",        price: 210,  v: 1000,  img: "crew.png",   stock: 60, delivery: "10 min", hot: false },
+    { id: "crew-2",   kind: "crew", code: "CREW_2M",  title: "Crew · 2 Months", desc: "Two months of Crew benefits at a discount.",                 price: 399,  v: 2000,  img: "crew.png",   stock: 40, delivery: "10 min", hot: false },
+    { id: "crew-3",   kind: "crew", code: "CREW_3M",  title: "Crew · 3 Months", desc: "Three months — save more than monthly.",                     price: 569,  v: 3000,  img: "crew.png",   stock: 30, delivery: "10 min", hot: false },
+    { id: "crew-6",   kind: "crew", code: "CREW_6M",  title: "Crew · 6 Months", desc: "Half-year bundle — best mid-tier Crew value.",               price: 1049, v: 6000,  img: "crew.png",   stock: 20, delivery: "15 min", hot: true  },
+    { id: "crew-12",  kind: "crew", code: "CREW_12M", title: "Crew · 12 Months",desc: "Full year — biggest Crew discount we offer.",                price: 1959, v: 12000, img: "crew.png",   stock: 12, delivery: "20 min", hot: true  },
+
+    /* ---------- FORTNITE GIFTS ---------- */
+    { id: "gift-500",  kind: "gift", code: "GIFT_500",  title: "Gift · 500 V-Bucks",  desc: "Send 500 V-Bucks to any Fortnite friend.",              price: 95,  v: 500,  img: "gift.png", stock: 80, delivery: "5 min",  hot: false },
+    { id: "gift-2000", kind: "gift", code: "GIFT_2000", title: "Gift · 2,000 V-Bucks",desc: "Send 2,000 V-Bucks — good for a legendary skin.",       price: 375, v: 2000, img: "gift.png", stock: 50, delivery: "5 min",  hot: true  },
+    { id: "gift-skin", kind: "gift", code: "GIFT_SKIN", title: "Item Shop Skin",      desc: "Any Item Shop skin gifted directly to your friend.",     price: 420, v: 0,    img: "gift.png", stock: 25, delivery: "15 min", hot: false }
+  ];
+
+  /* ============================================================
+     3. HELPERS
+     ============================================================ */
+  const $  = (sel, root = document) => root.querySelector(sel);
+  const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
+
+  function priceOf(p) { return Number(p.price) || 0; }
+  function fmt(n) { return Number(n || 0).toLocaleString("en-US"); }
+  function fmtPrice(n) { return fmt(n) + " " + CFG.currencySymbol; }
+  function fmtPer1k(p) {
+    if (!p.v || !p.price) return "";
+    const per1k = (p.price / p.v) * 1000;
+    return fmt(per1k.toFixed(0)) + " " + CFG.currencySymbol + " / 1K";
+  }
+  function uid(len = 5) {
+    const chars = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+    let s = "";
+    for (let i = 0; i < len; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return s;
+  }
+  function genOrderId() {
+    return CFG.orderPrefix + "-" + uid(5) + "-" + uid(5);
+  }
+  function getProductById(id) { return PRODUCTS.find(p => p.id === id) || null; }
+
+  function escapeHtml(str) {
+    if (str == null) return "";
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function stockBadge(stock) {
+    if (stock == null) return "";
+    if (stock <= 0)  return '<span class="pbadge stock-out">Out of stock</span>';
+    if (stock <= 15) return '<span class="pbadge stock-low">Low · ' + stock + ' left</span>';
+    return '<span class="pbadge stock-ok">In stock</span>';
+  }
+
+  async function copyText(text) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) {
+      return false;
     }
-    function clearError(input){
-      if (!input) return;
-      input.classList.remove("error");
-      const errEl = input.parentElement.querySelector(".form-error");
-      if (errEl) errEl.textContent = "";
+  }
+
+  /* ============================================================
+     4. TOAST
+     ============================================================ */
+  const toastEl = $("#toast");
+  let toastTimer = null;
+  function toast(msg, ms = 2600) {
+    if (!toastEl) return;
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), ms);
+  }
+
+  /* ============================================================
+     5. STORAGE (cart + favorites)
+     ============================================================ */
+  const LS = {
+    cart: "gn_cart_v1",
+    fav:  "gn_fav_v1",
+    lastOrder: "gn_last_order_v1"
+  };
+
+  const state = {
+    cart: loadLS(LS.cart, []),      // [{ id, qty }]
+    fav:  loadLS(LS.fav, []),       // [id]
+    activeProduct: null,
+    activePayment: "vodafone",
+    activeOrderId: null,
+    promo: null,                    // { code, pct, label }
+    proofFile: null
+  };
+
+  function loadLS(key, fallback) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? fallback; }
+    catch { return fallback; }
+  }
+  function saveLS(key, val) {
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+  }
+  function saveCart() { saveLS(LS.cart, state.cart); }
+  function saveFav()  { saveLS(LS.fav, state.fav); }
+
+  /* ============================================================
+     6. PAYMENT METHODS
+     ============================================================ */
+  const PAYMENTS = {
+    vodafone: {
+      label: "VODAFONE CASH",
+      address: "0104 264 1080",
+      name: "ADAM MOHAMED OMAR",
+      link: "http://vf.eg/vfcash?id=mt&qrId=wgmEpY"
+    },
+    instapay: {
+      label: "INSTAPAY",
+      address: "0115 893 4284",
+      name: "ADAM MOHAMED OMAR",
+      link: "https://ipn.eg/S/iadqm/instapay/9n2XjE"
+    },
+    telda: {
+      label: "TELDA",
+      address: "@itzadam",
+      name: "ADAM MOHAMED OMAR",
+      link: ""
+    }
+  };
+
+  /* ============================================================
+     7. RENDER PRODUCTS
+     ============================================================ */
+  function buildCardHTML(p) {
+    const faved = state.fav.includes(p.id) ? "active" : "";
+    const per1k = fmtPer1k(p);
+    return `
+      <article class="pcard-prod" data-id="${p.id}">
+        <button class="fav-toggle ${faved}" data-fav="${p.id}" type="button" aria-label="Favorite">♥</button>
+        <div class="prod-code">// ${escapeHtml(p.code)}</div>
+        <img class="prod-img" src="${escapeHtml(p.img)}" alt="" onerror="this.style.display='none'">
+        <h3 class="prod-title">${escapeHtml(p.title)}</h3>
+        <p class="prod-desc">${escapeHtml(p.desc)}</p>
+        <div class="prod-badges">
+          ${p.hot ? '<span class="pbadge hot">HOT</span>' : ''}
+          ${stockBadge(p.stock)}
+        </div>
+        <div class="prod-meta">
+          <span><span>Delivery</span><b>${escapeHtml(p.delivery || "Instant")}</b></span>
+          ${per1k ? `<span><span>Per 1K</span><b>${per1k}</b></span>` : ''}
+        </div>
+        <div class="prod-price-row">
+          <div class="prod-price">${fmtPrice(p.price)}</div>
+        </div>
+        <div class="prod-actions">
+          <button class="btn" data-buy="${p.id}" type="button">Buy Now</button>
+          <button class="btn ghost" data-cart="${p.id}" type="button">Add</button>
+        </div>
+      </article>
+    `;
+  }
+
+  function sortByPrice(a, b) { return priceOf(a) - priceOf(b); }
+
+  function renderAllProducts() {
+    const vb = $("#gridVB");
+    const cr = $("#gridCrew");
+    const gf = $("#gridGift");
+    const best = $("#gridBest");
+    const deals = $("#gridDeals");
+    const bundles = $("#gridBundles");
+
+    if (vb) vb.innerHTML = PRODUCTS.filter(p => p.kind === "vb").sort(sortByPrice).map(buildCardHTML).join("");
+    if (cr) cr.innerHTML = PRODUCTS.filter(p => p.kind === "crew").sort(sortByPrice).map(buildCardHTML).join("");
+    if (gf) gf.innerHTML = PRODUCTS.filter(p => p.kind === "gift").sort(sortByPrice).map(buildCardHTML).join("");
+
+    /* Best sellers — hot items, then by price */
+    if (best) {
+      const bestList = PRODUCTS.filter(p => p.hot).sort(sortByPrice);
+      best.innerHTML = bestList.map(buildCardHTML).join("");
     }
 
-    [name, email, message].forEach(input => {
-      if (!input) return;
-      input.addEventListener("input", () => clearError(input));
+    /* Deals — non-hot items with stock >= 20 */
+    if (deals && deals.innerHTML.trim() === "") {
+      const dealList = PRODUCTS.filter(p => !p.hot && p.stock >= 20).sort(sortByPrice);
+      if (dealList.length) {
+        const sec = document.getElementById("deals-section");
+        if (sec) sec.style.display = "";
+        deals.innerHTML = dealList.map(buildCardHTML).join("");
+      }
+    }
+
+    /* Bundles — crew multi-month + big V-Bucks */
+    if (bundles && bundles.innerHTML.trim() === "") {
+      const bundleList = PRODUCTS.filter(p => (p.kind === "crew" && /6|12/.test(p.title)) || p.id === "vb-12500").sort(sortByPrice);
+      if (bundleList.length) {
+        const sec = document.getElementById("bundles-section");
+        if (sec) sec.style.display = "";
+        bundles.innerHTML = bundleList.map(buildCardHTML).join("");
+      }
+    }
+
+    bindCardEvents();
+    updateCartBadge();
+    updateFavBadge();
+  }
+
+  function bindCardEvents() {
+    $$("[data-buy]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        const p = getProductById(btn.dataset.buy);
+        if (p) openProductModal(p);
+      });
     });
+    $$("[data-cart]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        addToCart(btn.dataset.cart);
+      });
+    });
+    $$("[data-fav]").forEach(btn => {
+      btn.addEventListener("click", e => {
+        e.stopPropagation();
+        toggleFav(btn.dataset.fav);
+      });
+    });
+    $$(".pcard-prod").forEach(card => {
+      card.addEventListener("click", () => {
+        const p = getProductById(card.dataset.id);
+        if (p) openProductModal(p);
+      });
+    });
+  }
 
-    contactForm.addEventListener("submit", (e) => {
-      e.preventDefault();
+  /* ============================================================
+     8. CART
+     ============================================================ */
+  function addToCart(id, qty = 1) {
+    const p = getProductById(id);
+    if (!p) return;
+    if (p.stock <= 0) { toast("Out of stock"); return; }
+    const item = state.cart.find(i => i.id === id);
+    if (item) item.qty += qty;
+    else state.cart.push({ id, qty });
+    saveCart();
+    updateCartBadge();
+    renderCartModal();
+    toast("Added to cart");
+  }
 
-      let valid = true;
+  function removeFromCart(id) {
+    state.cart = state.cart.filter(i => i.id !== id);
+    saveCart();
+    updateCartBadge();
+    renderCartModal();
+    updateCheckoutSummary();
+  }
 
-      const nameCheck = validateField(name, [validators.required, validators.minLength(2)]);
-      if (!nameCheck.valid){ showError(name, nameCheck.message); valid = false; }
+  function setCartQty(id, qty) {
+    qty = Math.max(1, Math.min(99, qty));
+    const item = state.cart.find(i => i.id === id);
+    if (!item) return;
+    item.qty = qty;
+    saveCart();
+    renderCartModal();
+    updateCheckoutSummary();
+  }
 
-      const emailCheck = validateField(email, [validators.required, validators.email]);
-      if (!emailCheck.valid){ showError(email, emailCheck.message); valid = false; }
+  function cartCount() {
+    return state.cart.reduce((sum, i) => sum + i.qty, 0);
+  }
 
-      const msgCheck = validateField(message, [validators.required, validators.minLength(10)]);
-      if (!msgCheck.valid){ showError(message, msgCheck.message); valid = false; }
+  function cartSubtotal() {
+    return state.cart.reduce((sum, i) => {
+      const p = getProductById(i.id);
+      return sum + (p ? priceOf(p) * i.qty : 0);
+    }, 0);
+  }
 
-      if (!valid){
-        if (noteEl){
-          noteEl.textContent = "Please fix the errors above";
-          noteEl.style.color = "var(--danger)";
-        }
+  function updateCartBadge() {
+    const badge = $("#cartCount");
+    if (!badge) return;
+    const n = cartCount();
+    badge.textContent = n;
+    badge.hidden = n === 0;
+  }
+
+  /* ============================================================
+     9. FAVORITES
+     ============================================================ */
+  function toggleFav(id) {
+    const idx = state.fav.indexOf(id);
+    if (idx >= 0) state.fav.splice(idx, 1);
+    else state.fav.push(id);
+    saveFav();
+    updateFavBadge();
+    renderAllProducts();
+    renderFavModal();
+    toast(state.fav.includes(id) ? "Added to favorites" : "Removed from favorites");
+  }
+
+  function updateFavBadge() {
+    const badge = $("#favCount");
+    if (!badge) return;
+    const n = state.fav.length;
+    badge.textContent = n;
+    badge.hidden = n === 0;
+  }
+
+  function renderFavModal() {
+    const wrap = $("#favItems");
+    if (!wrap) return;
+    if (!state.fav.length) {
+      wrap.innerHTML = '<div class="review-empty">No favorites yet.</div>';
+      return;
+    }
+    wrap.innerHTML = state.fav.map(id => {
+      const p = getProductById(id);
+      if (!p) return "";
+      return `
+        <div class="cart-item">
+          <div class="ci-info">
+            <div class="ci-title">${escapeHtml(p.title)}</div>
+            <div class="ci-desc">${escapeHtml(p.desc)}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ci-price">${fmtPrice(p.price)}</div>
+            <div class="ci-remove" data-unfav="${p.id}">✕ Remove</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+    $$("[data-unfav]").forEach(el => {
+      el.addEventListener("click", () => toggleFav(el.dataset.unfav));
+    });
+  }
+
+  /* ============================================================
+     10. CART MODAL
+     ============================================================ */
+  function renderCartModal() {
+    const wrap = $("#cartItems");
+    const totalEl = $("#cartTotal");
+    if (!wrap) return;
+
+    if (!state.cart.length) {
+      wrap.innerHTML = '<div class="review-empty">Your cart is empty.</div>';
+      if (totalEl) totalEl.textContent = fmtPrice(0);
+      return;
+    }
+
+    wrap.innerHTML = state.cart.map(item => {
+      const p = getProductById(item.id);
+      if (!p) return "";
+      return `
+        <div class="cart-item">
+          <div class="ci-info">
+            <div class="ci-title">${escapeHtml(p.title)} × ${item.qty}</div>
+            <div class="ci-desc">${escapeHtml(p.desc)}</div>
+            <div class="ci-remove" data-remove="${p.id}">✕ Remove</div>
+          </div>
+          <div style="text-align:right">
+            <div class="ci-price">${fmtPrice(priceOf(p) * item.qty)}</div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    if (totalEl) totalEl.textContent = fmtPrice(cartSubtotal());
+
+    $$("[data-remove]").forEach(el => {
+      el.addEventListener("click", () => removeFromCart(el.dataset.remove));
+    });
+  }
+
+  /* ============================================================
+     11. MODAL OPEN/CLOSE
+     ============================================================ */
+  function openModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add("open");
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove("open");
+    modal.setAttribute("aria-hidden", "true");
+    if (!document.querySelector(".modal.open")) {
+      document.body.style.overflow = "";
+    }
+  }
+
+  function closeAllModals() {
+    $$(".modal.open").forEach(m => {
+      m.classList.remove("open");
+      m.setAttribute("aria-hidden", "true");
+    });
+    document.body.style.overflow = "";
+  }
+
+  /* ============================================================
+     12. PRODUCT DETAIL MODAL
+     ============================================================ */
+  function openProductModal(p) {
+    state.activeProduct = p;
+
+    const img = $("#detailImg");
+    const code = $("#detailCode");
+    const title = $("#detailTitle");
+    const desc = $("#detailDesc");
+    const price = $("#detailPrice");
+    const delivery = $("#detailDelivery");
+    const stock = $("#detailStock");
+
+    if (img) { img.src = p.img; img.style.display = ""; }
+    if (code) code.textContent = p.code;
+    if (title) title.textContent = p.title;
+    if (desc) desc.textContent = p.desc;
+    if (price) price.textContent = fmtPrice(p.price);
+    if (delivery) delivery.textContent = p.delivery || "Instant";
+    if (stock) {
+      stock.textContent = p.stock > 0
+        ? (p.stock <= 15 ? `${p.stock} left` : "Available")
+        : "Out of stock";
+    }
+
+    /* Related — same kind, different id */
+    const relatedWrap = $("#relatedWrap");
+    const relatedGrid = $("#relatedGrid");
+    if (relatedWrap && relatedGrid) {
+      const related = PRODUCTS.filter(x => x.kind === p.kind && x.id !== p.id).slice(0, 4);
+      if (related.length) {
+        relatedWrap.style.display = "";
+        relatedGrid.innerHTML = related.map(buildCardHTML).join("");
+        bindCardEvents();
+      } else {
+        relatedWrap.style.display = "none";
+      }
+    }
+
+    openModal("productModal");
+  }
+
+  /* ============================================================
+     13. CHECKOUT MODAL
+     ============================================================ */
+  function openCheckout() {
+    if (!state.cart.length && !state.activeProduct) {
+      toast("Add an item first");
+      return;
+    }
+    if (!state.cart.length && state.activeProduct) {
+      addToCart(state.activeProduct.id);
+    }
+    updateCheckoutSummary();
+    updatePaymentUI();
+    openModal("checkoutModal");
+  }
+
+  function updateCheckoutSummary() {
+    const sub = cartSubtotal();
+    const subEl = $("#coSubtotal");
+    const totEl = $("#coTotal");
+    const titleEl = $("#coTitle");
+    const count = cartCount();
+
+    if (subEl) subEl.textContent = fmtPrice(sub);
+
+    /* Discount tier */
+    let pct = 0;
+    let label = "";
+    for (const tier of CFG.discountTiers) {
+      if (count >= tier.min) { pct = tier.pct; label = tier.label; }
+    }
+    if (state.promo) { pct = state.promo.pct; label = state.promo.label; }
+
+    const discEl = $("#discountPct");
+    const fillEl = $("#discountFill");
+    const msgEl = $("#discountMsg");
+    if (discEl) discEl.textContent = pct + "%";
+    if (fillEl) fillEl.style.width = Math.min(100, (pct / 20) * 100) + "%";
+    if (msgEl) {
+      if (pct > 0) msgEl.textContent = label + " applied";
+      else {
+        const next = CFG.discountTiers.find(t => count < t.min);
+        msgEl.textContent = next
+          ? `Add ${next.min - count} more item(s) to unlock ${next.pct}% off`
+          : "Add items to unlock discounts";
+      }
+    }
+
+    const total = sub - (sub * pct / 100);
+    if (totEl) totEl.textContent = fmtPrice(total);
+
+    const refEl = $("#coReference");
+    if (refEl && !refEl.dataset.filled) {
+      const ref = CFG.orderPrefix + "-REF-" + uid(6);
+      refEl.textContent = ref;
+      refEl.dataset.filled = "1";
+    }
+  }
+
+  function updatePaymentUI() {
+    const pay = PAYMENTS[state.activePayment];
+    const method = $("#coMethod");
+    const addr = $("#coAddress");
+    if (method) method.textContent = pay.label;
+    if (addr) addr.textContent = pay.address;
+
+    $$(".pay-tab").forEach(tab => {
+      tab.classList.toggle("active", tab.dataset.pay === state.activePayment);
+    });
+  }
+
+  /* ============================================================
+     14. FORM VALIDATION
+     ============================================================ */
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validatePhone(raw, country) {
+    const digits = (raw || "").replace(/\D/g, "");
+    const opt = document.querySelector(`#coCountry option[value="${country}"]`);
+    if (!opt) return digits.length >= 6;
+    const len = parseInt(opt.dataset.len, 10) || 10;
+    return digits.length === len;
+  }
+
+  /* ============================================================
+     15. SUBMIT ORDER
+     ============================================================ */
+  async function submitOrder() {
+    const userEl = $("#coUser");
+    const emailEl = $("#coEmail");
+    const phoneEl = $("#coPhone");
+    const countryEl = $("#coCountry");
+    const errEmail = $("#emailError");
+    const errPhone = $("#phoneError");
+
+    const name = (userEl?.value || "").trim();
+    const email = (emailEl?.value || "").trim().toLowerCase();
+    const phoneRaw = (phoneEl?.value || "").trim();
+    const country = countryEl?.value || "+20";
+
+    if (errEmail) { errEmail.hidden = true; errEmail.textContent = ""; }
+    if (errPhone) { errPhone.hidden = true; errPhone.textContent = ""; }
+
+    if (!name) { toast("Enter your name"); userEl?.focus(); return; }
+    if (!validateEmail(email)) {
+      if (errEmail) { errEmail.textContent = "Invalid email"; errEmail.hidden = false; }
+      emailEl?.focus();
+      return;
+    }
+    if (!validatePhone(phoneRaw, country)) {
+      if (errPhone) { errPhone.textContent = "Invalid phone number for selected country"; errPhone.hidden = false; }
+      phoneEl?.focus();
+      return;
+    }
+
+    const btn = $("#submitOrder");
+    if (btn) { btn.disabled = true; btn.textContent = "SUBMITTING..."; }
+
+    try {
+      const orderId = genOrderId();
+      const sub = cartSubtotal();
+      const count = cartCount();
+      let pct = 0;
+      for (const tier of CFG.discountTiers) if (count >= tier.min) pct = tier.pct;
+      if (state.promo) pct = state.promo.pct;
+      const total = sub - (sub * pct / 100);
+
+      const items = state.cart.map(i => {
+        const p = getProductById(i.id);
+        return { id: i.id, title: p?.title || "", qty: i.qty, price: priceOf(p) };
+      });
+
+      const productStr = items.map(i => `${i.title} × ${i.qty}`).join(", ");
+      const reference = $("#coReference")?.textContent || "";
+
+      const orderData = {
+        orderId,
+        name,
+        email,
+        phone: country + phoneRaw.replace(/\D/g, ""),
+        items,
+        product: productStr,
+        price: total,
+        subtotal: sub,
+        discountPct: pct,
+        promo: state.promo?.code || "",
+        payment: state.activePayment,
+        paymentLabel: PAYMENTS[state.activePayment].label,
+        reference,
+        status: "pending",
+        hasProof: !!state.proofFile
+      };
+
+      await fsAdd("orders", orderData);
+      try { localStorage.setItem(LS.lastOrder, JSON.stringify(orderData)); } catch {}
+
+      state.activeOrderId = orderId;
+
+      /* Success modal */
+      const codeEl = $("#successOrderCode");
+      const gwEl = $("#successGateway");
+      const plEl = $("#successPlayer");
+      if (codeEl) codeEl.textContent = orderId;
+      if (gwEl) gwEl.textContent = PAYMENTS[state.activePayment].label;
+      if (plEl) plEl.textContent = name;
+
+      closeModal("checkoutModal");
+      openModal("successModal");
+
+      /* Reset cart after successful submit */
+      state.cart = [];
+      saveCart();
+      updateCartBadge();
+      renderCartModal();
+    } catch (err) {
+      console.error("Order submit failed:", err);
+      toast("Could not submit — check your connection");
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "SUBMIT_ORDER"; }
+    }
+  }
+
+  /* ============================================================
+     16. SEARCH
+     ============================================================ */
+  function runSearch(q) {
+    const out = $("#searchResults");
+    if (!out) return;
+    const query = (q || "").trim().toLowerCase();
+    if (!query) {
+      out.innerHTML = '<div class="review-empty">Start typing to search products…</div>';
+      return;
+    }
+    const results = PRODUCTS.filter(p =>
+      p.title.toLowerCase().includes(query) ||
+      p.desc.toLowerCase().includes(query) ||
+      p.code.toLowerCase().includes(query)
+    );
+    if (!results.length) {
+      out.innerHTML = '<div class="review-empty">No products match.</div>';
+      return;
+    }
+    out.innerHTML = results.sort(sortByPrice).map(p => `
+      <div class="search-result" data-search-open="${p.id}">
+        <div>
+          <div class="sr-title">${escapeHtml(p.title)}</div>
+          <div class="sr-desc">${escapeHtml(p.desc)}</div>
+        </div>
+        <div class="sr-price">${fmtPrice(p.price)}</div>
+      </div>
+    `).join("");
+    $$("[data-search-open]").forEach(el => {
+      el.addEventListener("click", () => {
+        const p = getProductById(el.dataset.searchOpen);
+        if (p) { closeModal("searchModal"); openProductModal(p); }
+      });
+    });
+  }
+
+  /* ============================================================
+     17. COUNTDOWN (Weekly Drop)
+     ============================================================ */
+  function nextDropEnd() {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(CFG.weeklyDropHour, CFG.weeklyDropMinute, 59, 999);
+    let diff = CFG.weeklyDropDay - now.getDay();
+    if (diff < 0) diff += 7;
+    end.setDate(end.getDate() + diff);
+    if (end.getTime() <= now.getTime()) end.setDate(end.getDate() + 7);
+    return end;
+  }
+
+  function startCountdown() {
+    const hEl = $("#cdH");
+    const mEl = $("#cdM");
+    const sEl = $("#cdS");
+    if (!hEl || !mEl || !sEl) return;
+
+    function tick() {
+      const end = nextDropEnd();
+      const diff = Math.max(0, end.getTime() - Date.now());
+      const h = Math.floor(diff / 3600000);
+      const m = Math.floor((diff % 3600000) / 60000);
+      const s = Math.floor((diff % 60000) / 1000);
+      hEl.textContent = String(h).padStart(2, "0");
+      mEl.textContent = String(m).padStart(2, "0");
+      sEl.textContent = String(s).padStart(2, "0");
+    }
+    tick();
+    setInterval(tick, 1000);
+  }
+
+  /* ============================================================
+     18. ORDER TRACKING
+     ============================================================ */
+  async function trackOrder() {
+    const input = $("#trackInput");
+    const out = $("#trackResult");
+    if (!input || !out) return;
+    const id = input.value.trim().toUpperCase();
+    if (!id) { toast("Enter your order code"); return; }
+
+    out.innerHTML = '<div style="color:#8a8a8a;font-family:var(--mono);font-size:12px;text-align:center">Looking up…</div>';
+    try {
+      const order = await fsFindOrder(id);
+      if (!order) {
+        out.innerHTML = '<div class="review-empty">No order found for that code.</div>';
         return;
       }
-
-      /* Persist draft on submit (so it's not lost) */
-      saveFormDraft(contactForm);
-
-      submitBtn.disabled = true;
-      const original = submitBtn.textContent;
-      submitBtn.textContent = "Sending...";
-      if (noteEl){ noteEl.textContent = ""; }
-
-      setTimeout(() => {
-        if (noteEl){
-          noteEl.textContent = "✓ Message sent — we'll reply within 24 hours.";
-          noteEl.style.color = "var(--success)";
-        }
-        submitBtn.disabled = false;
-        submitBtn.textContent = original;
-        contactForm.reset();
-        clearFormDraft(contactForm);
-      }, 1200);
-    });
-
-    /* Draft persistence */
-    function saveFormDraft(form){
-      try {
-        const data = {};
-        new FormData(form).forEach((v, k) => { data[k] = v; });
-        localStorage.setItem("nexifing_contact_draft", JSON.stringify(data));
-      } catch(e){}
+      const d = order.createdAt?.toDate?.();
+      const dateStr = d ? d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+      out.innerHTML = `
+        <div style="background:#111;border:1px solid #1f1f1f;padding:22px;font-family:var(--mono);font-size:12.5px">
+          <div style="display:flex;justify-content:space-between;padding-bottom:9px;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Order</span><b>${escapeHtml(order.orderId)}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Date</span><b>${dateStr}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Product</span><b>${escapeHtml(order.product || "—")}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Price</span><b>${fmtPrice(order.price)}</b></div>
+          <div style="display:flex;justify-content:space-between;padding-top:9px"><span style="color:#4a4a4a;text-transform:uppercase">Status</span><span class="badge ${escapeHtml(order.status || "pending")}">${escapeHtml(order.status || "pending")}</span></div>
+        </div>
+      `;
+    } catch (e) {
+      console.error(e);
+      out.innerHTML = '<div class="review-empty">Could not load order. Try again later.</div>';
     }
-    function clearFormDraft(form){
-      try { localStorage.removeItem("nexifing_contact_draft"); } catch(e){}
-    }
-    function restoreFormDraft(form){
-      try {
-        const raw = localStorage.getItem("nexifing_contact_draft");
-        if (!raw) return;
-        const data = JSON.parse(raw);
-        Object.entries(data).forEach(([k, v]) => {
-          const el = form.querySelector(`[name="${k}"]`);
-          if (el) el.value = v;
-        });
-      } catch(e){}
-    }
-    restoreFormDraft(contactForm);
-
-    /* Auto-save draft every 3 seconds while typing */
-    let draftTimer;
-    contactForm.addEventListener("input", () => {
-      clearTimeout(draftTimer);
-      draftTimer = setTimeout(() => saveFormDraft(contactForm), 3000);
-    });
   }
 
-  /* ==========================================================================
-     13. HERO PARALLAX
-     ========================================================================== */
-  const heroGlows = $$(".hero .glow");
-  if (heroGlows.length && !prefersReducedMotion){
-    const parallax = throttle(() => {
-      const y = window.pageYOffset;
-      heroGlows.forEach((glow, i) => {
-        glow.style.transform = `translateY(${y * (0.15 + i * 0.1)}px)`;
-      });
-    }, 40);
-    window.addEventListener("scroll", parallax, { passive: true });
-  }
+  /* ============================================================
+     19. SUPPORT TICKET
+     ============================================================ */
+  async function submitTicket() {
+    const nameEl = $("#ticketName");
+    const emailEl = $("#ticketEmail");
+    const orderEl = $("#ticketOrder");
+    const msgEl = $("#ticketMsg");
+    const noteEl = $("#ticketNote");
+    const btn = $("#submitTicket");
 
-  /* ==========================================================================
-     14. IMAGE PREFETCH
-     ========================================================================== */
-  if ("requestIdleCallback" in window){
-    requestIdleCallback(() => {
-      ["nexifing-logo.png", "favicon.png"].forEach(src => {
-        const img = new Image();
-        img.src = src;
-      });
-    });
-  }
+    const name = (nameEl?.value || "").trim();
+    const email = (emailEl?.value || "").trim().toLowerCase();
+    const orderId = (orderEl?.value || "").trim().toUpperCase();
+    const message = (msgEl?.value || "").trim();
 
-  /* ==========================================================================
-     15. HOVER WILL-CHANGE HINTS
-     ========================================================================== */
-  $$(".work-card, .service, .pricing-card").forEach(card => {
-    card.addEventListener("mouseenter", () => { card.style.willChange = "transform"; });
-    card.addEventListener("mouseleave", () => { card.style.willChange = "auto"; });
-  });
-
-  /* ==========================================================================
-     16. KEYBOARD SHORTCUTS
-     ========================================================================== */
-  document.addEventListener("keydown", (e) => {
-    /* "/" focuses search (if exists) */
-    if (e.key === "/" && !isTyping(e.target)){
-      const searchInput = $("#searchInput");
-      if (searchInput){
-        e.preventDefault();
-        searchInput.focus();
-      }
+    if (!name || !validateEmail(email) || !message) {
+      if (noteEl) noteEl.textContent = "Fill name, valid email and message";
+      return;
     }
-    /* "g h" → home (github-style) */
-    if (e.key === "g" && !isTyping(e.target)){
-      const handler = (ev) => {
-        if (ev.key === "h"){ window.location.href = "/"; }
-        document.removeEventListener("keydown", handler);
-      };
-      document.addEventListener("keydown", handler);
-      setTimeout(() => document.removeEventListener("keydown", handler), 800);
-    }
-  });
 
-  function isTyping(el){
-    if (!el) return false;
-    const tag = el.tagName.toLowerCase();
-    return tag === "input" || tag === "textarea" || tag === "select" || el.isContentEditable;
+    if (btn) { btn.disabled = true; btn.textContent = "SENDING..."; }
+    if (noteEl) noteEl.textContent = "Sending…";
+
+    try {
+      await fsAdd("tickets", { name, email, orderId, message, status: "open" });
+      if (noteEl) noteEl.textContent = "✓ Ticket sent — we'll reply within 24h";
+      if (nameEl) nameEl.value = "";
+      if (emailEl) emailEl.value = "";
+      if (orderEl) orderEl.value = "";
+      if (msgEl) msgEl.value = "";
+    } catch (err) {
+      console.error(err);
+      if (noteEl) noteEl.textContent = "Could not send — try again";
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = "SUBMIT_TICKET"; }
+    }
   }
 
-  /* ==========================================================================
-     17. TOAST NOTIFICATIONS
-     ========================================================================== */
-  function showToast(message, type = "info", duration = 3000){
-    const toast = document.createElement("div");
-    toast.className = `toast toast-${type}`;
-    toast.textContent = message;
-    document.body.appendChild(toast);
+  /* ============================================================
+     20. INSTAGRAM SEND HANDLER
+     ============================================================ */
+  async function sendToInstagram() {
+    const code = state.activeOrderId || "";
+    if (!code) { toast("No order yet"); return; }
 
-    requestAnimationFrame(() => toast.classList.add("visible"));
+    const lastOrder = (() => {
+      try { return JSON.parse(localStorage.getItem(LS.lastOrder) || "null"); }
+      catch { return null; }
+    })();
+
+    const msg = [
+      "Hi GAMENEST! I just placed an order:",
+      "",
+      "Order: " + code,
+      "Product: " + (lastOrder?.product || "—"),
+      "Name: " + (lastOrder?.name || "—"),
+      "Email: " + (lastOrder?.email || "—"),
+      "Phone: " + (lastOrder?.phone || "—"),
+      "Payment: " + (lastOrder?.paymentLabel || PAYMENTS[state.activePayment].label),
+      "Total: " + fmtPrice(lastOrder?.price || cartSubtotal()),
+      "",
+      "Attaching payment screenshot now."
+    ].join("\n");
+
+    const ok = await copyText(msg);
+    toast(ok ? "✓ Copied — paste in Instagram DM" : "Copy manually");
 
     setTimeout(() => {
-      toast.classList.remove("visible");
-      setTimeout(() => toast.remove(), 300);
-    }, duration);
+      window.open("https://ig.me/m/" + CFG.instagramUser, "_blank", "noopener");
+    }, 350);
   }
-  window.NEXIFING = window.NEXIFING || {};
-  window.NEXIFING.showToast = showToast;
 
-  /* ==========================================================================
-     18. COPY-TO-CLIPBOARD BUTTONS
-     ========================================================================== */
-  $$("[data-copy]").forEach(btn => {
-    btn.addEventListener("click", async () => {
-      const text = btn.dataset.copy;
-      if (!text) return;
-      try {
-        await navigator.clipboard.writeText(text);
-        showToast("Copied to clipboard", "success", 1800);
-        btn.classList.add("copied");
-        setTimeout(() => btn.classList.remove("copied"), 1500);
-      } catch(e){
-        showToast("Copy failed", "error", 1800);
+  /* ============================================================
+     21. BIND EVENTS
+     ============================================================ */
+  function bindGlobalEvents() {
+    /* Mobile menu */
+    const menuBtn = $("#menuBtn");
+    const navLinks = $("#navLinks");
+    if (menuBtn && navLinks) {
+      menuBtn.addEventListener("click", () => navLinks.classList.toggle("open"));
+    }
+
+    /* Nav icons */
+    $("#searchBtn")?.addEventListener("click", () => {
+      openModal("searchModal");
+      setTimeout(() => $("#searchInput")?.focus(), 100);
+      runSearch("");
+    });
+    $("#favBtn")?.addEventListener("click", () => {
+      renderFavModal();
+      openModal("favModal");
+    });
+    $("#cartBtn")?.addEventListener("click", () => {
+      renderCartModal();
+      openModal("cartModal");
+    });
+
+    /* Modal close buttons */
+    $$("[data-close]").forEach(el => el.addEventListener("click", () => closeModal("productModal")));
+    $$("[data-close-checkout]").forEach(el => el.addEventListener("click", () => closeModal("checkoutModal")));
+    $$("[data-close-cart]").forEach(el => el.addEventListener("click", () => closeModal("cartModal")));
+    $$("[data-close-fav]").forEach(el => el.addEventListener("click", () => closeModal("favModal")));
+    $$("[data-close-search]").forEach(el => el.addEventListener("click", () => closeModal("searchModal")));
+
+    /* ESC closes any modal */
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") closeAllModals();
+    });
+
+    /* Product modal actions */
+    $("#buyNowBtn")?.addEventListener("click", () => {
+      if (state.activeProduct) {
+        closeModal("productModal");
+        state.cart = [{ id: state.activeProduct.id, qty: 1 }];
+        saveCart();
+        updateCartBadge();
+        openCheckout();
       }
     });
-  });
+    $("#addCartBtn")?.addEventListener("click", () => {
+      if (state.activeProduct) {
+        addToCart(state.activeProduct.id);
+        closeModal("productModal");
+      }
+    });
 
-  /* ==========================================================================
-     19. YEAR AUTO-FILL
-     ========================================================================== */
-  $$("[data-year]").forEach(el => {
-    el.textContent = new Date().getFullYear();
-  });
+    /* Cart modal → checkout */
+    $("#cartCheckout")?.addEventListener("click", () => {
+      closeModal("cartModal");
+      openCheckout();
+    });
 
-  /* ==========================================================================
-     20. INJECTED STYLES (toast, progress, back-to-top)
-     ========================================================================== */
-  const styleEl = document.createElement("style");
-  styleEl.textContent = `
-    /* Reading progress */
-    .read-progress{
-      position:fixed;top:0;left:0;right:0;height:2px;
-      background:linear-gradient(90deg,#5b8cff,#7b5bff);
-      transform:scaleX(0);transform-origin:left;
-      z-index:200;pointer-events:none;
-      transition:transform .1s linear;
+    /* Payment tab switch */
+    $$(".pay-tab").forEach(tab => {
+      tab.addEventListener("click", () => {
+        state.activePayment = tab.dataset.pay;
+        updatePaymentUI();
+      });
+    });
+
+    /* Pay now button */
+    $("#payNowBtn")?.addEventListener("click", () => {
+      const pay = PAYMENTS[state.activePayment];
+      if (pay.link) window.open(pay.link, "_blank", "noopener");
+      else {
+        copyText(pay.address);
+        toast("Address copied: " + pay.address);
+      }
+    });
+
+    /* Payment gateway buttons on home page */
+    $$(".gateway .gw-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const gateway = btn.closest(".gateway");
+        const link = gateway?.dataset.link;
+        const val = gateway?.dataset.value;
+        if (link) window.open(link, "_blank", "noopener");
+        else if (val) {
+          copyText(val);
+          toast("Copied: " + val);
+        }
+      });
+    });
+
+    /* Promo apply */
+    $("#promoApplyBtn")?.addEventListener("click", () => {
+      const input = $("#promoInput");
+      const code = (input?.value || "").trim().toUpperCase();
+      if (!code) { toast("Enter a code"); return; }
+      const promo = CFG.promos[code];
+      if (!promo) { toast("Invalid promo code"); return; }
+      state.promo = { code, ...promo };
+      updateCheckoutSummary();
+      toast("✓ " + promo.label + " applied");
+    });
+
+    /* Country select → phone placeholder */
+    $("#coCountry")?.addEventListener("change", e => {
+      const opt = e.target.selectedOptions[0];
+      const ph = $("#coPhone");
+      if (ph && opt?.dataset.example) ph.placeholder = "e.g. " + opt.dataset.example;
+    });
+
+    /* Proof upload */
+    const uploadBox = $("#uploadBox");
+    const uploadInput = $("#proofUpload");
+    const proofPreview = $("#proofPreview");
+    const proofRemove = $("#proofRemove");
+    const uploadLabel = $("#uploadLabel");
+
+    uploadBox?.addEventListener("click", () => uploadInput?.click());
+    uploadBox?.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") uploadInput?.click();
+    });
+    uploadInput?.addEventListener("change", () => {
+      const file = uploadInput.files?.[0];
+      if (!file) return;
+      if (file.size > 6 * 1024 * 1024) { toast("File too large (max 6MB)"); return; }
+      state.proofFile = file;
+      if (uploadLabel) uploadLabel.textContent = "[ " + file.name.slice(0, 40) + " ]";
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (proofPreview) {
+          proofPreview.src = reader.result;
+          proofPreview.hidden = false;
+        }
+        if (proofRemove) proofRemove.hidden = false;
+      };
+      reader.readAsDataURL(file);
+    });
+    proofRemove?.addEventListener("click", e => {
+      e.stopPropagation();
+      state.proofFile = null;
+      if (uploadInput) uploadInput.value = "";
+      if (proofPreview) { proofPreview.src = ""; proofPreview.hidden = true; }
+      if (proofRemove) proofRemove.hidden = true;
+      if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
+    });
+
+    /* Submit order */
+    $("#submitOrder")?.addEventListener("click", submitOrder);
+
+    /* Copy ticket */
+    $("#copyTicket")?.addEventListener("click", async () => {
+      const lastOrder = (() => {
+        try { return JSON.parse(localStorage.getItem(LS.lastOrder) || "null"); }
+        catch { return null; }
+      })();
+      const ticket = [
+        "GAMENEST ORDER TICKET",
+        "Order: " + (state.activeOrderId || "—"),
+        "Product: " + (lastOrder?.product || "—"),
+        "Name: " + (lastOrder?.name || "—"),
+        "Email: " + (lastOrder?.email || "—"),
+        "Total: " + fmtPrice(lastOrder?.price || 0)
+      ].join("\n");
+      const ok = await copyText(ticket);
+      toast(ok ? "Ticket copied" : "Copy failed");
+    });
+
+    /* Success modal buttons */
+    $("#sendToInsta")?.addEventListener("click", sendToInstagram);
+    $("#terminateLink")?.addEventListener("click", () => {
+      closeModal("successModal");
+      toast("Order submitted — thanks!");
+    });
+
+    /* Track */
+    $("#trackBtn")?.addEventListener("click", trackOrder);
+    $("#trackInput")?.addEventListener("keypress", e => {
+      if (e.key === "Enter") trackOrder();
+    });
+
+    /* Support ticket */
+    $("#submitTicket")?.addEventListener("click", submitTicket);
+
+    /* Search */
+    const searchInput = $("#searchInput");
+    if (searchInput) {
+      let debounce;
+      searchInput.addEventListener("input", e => {
+        clearTimeout(debounce);
+        debounce = setTimeout(() => runSearch(e.target.value), 120);
+      });
     }
+  }
 
-    /* Back to top */
-    .back-to-top{
-      position:fixed;bottom:24px;right:24px;
-      width:48px;height:48px;border-radius:50%;
-      background:var(--surface);border:1px solid var(--border-2);
-      color:var(--text-2);
-      display:flex;align-items:center;justify-content:center;
-      cursor:pointer;z-index:90;
-      opacity:0;pointer-events:none;
-      transform:translateY(12px);
-      transition:all .3s cubic-bezier(.22,1,.36,1);
-      box-shadow:0 8px 24px rgba(0,0,0,.4);
-    }
-    .back-to-top.visible{opacity:1;pointer-events:auto;transform:translateY(0)}
-    .back-to-top:hover{
-      background:linear-gradient(135deg,#5b8cff,#7b5bff);
-      border-color:transparent;color:#fff;
-      transform:translateY(-2px);
-      box-shadow:0 12px 32px rgba(91,140,255,.4);
-    }
-    .back-to-top svg{display:block}
+  /* ============================================================
+     22. BOOT
+     ============================================================ */
+  function boot() {
+    renderAllProducts();
+    renderCartModal();
+    renderFavModal();
+    bindGlobalEvents();
+    startCountdown();
+    updateCheckoutSummary();
+    updatePaymentUI();
+    initFirebase().catch(() => {});
 
-    /* Toast */
-    .toast{
-      position:fixed;bottom:32px;left:50%;
-      transform:translate(-50%,20px);
-      padding:14px 24px;border-radius:10px;
-      background:var(--surface);border:1px solid var(--border-2);
-      color:var(--text);font-size:14px;font-weight:500;
-      box-shadow:0 20px 60px rgba(0,0,0,.5);
-      z-index:250;pointer-events:none;
-      opacity:0;
-      transition:opacity .25s cubic-bezier(.22,1,.36,1),
-                 transform .25s cubic-bezier(.22,1,.36,1);
-      max-width:calc(100vw - 40px);
-    }
-    .toast.visible{opacity:1;transform:translate(-50%,0)}
-    .toast-success{border-color:rgba(74,222,128,.4);color:#4ade80}
-    .toast-error{border-color:rgba(248,113,113,.4);color:#f87171}
-    .toast-info{border-color:rgba(91,140,255,.4);color:#5b8cff}
+    /* Default search state */
+    runSearch("");
+  }
 
-    /* Form error states */
-    .form-error{
-      display:block;margin-top:6px;
-      font-family:var(--mono);font-size:12px;
-      color:var(--danger);letter-spacing:.02em;
-      min-height:0;
-    }
-    input.error, textarea.error{
-      border-color:var(--danger) !important;
-    }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", boot);
+  } else {
+    boot();
+  }
 
-    /* Copied state */
-    .copied{
-      background:rgba(74,222,128,.15) !important;
-      border-color:rgba(74,222,128,.5) !important;
-      color:#4ade80 !important;
-    }
-
-    @media(max-width:640px){
-      .back-to-top{bottom:16px;right:16px;width:42px;height:42px}
-      .toast{font-size:13px;padding:12px 18px}
-    }
-    @media(prefers-reduced-motion:reduce){
-      .back-to-top,.toast,.read-progress{transition:none}
-    }
-  `;
-  document.head.appendChild(styleEl);
-
-  /* ==========================================================================
-     21. CONSOLE BANNER
-     ========================================================================== */
-  try {
-    console.log(
-      "%c NEXIFING ",
-      "background:linear-gradient(135deg,#5b8cff,#7b5bff);color:#fff;font-weight:800;padding:6px 12px;border-radius:6px;letter-spacing:.14em;font-size:12px"
-    );
-    console.log(
-      "%c Web Development Studio · https://7az3ma7m3dm-oss.github.io/nexifing/",
-      "color:#7a7a92;font-size:11px"
-    );
-    console.log(
-      "%c Tip: press '/' to focus search · type 'g h' to jump home",
-      "color:#5b8cff;font-size:11px;font-style:italic"
-    );
-  } catch(e){}
-
-  /* ==========================================================================
-     22. READY
-     ========================================================================== */
-  safeLog("init", "all systems ready");
-  document.documentElement.setAttribute("data-nexifing-ready", "true");
-
+  /* Expose for debugging */
+  window.GN = {
+    state,
+    PRODUCTS,
+    PAYMENTS,
+    addToCart,
+    removeFromCart,
+    openProductModal,
+    openCheckout,
+    toast,
+    copyText
+  };
 })();
