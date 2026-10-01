@@ -1,3 +1,46 @@
+// ---- GameNest: website settings (banner + maintenance) ----
+(async function () {
+  try {
+    const { initializeApp, getApps } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+    const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+
+    const cfg = {
+      apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
+      authDomain: "gamenest-reviews.firebaseapp.com",
+      projectId: "gamenest-reviews",
+      storageBucket: "gamenest-reviews.firebasestorage.app",
+      messagingSenderId: "480446593066",
+      appId: "1:480446593066:web:97a76d0cf5a1aeb7c7ab53"
+    };
+
+    const app = getApps().length ? getApps()[0] : initializeApp(cfg);
+    const db  = getFirestore(app);
+
+    const snap = await getDoc(doc(db, "settings", "website"));
+    if (!snap.exists()) return;
+    const s = snap.data();
+
+    // Maintenance mode
+    if (s.maintenance === true) {
+      document.documentElement.innerHTML =
+        '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#fff;font-family:ui-monospace,monospace;text-align:center;padding:24px;letter-spacing:.14em;text-transform:uppercase">🛠️ Maintenance in progress — back soon.</div>';
+      return;
+    }
+
+    // Banner
+    if (s.bannerText && s.bannerText.trim()) {
+      const bar = document.createElement("div");
+      bar.textContent = s.bannerText;
+      bar.style.cssText =
+        "background:#fff;color:#0a0a0a;text-align:center;padding:10px 16px;" +
+        "font-family:ui-monospace,monospace;font-size:12px;font-weight:800;" +
+        "letter-spacing:.16em;text-transform:uppercase;position:sticky;top:0;z-index:9999";
+      document.body.prepend(bar);
+    }
+  } catch (e) {
+    // Silent — site still works if Firebase is offline
+  }
+})();
 /* ============================================================
    GAMENEST — script.js
    Cart · Favorites · Search · Checkout · Orders · Reviews
