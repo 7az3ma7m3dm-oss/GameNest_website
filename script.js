@@ -132,9 +132,9 @@
   const PRODUCTS = [
     /* ---------- V-BUCKS ---------- */
     { id: "vb-800",   kind: "vb",   code: "VB_800",   title: "800 V-Bucks",   desc: "Starter pack — perfect for a skin or emote.",                 price: 199,  v: 800,   img: "vbucks.png", stock: 50, delivery: "5 min",  hot: false },
-    { id: "vb-2400",  kind: "vb",   code: "VB_2400",  title: "2,400 V-Bucks", desc: "Most popular — full Battle Pass + extras.",                    price: 479,  v: 2400,  img: "vbucks.png", stock: 40, delivery: "5 min",  hot: true  },
-    { id: "vb-4500",  kind: "vb",   code: "VB_4500",  title: "4,500 V-Bucks", desc: "Best mid-tier value for regular players.",                     price: 759,  v: 4500,  img: "vbucks.png", stock: 28, delivery: "10 min", hot: false },
-    { id: "vb-12500", kind: "vb",   code: "VB_12500", title: "12,500 V-Bucks",desc: "Mega pack — bundle of legendary skins + Battle Pass.",         price: 1749, v: 12500, img: "vbucks.png", stock: 14, delivery: "15 min", hot: true  },
+    { id: "vb-2400",  kind: "vb",   code: "VB_2400",  title: "2,400 V-Bucks", desc: "Most popular — full Battle Pass + extras.",                    price: 549,  v: 2400,  img: "vbucks.png", stock: 40, delivery: "5 min",  hot: true  },
+    { id: "vb-4500",  kind: "vb",   code: "VB_4500",  title: "4,500 V-Bucks", desc: "Best mid-tier value for regular players.",                     price: 849,  v: 4500,  img: "vbucks.png", stock: 28, delivery: "10 min", hot: false },
+    { id: "vb-12500", kind: "vb",   code: "VB_12500", title: "12,500 V-Bucks",desc: "Mega pack — bundle of legendary skins + Battle Pass.",         price: 1899, v: 12500, img: "vbucks.png", stock: 14, delivery: "15 min", hot: true  },
 
     /* ---------- FORTNITE CREW ---------- */
     { id: "crew-1",   kind: "crew", code: "CREW_1M",  title: "Crew · 1 Month",  desc: "Monthly V-Bucks + Crew Pack + current Battle Pass.",        price: 210,  v: 1000,  img: "crew.png",   stock: 60, delivery: "10 min", hot: false },
