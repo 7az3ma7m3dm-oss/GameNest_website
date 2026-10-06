@@ -20,14 +20,12 @@
     if (!snap.exists()) return;
     const s = snap.data();
 
-    // Maintenance mode
     if (s.maintenance === true) {
       document.documentElement.innerHTML =
         '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0a0a0a;color:#fff;font-family:ui-monospace,monospace;text-align:center;padding:24px;letter-spacing:.14em;text-transform:uppercase">🛠️ Maintenance in progress — back soon.</div>';
       return;
     }
 
-    // Banner
     if (s.bannerText && s.bannerText.trim()) {
       const bar = document.createElement("div");
       bar.textContent = s.bannerText;
@@ -38,9 +36,10 @@
       document.body.prepend(bar);
     }
   } catch (e) {
-    // Silent — site still works if Firebase is offline
+    // Silent
   }
 })();
+
 /* ============================================================
    GAMENEST — script.js
    Cart · Favorites · Search · Checkout · Orders · Reviews
@@ -57,20 +56,17 @@
     currency: "EGP",
     currencySymbol: "EGP",
     orderPrefix: "GN",
-    instagramUser: "gamenestshop", // IG username for DM link
+    instagramUser: "gamenestshop",
     instagramUrl: "https://www.instagram.com/gamenestshop/",
     discordUrl: "https://discord.gg/X3qCVbnW3K",
-    /* Weekly drop resets every Friday at 23:59:59 local time */
-    weeklyDropDay: 5, // 0=Sun, 5=Fri
+    weeklyDropDay: 5,
     weeklyDropHour: 23,
     weeklyDropMinute: 59,
-    /* Discount tiers (by item count) */
     discountTiers: [
       { min: 2, pct: 10, label: "10% OFF" },
       { min: 3, pct: 15, label: "15% OFF" },
       { min: 5, pct: 20, label: "20% OFF" }
     ],
-    /* Promo codes */
     promos: {
       GAMENEST10: { pct: 10, label: "10% OFF" },
       DROP15:      { pct: 15, label: "15% OFF" },
@@ -79,7 +75,7 @@
   };
 
   /* ============================================================
-     1. FIREBASE (loaded lazily by index.html module script)
+     1. FIREBASE
      ============================================================ */
   const firebaseConfig = {
     apiKey: "AIzaSyAHa3wntlgoYqaX3IlNzPzTA5nfxy5WhpM",
@@ -128,7 +124,6 @@
   /* ============================================================
      2. PRODUCTS DATA
      ============================================================ */
-  /* price: in EGP · v: V-Bucks amount for price-per-1000 calc · stock · delivery */
   const PRODUCTS = [
     /* ---------- V-BUCKS ---------- */
     { id: "vb-800",   kind: "vb",   code: "VB_800",   title: "800 V-Bucks",   desc: "Starter pack — perfect for a skin or emote.",                 price: 199,  v: 800,   img: "vbucks.png", stock: 50, delivery: "5 min",  hot: false },
@@ -145,11 +140,13 @@
 
     /* ---------- FORTNITE GIFTS ---------- */
     { id: "gift-500",  kind: "gift", code: "GIFT_500",  title: "Gift · 500 V-Bucks",  desc: "Send 500 V-Bucks to any Fortnite friend.",              price: 95,  v: 500,  img: "gift.png", stock: 80, delivery: "5 min",  hot: false },
-    { id: "gift-2000", kind: "gift", code: "GIFT_2000", title: "Gift · 2,000 V-Bucks",desc: "Send 2,000 V-Bucks — good for a legendary skin.",       price: 375, v: 2000, img: "gift.png", stock: 50, delivery: "5 min",  hot: true  },
-    { id: "gift-skin", kind: "gift", code: "GIFT_SKIN", title: "Item Shop Skin",      desc: "Any Item Shop skin gifted directly to your friend.",     price: 420, v: 0,    img: "gift.png", stock: 25, delivery: "15 min", hot: false }
+    { id: "gift-800",  kind: "gift", code: "GIFT_800",  title: "Gift · 800 V-Bucks",  desc: "Send 800 V-Bucks to any Fortnite friend.",              price: 150, v: 800,  img: "gift.png", stock: 75, delivery: "5 min",  hot: false },
+    { id: "gift-1200", kind: "gift", code: "GIFT_1200", title: "Gift · 1,200 V-Bucks",desc: "Send 1,200 V-Bucks to any Fortnite friend.",            price: 225, v: 1200, img: "gift.png", stock: 70, delivery: "5 min",  hot: false },
+    { id: "gift-1500", kind: "gift", code: "GIFT_1500", title: "Gift · 1,500 V-Bucks",desc: "Send 1,500 V-Bucks to any Fortnite friend.",            price: 280, v: 1500, img: "gift.png", stock: 65, delivery: "5 min",  hot: false },
+    { id: "gift-1800", kind: "gift", code: "GIFT_1800", title: "Gift · 1,800 V-Bucks",desc: "Send 1,800 V-Bucks to any Fortnite friend.",            price: 330, v: 1800, img: "gift.png", stock: 60, delivery: "5 min",  hot: false },
+    { id: "gift-2000", kind: "gift", code: "GIFT_2000", title: "Gift · 2,000 V-Bucks",desc: "Send 2,000 V-Bucks — good for a legendary skin.",       price: 375, v: 2000, img: "gift.png", stock: 50, delivery: "5 min",  hot: true  }
   ];
-
-  /* ============================================================
+    /* ============================================================
      3. HELPERS
      ============================================================ */
   const $  = (sel, root = document) => root.querySelector(sel);
@@ -225,7 +222,7 @@
   }
 
   /* ============================================================
-     5. STORAGE (cart + favorites)
+     5. STORAGE
      ============================================================ */
   const LS = {
     cart: "gn_cart_v1",
@@ -234,12 +231,12 @@
   };
 
   const state = {
-    cart: loadLS(LS.cart, []),      // [{ id, qty }]
-    fav:  loadLS(LS.fav, []),       // [id]
+    cart: loadLS(LS.cart, []),
+    fav:  loadLS(LS.fav, []),
     activeProduct: null,
     activePayment: "vodafone",
     activeOrderId: null,
-    promo: null,                    // { code, pct, label }
+    promo: null,
     proofFile: null
   };
 
@@ -323,13 +320,11 @@
     if (cr) cr.innerHTML = PRODUCTS.filter(p => p.kind === "crew").sort(sortByPrice).map(buildCardHTML).join("");
     if (gf) gf.innerHTML = PRODUCTS.filter(p => p.kind === "gift").sort(sortByPrice).map(buildCardHTML).join("");
 
-    /* Best sellers — hot items, then by price */
     if (best) {
       const bestList = PRODUCTS.filter(p => p.hot).sort(sortByPrice);
       best.innerHTML = bestList.map(buildCardHTML).join("");
     }
 
-    /* Deals — non-hot items with stock >= 20 */
     if (deals && deals.innerHTML.trim() === "") {
       const dealList = PRODUCTS.filter(p => !p.hot && p.stock >= 20).sort(sortByPrice);
       if (dealList.length) {
@@ -339,7 +334,6 @@
       }
     }
 
-    /* Bundles — crew multi-month + big V-Bucks */
     if (bundles && bundles.innerHTML.trim() === "") {
       const bundleList = PRODUCTS.filter(p => (p.kind === "crew" && /6|12/.test(p.title)) || p.id === "vb-12500").sort(sortByPrice);
       if (bundleList.length) {
@@ -484,8 +478,7 @@
       el.addEventListener("click", () => toggleFav(el.dataset.unfav));
     });
   }
-
-  /* ============================================================
+    /* ============================================================
      10. CART MODAL
      ============================================================ */
   function renderCartModal() {
@@ -564,7 +557,6 @@
     const desc = $("#detailDesc");
     const price = $("#detailPrice");
     const delivery = $("#detailDelivery");
-    const stock = $("#detailStock");
 
     if (img) { img.src = p.img; img.style.display = ""; }
     if (code) code.textContent = p.code;
@@ -572,13 +564,7 @@
     if (desc) desc.textContent = p.desc;
     if (price) price.textContent = fmtPrice(p.price);
     if (delivery) delivery.textContent = p.delivery || "Instant";
-    if (stock) {
-      stock.textContent = p.stock > 0
-        ? (p.stock <= 15 ? `${p.stock} left` : "Available")
-        : "Out of stock";
-    }
 
-    /* Related — same kind, different id */
     const relatedWrap = $("#relatedWrap");
     const relatedGrid = $("#relatedGrid");
     if (relatedWrap && relatedGrid) {
@@ -615,12 +601,10 @@
     const sub = cartSubtotal();
     const subEl = $("#coSubtotal");
     const totEl = $("#coTotal");
-    const titleEl = $("#coTitle");
     const count = cartCount();
 
     if (subEl) subEl.textContent = fmtPrice(sub);
 
-    /* Discount tier */
     let pct = 0;
     let label = "";
     for (const tier of CFG.discountTiers) {
@@ -667,7 +651,7 @@
   }
 
   /* ============================================================
-     14. FORM VALIDATION
+     14. VALIDATION
      ============================================================ */
   function validateEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -682,7 +666,7 @@
   }
 
   /* ============================================================
-     15. SUBMIT ORDER
+     15. SUBMIT ORDER (receipt saved to Firestore)
      ============================================================ */
   async function submitOrder() {
     const userEl = $("#coUser");
@@ -721,6 +705,7 @@
       const count = cartCount();
       let pct = 0;
       for (const tier of CFG.discountTiers) if (count >= tier.min) pct = tier.pct;
+      if (state.promo) pct = state.promo.promo ? state.promo.pct : state.promo.pct;
       if (state.promo) pct = state.promo.pct;
       const total = sub - (sub * pct / 100);
 
@@ -747,6 +732,7 @@
         paymentLabel: PAYMENTS[state.activePayment].label,
         reference,
         status: "pending",
+        receipt: state.proofFile || "",
         hasProof: !!state.proofFile
       };
 
@@ -755,7 +741,6 @@
 
       state.activeOrderId = orderId;
 
-      /* Success modal */
       const codeEl = $("#successOrderCode");
       const gwEl = $("#successGateway");
       const plEl = $("#successPlayer");
@@ -766,11 +751,21 @@
       closeModal("checkoutModal");
       openModal("successModal");
 
-      /* Reset cart after successful submit */
       state.cart = [];
       saveCart();
       updateCartBadge();
       renderCartModal();
+
+      /* Reset receipt + form after success */
+      state.proofFile = null;
+      const proofInput = $("#proofUpload");
+      const proofPreview = $("#proofPreview");
+      const proofRemove = $("#proofRemove");
+      const uploadLabel = $("#uploadLabel");
+      if (proofInput) proofInput.value = "";
+      if (proofPreview) { proofPreview.src = ""; proofPreview.hidden = true; }
+      if (proofRemove) proofRemove.hidden = true;
+      if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
     } catch (err) {
       console.error("Order submit failed:", err);
       toast("Could not submit — check your connection");
@@ -778,8 +773,7 @@
       if (btn) { btn.disabled = false; btn.textContent = "SUBMIT_ORDER"; }
     }
   }
-
-  /* ============================================================
+    /* ============================================================
      16. SEARCH
      ============================================================ */
   function runSearch(q) {
@@ -817,7 +811,7 @@
   }
 
   /* ============================================================
-     17. COUNTDOWN (Weekly Drop)
+     17. COUNTDOWN
      ============================================================ */
   function nextDropEnd() {
     const now = new Date();
@@ -851,7 +845,7 @@
   }
 
   /* ============================================================
-     18. ORDER TRACKING
+     18. TRACK ORDER
      ============================================================ */
   async function trackOrder() {
     const input = $("#trackInput");
@@ -870,12 +864,12 @@
       const d = order.createdAt?.toDate?.();
       const dateStr = d ? d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
       out.innerHTML = `
-        <div style="background:#111;border:1px solid #1f1f1f;padding:22px;font-family:var(--mono);font-size:12.5px">
-          <div style="display:flex;justify-content:space-between;padding-bottom:9px;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Order</span><b>${escapeHtml(order.orderId)}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Date</span><b>${dateStr}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Product</span><b>${escapeHtml(order.product || "—")}</b></div>
-          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #1f1f1f"><span style="color:#4a4a4a;text-transform:uppercase">Price</span><b>${fmtPrice(order.price)}</b></div>
-          <div style="display:flex;justify-content:space-between;padding-top:9px"><span style="color:#4a4a4a;text-transform:uppercase">Status</span><span class="badge ${escapeHtml(order.status || "pending")}">${escapeHtml(order.status || "pending")}</span></div>
+        <div style="background:var(--glass);border:1px solid var(--line);padding:22px;font-family:var(--mono);font-size:12.5px;border-radius:14px">
+          <div style="display:flex;justify-content:space-between;padding-bottom:9px;border-bottom:1px dashed var(--line)"><span style="color:var(--text-3);text-transform:uppercase">Order</span><b>${escapeHtml(order.orderId)}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--text-3);text-transform:uppercase">Date</span><b>${dateStr}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--text-3);text-transform:uppercase">Product</span><b>${escapeHtml(order.product || "—")}</b></div>
+          <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed var(--line)"><span style="color:var(--text-3);text-transform:uppercase">Price</span><b>${fmtPrice(order.price)}</b></div>
+          <div style="display:flex;justify-content:space-between;padding-top:9px"><span style="color:var(--text-3);text-transform:uppercase">Status</span><span class="badge ${escapeHtml(order.status || "pending")}">${escapeHtml(order.status || "pending")}</span></div>
         </div>
       `;
     } catch (e) {
@@ -924,7 +918,7 @@
   }
 
   /* ============================================================
-     20. INSTAGRAM SEND HANDLER
+     20. INSTAGRAM SEND
      ============================================================ */
   async function sendToInstagram() {
     const code = state.activeOrderId || "";
@@ -961,14 +955,12 @@
      21. BIND EVENTS
      ============================================================ */
   function bindGlobalEvents() {
-    /* Mobile menu */
     const menuBtn = $("#menuBtn");
     const navLinks = $("#navLinks");
     if (menuBtn && navLinks) {
       menuBtn.addEventListener("click", () => navLinks.classList.toggle("open"));
     }
 
-    /* Nav icons */
     $("#searchBtn")?.addEventListener("click", () => {
       openModal("searchModal");
       setTimeout(() => $("#searchInput")?.focus(), 100);
@@ -983,19 +975,16 @@
       openModal("cartModal");
     });
 
-    /* Modal close buttons */
     $$("[data-close]").forEach(el => el.addEventListener("click", () => closeModal("productModal")));
     $$("[data-close-checkout]").forEach(el => el.addEventListener("click", () => closeModal("checkoutModal")));
     $$("[data-close-cart]").forEach(el => el.addEventListener("click", () => closeModal("cartModal")));
     $$("[data-close-fav]").forEach(el => el.addEventListener("click", () => closeModal("favModal")));
     $$("[data-close-search]").forEach(el => el.addEventListener("click", () => closeModal("searchModal")));
 
-    /* ESC closes any modal */
     document.addEventListener("keydown", e => {
       if (e.key === "Escape") closeAllModals();
     });
 
-    /* Product modal actions */
     $("#buyNowBtn")?.addEventListener("click", () => {
       if (state.activeProduct) {
         closeModal("productModal");
@@ -1012,13 +1001,11 @@
       }
     });
 
-    /* Cart modal → checkout */
     $("#cartCheckout")?.addEventListener("click", () => {
       closeModal("cartModal");
       openCheckout();
     });
 
-    /* Payment tab switch */
     $$(".pay-tab").forEach(tab => {
       tab.addEventListener("click", () => {
         state.activePayment = tab.dataset.pay;
@@ -1026,7 +1013,6 @@
       });
     });
 
-    /* Pay now button */
     $("#payNowBtn")?.addEventListener("click", () => {
       const pay = PAYMENTS[state.activePayment];
       if (pay.link) window.open(pay.link, "_blank", "noopener");
@@ -1036,7 +1022,6 @@
       }
     });
 
-    /* Payment gateway buttons on home page */
     $$(".gateway .gw-btn").forEach(btn => {
       btn.addEventListener("click", () => {
         const gateway = btn.closest(".gateway");
@@ -1050,7 +1035,6 @@
       });
     });
 
-    /* Promo apply */
     $("#promoApplyBtn")?.addEventListener("click", () => {
       const input = $("#promoInput");
       const code = (input?.value || "").trim().toUpperCase();
@@ -1062,14 +1046,16 @@
       toast("✓ " + promo.label + " applied");
     });
 
-    /* Country select → phone placeholder */
     $("#coCountry")?.addEventListener("change", e => {
       const opt = e.target.selectedOptions[0];
       const ph = $("#coPhone");
       if (ph && opt?.dataset.example) ph.placeholder = "e.g. " + opt.dataset.example;
     });
 
-    /* Proof upload */
+    /* ============================================================
+       RECEIPT UPLOAD — converts image to compressed base64
+       so it can be saved in Firestore and shown in admin
+       ============================================================ */
     const uploadBox = $("#uploadBox");
     const uploadInput = $("#proofUpload");
     const proofPreview = $("#proofPreview");
@@ -1080,22 +1066,40 @@
     uploadBox?.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") uploadInput?.click();
     });
+
     uploadInput?.addEventListener("change", () => {
       const file = uploadInput.files?.[0];
       if (!file) return;
-      if (file.size > 6 * 1024 * 1024) { toast("File too large (max 6MB)"); return; }
-      state.proofFile = file;
+      if (file.size > 800 * 1024) {
+        toast("File too large (max 800KB)");
+        return;
+      }
       if (uploadLabel) uploadLabel.textContent = "[ " + file.name.slice(0, 40) + " ]";
+
       const reader = new FileReader();
       reader.onload = () => {
-        if (proofPreview) {
-          proofPreview.src = reader.result;
-          proofPreview.hidden = false;
-        }
-        if (proofRemove) proofRemove.hidden = false;
+        const dataUrl = reader.result;
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          const maxW = 900;
+          const scale = img.width > maxW ? maxW / img.width : 1;
+          canvas.width  = Math.round(img.width  * scale);
+          canvas.height = Math.round(img.height * scale);
+          canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+          const compressed = canvas.toDataURL("image/jpeg", 0.7);
+          state.proofFile = compressed;
+          if (proofPreview) {
+            proofPreview.src = compressed;
+            proofPreview.hidden = false;
+          }
+          if (proofRemove) proofRemove.hidden = false;
+        };
+        img.src = dataUrl;
       };
       reader.readAsDataURL(file);
     });
+
     proofRemove?.addEventListener("click", e => {
       e.stopPropagation();
       state.proofFile = null;
@@ -1105,10 +1109,8 @@
       if (uploadLabel) uploadLabel.textContent = "[ UPLOAD_PAYMENT_RECEIPT ]";
     });
 
-    /* Submit order */
     $("#submitOrder")?.addEventListener("click", submitOrder);
 
-    /* Copy ticket */
     $("#copyTicket")?.addEventListener("click", async () => {
       const lastOrder = (() => {
         try { return JSON.parse(localStorage.getItem(LS.lastOrder) || "null"); }
@@ -1126,23 +1128,18 @@
       toast(ok ? "Ticket copied" : "Copy failed");
     });
 
-    /* Success modal buttons */
-    $("#sendToInsta")?.addEventListener("click", sendToInstagram);
     $("#terminateLink")?.addEventListener("click", () => {
       closeModal("successModal");
       toast("Order submitted — thanks!");
     });
 
-    /* Track */
     $("#trackBtn")?.addEventListener("click", trackOrder);
     $("#trackInput")?.addEventListener("keypress", e => {
       if (e.key === "Enter") trackOrder();
     });
 
-    /* Support ticket */
     $("#submitTicket")?.addEventListener("click", submitTicket);
 
-    /* Search */
     const searchInput = $("#searchInput");
     if (searchInput) {
       let debounce;
@@ -1165,8 +1162,6 @@
     updateCheckoutSummary();
     updatePaymentUI();
     initFirebase().catch(() => {});
-
-    /* Default search state */
     runSearch("");
   }
 
@@ -1176,7 +1171,6 @@
     boot();
   }
 
-  /* Expose for debugging */
   window.GN = {
     state,
     PRODUCTS,
