@@ -1701,10 +1701,10 @@ button{cursor:pointer;border:none;background:none;padding:0}
   animation:pulse 2s ease-in-out infinite;
 }
 .hero-title{
-  font-family:var(--sans);
+  font-family:var(--mono);
   font-size:clamp(2.6rem,6vw,4.6rem);
   font-weight:900;
-  letter-spacing:-.04em;
+  letter-spacing:-.06em;
   line-height:1.02;
   margin:0;
   color:#fff;
