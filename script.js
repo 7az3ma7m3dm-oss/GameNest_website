@@ -184,7 +184,6 @@
   function stockBadge(stock) {
     if (stock == null) return "";
     if (stock <= 0)  return '<span class="pbadge stock-out">Out of stock</span>';
-    if (stock <= 15) return '<span class="pbadge stock-low">Low · ' + stock + ' left</span>';
     return '<span class="pbadge stock-ok">In stock</span>';
   }
 
