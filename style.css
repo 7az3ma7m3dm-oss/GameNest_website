@@ -1649,3 +1649,64 @@ button.btn,
   .product-card { padding: 18px; }
   .hero .btns .btn { width: 100%; }
 }
+
+
+/* GameNest card sizing fix — target the actual rendered .pcard-prod cards */
+.pgrid {
+  width: min(calc(100% - 40px), 1240px) !important;
+  max-width: 1240px !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 22px !important;
+}
+.pcard-prod {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 430px !important;
+  padding: 24px !important;
+  gap: 13px !important;
+  border-radius: 16px !important;
+}
+.pcard-prod .prod-img {
+  width: 100% !important;
+  height: 170px !important;
+  object-fit: contain !important;
+  margin: 4px auto 8px !important;
+}
+.pcard-prod .prod-title {
+  font-size: 19px !important;
+  line-height: 1.35 !important;
+  font-weight: 850 !important;
+}
+.pcard-prod .prod-desc {
+  font-size: 13px !important;
+  line-height: 1.65 !important;
+}
+.pcard-prod .prod-price {
+  font-size: 25px !important;
+  font-weight: 900 !important;
+}
+.pcard-prod .prod-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+}
+.pcard-prod .prod-actions .btn {
+  min-height: 48px !important;
+  font-size: 14px !important;
+  font-weight: 850 !important;
+}
+@media (max-width: 900px) {
+  .pgrid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 16px !important; }
+  .pcard-prod { min-height: 400px !important; padding: 18px !important; }
+  .pcard-prod .prod-img { height: 145px !important; }
+}
+@media (max-width: 520px) {
+  .pgrid { width: min(calc(100% - 28px), 480px) !important; gap: 12px !important; }
+  .pcard-prod { min-height: 0 !important; padding: 14px !important; gap: 10px !important; }
+  .pcard-prod .prod-img { height: 112px !important; }
+  .pcard-prod .prod-title { font-size: 15px !important; }
+  .pcard-prod .prod-desc { font-size: 11px !important; }
+  .pcard-prod .prod-price { font-size: 19px !important; }
+  .pcard-prod .prod-actions { grid-template-columns: 1fr !important; }
+  .pcard-prod .prod-actions .btn { min-height: 42px !important; font-size: 12px !important; }
+}
